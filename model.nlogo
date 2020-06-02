@@ -1,28 +1,33 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Breeds, turtle variables, and global variables
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+globals [
+  SS-contacts
+  SE-contacts
+  SI-contacts
+  SR-contacts
+  EE-contacts
+  EI-contacts
+  ER-contacts
+  II-contacts
+  IR-contacts
+  RR-contacts
 
-globals [SS-contacts
-         SE-contacts
-         SI-contacts
-         SR-contacts
-         EE-contacts
-         EI-contacts
-         ER-contacts
-         II-contacts
-         IR-contacts
-         RR-contacts]
+  first-lockdown?
+  already-locked?
+]
 
-breed [susceptibles susceptible]
-breed [exposeds exposed]
-breed [infecteds infected]
-breed [removeds removed]
-breed [deads dead]
+breed [susceptibles susceptible]  ;; can be infected
+breed [exposeds exposed]          ;; infectious but asymptomatic
+breed [infecteds infected]        ;; infectious and symptomatic
+breed [removeds removed]          ;; recovered and immune
+breed [deads dead]                ;; removed from population
+
+turtles-own [
+  z-contact                ;; radius of contact neighbourhood
+  age                      ;; age range of person (0-29, 30-59, 60+)
+]
 
 susceptibles-own [
   to-become-exposed?       ;; whether an S will turn into E
-  p-infect                 ;; probability of infecting a contact
-  z-infection              ;; radius of infection neighbourhood
+  p-infect                 ;; probability of being infected by contact
 ]
 
 exposeds-own [
@@ -40,9 +45,8 @@ removeds-own [
   imm-countdown            ;; time until R returns to S
 ]
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Setup procedures
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;; SETUP ;;;;;;;;;;;;;;;;;;;;;;;
 
 to setup
   clear-all
@@ -51,9 +55,9 @@ to setup
   reset-ticks
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Setup procedure: setup-globals
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;; SETUP PROCEDURES ;;;;;;;;;;;;;;;;;
+
 to setup-globals ;; no contacts to begin with
   set SS-contacts 0
   set SE-contacts 0
@@ -65,143 +69,65 @@ to setup-globals ;; no contacts to begin with
   set II-contacts 0
   set IR-contacts 0
   set RR-contacts 0
+
+  set first-lockdown? false
+  set already-locked? false
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Setup procedure: setup-turtles
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; We first create a susceptible on every patch
-;; Then we convert initial-inf randomly chosen susceptibles to infecteds
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to setup-turtles
   set-default-shape turtles "person"
   ask patches
      [
        set pcolor white
-       sprout-susceptibles 1
-          [set color green
-           set to-become-exposed? false
-           set p-infect p-infect-init         ;; set infection probability to p-infect-init slider value
-           set z-infection z-infection-init]  ;; set infection radius to z-infection-init slider value
+       sprout-susceptibles 1 [                  ;; place a susceptible on each patch
+          set color green
+          set to-become-exposed? false
+          set p-infect p-infect-init
+          set z-contact z-contact-init
+          set-age
+        ]
      ]
-   ask turtles-on (n-of initial-inf patches)  ;; create random infecteds based on initial-inf value
+   ask turtles-on (n-of initial-inf patches)    ;; infect n random susceptibles
      [
-       set breed infecteds
-       set color red
-       set rec-countdown round (normal-dist recovery-mean recovery-stdev)
-       set removal-or-death? false
+      set breed infecteds
+      set color red
+      set rec-countdown round (normal-dist recovery-mean recovery-stdev)
+      set removal-or-death? false
+      set z-contact z-contact-init
      ]
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedures
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to set-age
+  let p (random 100) + 1
+  if (p <= 40) [set age "30-59"]                ;; 40% (30-59)
+  if (p > 40 and p <= 77) [set age "0-29"]      ;; 37% (0-29)
+  if (p > 77) [set age "60+"]                   ;; 23% (60+)
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;; GO ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
-  ifelse (ticks < (duration * 365)) ;; and ((count infecteds + count exposeds) > 0)
+  ifelse (ticks < (duration * 365))
+;  and ((count infecteds + count exposeds) > 0)  ;; uncomment to stop simulation when virus stops circulating
   [
-    modify-contact       ;; turtles consider the number of infecteds (and removeds if switch is on) and change their number of contacts and/or infection neighbourhood radius depending on risk attitude
-    count-contacts       ;; update the number of contacts made before with the ones made at this step after contacts were modified
-    expose-susceptibles  ;; turn susceptibles into exposeds if they had contact with an infected or another exposed with probability p-infect
+    count-contacts       ;; update the number of contacts made before with the ones made at this step after lockdown was modified
+    expose-susceptibles  ;; turn susceptibles into exposeds if they had contact with an infected or exposed with probability p-infect
     infect-exposeds      ;; turn exposeds into infecteds after inc-countdown ticks
     remove-infecteds     ;; turn infecteds into removeds or deads after rec-countdown ticks, with p-death probability of becoming deads instead of removeds
     lose-immunity        ;; turn removeds back into susceptibles after imm-countdown ticks
-    update-breeds
-    tick
+    update-breeds        ;; update conditions as necessary
+    modify-lockdown      ;; modify the lockdown depending on the new number of infecteds
+    tick                 ;; go to next day
   ][
     stop
   ]
 end
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;; GO PROCEDURES ;;;;;;;;;;;;;;;;;;;
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedure: modify contact
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Turtles sense infection pressure in awareness neighbourhood and modify contacts accordingly,
-;; conditioned by the current risk attitude. Calculation of infection pressure is based on
-;; either the number of infected or removed neighbours, or the number of infecteds only,
-;; depending on the switch aware-of-removeds?
-;;
-;; Modifying contacts is done in one/more of three ways depending on selected switches:
-;;    - Reduce/reinstate long-range contacts by making some links inactive/active
-;;    - Reduce/increase the order of the infection neighbourhood up to a maximum of z-infection-init
-;;    - Reduce/increase p-infect up to a maximum of p-infect-init
-;;
-;; There are lots of different possible ways to choose how to reduce contacts.
-;; I will reduce them in proportion to infection pressure, moderated by risk attitude.
-;; Examples: Assume the current infection-pressure is 0.5 (half of neighbours are infected)
-;;    Risk-attitude = 0 (extremely risk averse)
-;;         response-size will be 1, regardless of infection-pressure, so all contact will stop
-;;    Risk-attitude = 0.5 (somewhat risk averse)
-;;         response-size is about 0.7 (proportion of contact to drop > infection pressure)
-;;    Risk-attitude = 1 (risk neutral)
-;;         response-size = 0.5 (proportion of contact to drop equals infection pressure)
-;;    Risk-attitude = 2 (somewhat risk seeking)
-;;         response-size = 0.25 (proportion of contact to drop < infection pressure)
-;;    risk-attitude = 12 (very risk seeking)
-;;         response-size is about 0.0002 (on a 50x50 grid, no contacts will be droppped)
-;;
-;; Note that a link may be modified by the turtles at either of its ends
-;; and the changes made may be in conflict. The "winner" will be whichever turtle
-;; is randomly chosen second of the two.
-;;
-;; Question: should there be some probability associated with modifying contact?
-;; At the moment, the size of the response is deterministically fixed by the infection pressure
-;; and risk attitude. This could be made less deterministic.
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-to modify-contact
-
-  if (modify-z-infection? or modify-p-infect?) [
-    ask susceptibles [
-
-      let affecteds 0
-       ifelse aware-of-removeds? ;; if gov is counting active cases, does not matter, otherwise does, but either way will get scrapped with imposed social distancing
-          [set affecteds (count turtles in-radius awareness-neighbourhood with [breed = infecteds or breed = removeds])] ;; awareness-neighbourhood: awereness radius from slider
-          [set affecteds (count infecteds in-radius awareness-neighbourhood)]
-
-       let infection-pressure affecteds / (count turtles in-radius awareness-neighbourhood) ;; proportion of affected turtles in awareness neighbourhood
-       let response-size infection-pressure ^ risk-attitude                                 ;; risk attitude influences response
-
-       if modify-z-infection? [
-          set z-infection (round (sqrt (1 - response-size) * z-infection-init))
-          ifelse (z-infection = z-infection-init)
-            [set shape "person"]
-            [set shape "person-outline"] ;; if person changed their radius they get an outline
-       ]
-
-       if modify-p-infect? [
-          set p-infect (1 - response-size) * p-infect-init
-          ifelse (p-infect = p-infect-init)
-            [set shape "person"]
-            [set shape "person-outline"] ;; if person changed their contacts they get an outline
-        ]
-      ]
-    ]
-end
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedure: count contacts
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; We add to the total contacts so far the count of the number of contacts made at the current step.
-;; Which contacts do we count?
-;; SI contacts: For each susceptible, we count the number of infecteds within its z-infection radius. Each contact is given the weight
-;;      p-infect / p-infect-init in order to capture the reduced benefit of contact when the susceptible is being cautious.
-;; SR contacts: For each susceptible, we count the number of removeds within its z-infection radius. Each contact is given the weight
-;;      p-infect / p-infect-init, as above.
-;; SS contacts: For each susceptible, we count the number of other susceptibles within its z-infection radius and having the original
-;;      susceptible within their own z-infection radius. Each contact is given the weight p-infect / p-infect-init.
-;;      The total count is then halved so that each SS pair is counted only once. The effect of this is that the weight of an SS
-;;      contact is the average of the p-infect / p-infect-init ratios of the two susceptibles.
-;; IR contacts: For each infected, we count the number of removeds within the radius z-infection-init.
-;; II contacts: For each infected, we count the number of other infecteds within the radius z-infection-init. This total is then halved.
-;; RR contacts: For each removed, we count the number of other removeds within the radius z-infection-init. This total is then halved.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to count-contacts
-
   let SS-tick 0
   let SE-tick 0
   let SI-tick 0
@@ -214,29 +140,29 @@ to count-contacts
   let RR-tick 0
 
   ask susceptibles [
-    set SS-tick (SS-tick + ((count other susceptibles in-radius z-infection with [z-infection >= distance myself]) * (p-infect / p-infect-init)))
-    set SE-tick (SE-tick + ((count exposeds in-radius z-infection) * (p-infect / p-infect-init)))
-    set SI-tick (SI-tick + ((count infecteds in-radius z-infection) * (p-infect / p-infect-init)))
-    set SR-tick (SR-tick + ((count removeds in-radius z-infection) * (p-infect / p-infect-init)))
+    set SS-tick (SS-tick + ((count other susceptibles in-radius z-contact with [z-contact >= distance myself])))
+    set SE-tick (SE-tick + ((count exposeds in-radius z-contact)))
+    set SI-tick (SI-tick + ((count infecteds in-radius z-contact)))
+    set SR-tick (SR-tick + ((count removeds in-radius z-contact)))
 
   ]
   set SS-tick (SS-tick / 2)
 
   ask exposeds [
-    set EE-tick (EE-tick + ((count other exposeds in-radius z-infection-init)))
-    set EI-tick (EI-tick + ((count infecteds in-radius z-infection-init)))
-    set ER-tick (ER-tick + ((count removeds in-radius z-infection-init)))
+    set EE-tick (EE-tick + ((count other exposeds in-radius z-contact with [z-contact >= distance myself])))
+    set EI-tick (EI-tick + ((count infecteds in-radius z-contact-init)))
+    set ER-tick (ER-tick + ((count removeds in-radius z-contact-init)))
   ]
   set EE-tick (EE-tick / 2)
 
   ask infecteds [
-    set II-tick (II-tick + (count other infecteds in-radius z-infection-init))
-    set IR-tick (IR-tick + (count removeds in-radius z-infection-init))
+    set II-tick (II-tick + (count other infecteds in-radius z-contact with [z-contact >= distance myself]))
+    set IR-tick (IR-tick + (count removeds in-radius z-contact-init))
   ]
   set II-tick (II-tick / 2)
 
   ask removeds [
-    set RR-tick (RR-tick + (count other removeds in-radius z-infection-init))
+    set RR-tick (RR-tick + (count other removeds in-radius z-contact with [z-contact >= distance myself]))
   ]
   set RR-tick (RR-tick / 2)
 
@@ -256,42 +182,46 @@ to count-contacts
   set II-contacts (II-contacts + II-tick)
   set IR-contacts (IR-contacts + IR-tick)
   set RR-contacts (RR-contacts + RR-tick)
-
 end
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedure: expose-susceptibles
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Each susceptible makes contact with all infecteds within its infection neighbourhood (of radius z-infection).
-;; Each of these contacts may result in it becoming exposed, with probability p-infect
-;;
-;; Note: in this model I am assuming that in each time unit a susceptible will make contact with *all* of its possible contacts.
-;; This is different from the models used in the work with Carron, where it was assumed that in a single time unit only one contact
-;; would take place. Does this difference matter? It may be that implicitly this model is using a larger time unit.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to expose-susceptibles
    ask susceptibles [
 
-     let infected-contacts                                         ;; this is the number of infecteds contacted by this susceptible, and is the sum of
-        ((count infecteds in-radius z-infection) +                 ;; the number of infecteds and
-         (count exposeds in-radius z-infection))                   ;; the number of exposeds within the radius z-infection
+     let infected-contacts (                                                           ;; number of infected contacts is
+      (count infecteds in-radius z-contact with [z-contact >= distance myself]) +      ;; the number of actual infecteds plus
+      (count exposeds in-radius z-contact with [z-contact >= distance myself])         ;; that of exposeds in the susceptible's z-radius (if the susceptible is in their radius)
+    )
 
-     let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)   ;; probability of at least one of these contacts causing infection is
-                                                                   ;; 1 - the probability that none of them cause infection
+    if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
+      set p-infect (1 - protection-strength / 100) * (p-infect-init / 100)             ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
+    ]
 
-     let p (random 100) + 1                                        ;; changed from 1000
-     if (p <= infection-prob * 100)
-      [set to-become-exposed? true]
-
+     let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                       ;; probability of at least one of these contacts causing infection is
+                                                                                       ;; 1 - the probability that none of them cause infection
+     let p (random 100 + 1)
+     if (p <= infection-prob * 100) [
+      set to-become-exposed? true
+    ]
  ]
+
+  check-travel
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedure: infect-exposeds
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; exposeds show symptoms at the end of the incubation period
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to check-travel
+  if not closed-system? and (count infecteds) < lockdown-threshold [  ;; if people can travel and lockdown is not active
+    let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
+    if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
+      ask susceptibles-on (n-of 1 patches) [
+        set breed infecteds
+        set color red
+        set rec-countdown round (normal-dist recovery-mean recovery-stdev)
+        set removal-or-death? false
+        set z-contact z-contact-init
+      ]
+    ]
+  ]
+end
+
 to infect-exposeds
   ask exposeds [
     ifelse inc-countdown = 0
@@ -300,11 +230,6 @@ to infect-exposeds
   ]
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedure: remove-infecteds
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; infecteds are removed or die at the end of the recovery period
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to remove-infecteds
   ask infecteds [
     ifelse rec-countdown = 0
@@ -313,11 +238,6 @@ to remove-infecteds
   ]
  end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedure: lose-immunity
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; removeds return susceptible at the end of the immunity period
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to lose-immunity
   ask removeds [
     ifelse imm-countdown = 0
@@ -326,34 +246,42 @@ to lose-immunity
   ]
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Go procedure: update-breeds
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to update-breeds
 
-  ask susceptibles with [to-become-exposed? = true][
-   set breed exposeds
-   set color yellow
-   set inc-countdown (log-normal incubation-mean incubation-stdev)
-   set to-become-infected? false
+  ask susceptibles with [to-become-exposed? = true] [
+    set breed exposeds
+    set color yellow
+    set inc-countdown (log-normal incubation-mean incubation-stdev)
+    set to-become-infected? false
+    ifelse z-contact = 0
+    [set shape "person-outline"]
+    [set shape "person"]
   ]
 
-  ask exposeds with [to-become-infected? = true][
+  ask exposeds with [to-become-infected? = true] [
     set breed infecteds
     set color red
     set rec-countdown (normal-dist recovery-mean recovery-stdev)
     set removal-or-death? false
+    ifelse z-contact = 0
+    [set shape "person-outline"]
+    [set shape "person"]
   ]
 
   ask infecteds with [removal-or-death? = true] [
-    let p (random 100) + 1
-    ifelse (p <= p-death * 100)
+    let p (random 100 + 1)
+    let p-death-here (actual-p-death age)
+    ifelse (p <= p-death-here)
     [set breed deads
       set color black]
     [set breed removeds
       set color 8
       set imm-countdown (poisson-dist immunity-mean)
-      set to-become-susceptible? false]
+      set to-become-susceptible? false
+      ifelse z-contact = 0
+      [set shape "person-outline"]
+      [set shape "person"]
+    ]
   ]
 
   ask removeds with [to-become-susceptible? = true] [
@@ -361,13 +289,54 @@ to update-breeds
     set color green
     set to-become-exposed? false
     set p-infect p-infect-init
-    set z-infection z-infection-init
+    ifelse z-contact = 0
+    [set shape "person-outline"]
+    [set shape "person"]
   ]
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Reporters for distributions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to modify-lockdown
+  if imposed-lockdown? [
+    ifelse (count infecteds) > lockdown-threshold
+    [start-lockdown]
+    [end-lockdown]
+  ]
+end
+
+to start-lockdown
+  let alives turtles with [not member? self deads]
+  if not already-locked? [
+    ask alives [
+      let p (random 100 + 1)
+      if p <= (lockdown-strictness)
+      [
+        set z-contact 0
+        set shape "person-outline"
+      ]
+      set already-locked? true
+    ]
+  ]
+end
+
+to end-lockdown
+  let alives turtles with [not member? self deads]
+  if already-locked? [
+    ask alives [
+      set z-contact z-contact-init
+      set shape "person"
+    ]
+    set already-locked? false
+  ]
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;; UTILITIES ;;;;;;;;;;;;;;;;;;;;;
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;;;;;;;;;
 
 to-report log-normal [mu sigma]
 ;  let z (random-normal mu sigma) ;; this was for the original formula I thought was correct
@@ -377,13 +346,27 @@ end
 
 to-report normal-dist [mu sigma]
   let x round (random-normal mu sigma)
-  ifelse x > 0                    ;; bad hack to prevent negative days, but may need a different dist
+  ifelse x > 0                    ;; bad hack to prevent negative days, may need a different dist
   [report x]
   [report (x * -1)]
 end
 
 to-report poisson-dist [mu]
   report round (random-poisson mu)
+end
+
+to-report actual-p-death [#age]
+  let p 0
+  if #age = "0-29" [
+    set p (p-death * 0.6) / (100 - p-death + (p-death * 0.6))
+  ]
+  if #age = "30-59" [
+    set p p-death
+  ]
+  if #age = "60+" [
+    set p (p-death * 5.1) / ((100 - p-death + p-death * 5.1))
+  ]
+  report p
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -414,10 +397,10 @@ ticks
 30.0
 
 BUTTON
-1161
-305
-1231
-340
+1162
+307
+1232
+342
 NIL
 setup
 NIL
@@ -448,40 +431,40 @@ NIL
 1
 
 SLIDER
-15
-38
-229
-71
+14
+40
+228
+73
 p-infect-init
 p-infect-init
-0.0
-1.0
-0.3
-0.01
 1
-*100%
+100
+30.0
+1
+1
+%
 HORIZONTAL
 
 SLIDER
-1207
-646
-1400
-679
+1200
+433
+1393
+466
 initial-inf
 initial-inf
 0
 100
 10.0
-10
+1
 1
 NIL
 HORIZONTAL
 
 PLOT
-25
-395
-468
-695
+23
+421
+466
+721
 Simulation populations
 NIL
 NIL
@@ -498,15 +481,15 @@ PENS
 "infected" 1.0 0 -2674135 true "" "plot count infecteds"
 "removed" 1.0 0 -3026479 true "" "plot count removeds"
 "dead" 1.0 0 -16777216 true "" "plot count deads"
-"controlled" 1.0 0 -11221820 true "" "plot count turtles with [shape = \"person-outline\"]"
+"lockdown" 1.0 0 -11221820 true "" "plot count turtles with [shape = \"person-outline\"]"
 
 SLIDER
 13
 134
 185
 167
-z-infection-init
-z-infection-init
+z-contact-init
+z-contact-init
 0
 71
 2.0
@@ -517,66 +500,18 @@ HORIZONTAL
 
 SLIDER
 15
-229
-242
-262
-awareness-neighbourhood
-awareness-neighbourhood
+271
+215
+304
+lockdown-strictness
+lockdown-strictness
 0
-71
-2.0
+100
+90.0
 1
 1
-radius
+%
 HORIZONTAL
-
-SWITCH
-1206
-563
-1368
-596
-modify-z-infection?
-modify-z-infection?
-0
-1
--1000
-
-SLIDER
-15
-275
-187
-308
-risk-attitude
-risk-attitude
-0
-12
-1.0
-0.1
-1
-NIL
-HORIZONTAL
-
-SWITCH
-1207
-606
-1369
-639
-modify-p-infect?
-modify-p-infect?
-0
-1
--1000
-
-SWITCH
-1206
-521
-1377
-554
-aware-of-removeds?
-aware-of-removeds?
-1
-1
--1000
 
 PLOT
 1143
@@ -597,20 +532,20 @@ PENS
 "default" 1.0 0 -16777216 true "" ""
 
 TEXTBOX
-203
-13
-353
-31
+62
+14
+212
+32
 infection parameters
 11
 0.0
 1
 
 TEXTBOX
-1255
-499
-1405
-517
+1249
+401
+1399
+419
 model options
 11
 0.0
@@ -641,11 +576,11 @@ SLIDER
 p-death
 p-death
 0
+100
+3.0
+1.0
 1
-0.015
-0.01
-1
-NIL
+%
 HORIZONTAL
 
 SLIDER
@@ -709,10 +644,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1207
-684
-1379
-717
+1200
+471
+1372
+504
 duration
 duration
 0
@@ -732,7 +667,7 @@ immunity-mean
 immunity-mean
 0
 365
-30.0
+365.0
 1
 1
 days
@@ -747,6 +682,193 @@ countdowns
 11
 0.0
 1
+
+SLIDER
+15
+228
+240
+261
+lockdown-threshold
+lockdown-threshold
+0
+10000
+100.0
+100
+1
+infecteds
+HORIZONTAL
+
+SWITCH
+1201
+511
+1363
+544
+imposed-lockdown?
+imposed-lockdown?
+1
+1
+-1000
+
+TEXTBOX
+53
+204
+203
+222
+lockdown parameters
+11
+0.0
+1
+
+SWITCH
+1202
+548
+1348
+581
+modify-p-infect?
+modify-p-infect?
+1
+1
+-1000
+
+SLIDER
+14
+311
+222
+344
+protection-strength
+protection-strength
+1
+100
+50.0
+1
+1
+%
+HORIZONTAL
+
+SWITCH
+1202
+587
+1342
+620
+closed-system?
+closed-system?
+0
+1
+-1000
+
+SLIDER
+15
+352
+196
+385
+travel-strictness
+travel-strictness
+0
+100
+0.0
+1
+1
+%
+HORIZONTAL
+
+MONITOR
+605
+658
+671
+703
+exposeds
+count exposeds
+0
+1
+11
+
+MONITOR
+684
+659
+748
+704
+infecteds
+count infecteds
+17
+1
+11
+
+MONITOR
+513
+658
+593
+703
+susceptibles
+count susceptibles
+0
+1
+11
+
+MONITOR
+761
+659
+828
+704
+removeds
+count removeds
+0
+1
+11
+
+MONITOR
+843
+660
+900
+705
+deads
+count deads
+0
+1
+11
+
+MONITOR
+916
+660
+1009
+705
+% in lockdown
+(count turtles with [shape = \"person-outline\"]) / \ncount turtles with [not member? self deads] \n* 100
+0
+1
+11
+
+MONITOR
+1101
+660
+1163
+705
+% 30-59
+count turtles with [age = \"30-59\"] /\ncount turtles * 100
+1
+1
+11
+
+MONITOR
+1177
+660
+1234
+705
+% 60+
+count turtles with [age = \"60+\"] /\ncount turtles * 100
+1
+1
+11
+
+MONITOR
+1026
+661
+1083
+706
+% 0-29
+count turtles with [age = \"0-29\"] /\ncount turtles * 100
+1
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -935,16 +1057,16 @@ Polygon -7500403 true true 105 90 60 150 75 180 135 105
 
 person-outline
 false
-0
+11
 Polygon -16777216 true false 195 75 255 150 225 195 150 105
 Polygon -16777216 true false 105 75 45 150 75 195 150 105
 Polygon -16777216 true false 105 75 105 195 75 285 105 315 135 300 150 255 165 300 195 315 225 285 195 195 195 75
 Circle -16777216 true false 103 -2 92
-Circle -7500403 true true 110 5 80
-Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
-Rectangle -7500403 true true 127 79 172 94
-Polygon -7500403 true true 105 90 60 150 75 180 135 105
-Polygon -7500403 true true 195 90 240 150 225 180 165 105
+Circle -8630108 true true 110 5 80
+Polygon -8630108 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Rectangle -8630108 true true 127 79 172 94
+Polygon -8630108 true true 105 90 60 150 75 180 135 105
+Polygon -8630108 true true 195 90 240 150 225 180 165 105
 
 plant
 false
