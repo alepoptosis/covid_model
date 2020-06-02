@@ -1,0 +1,34 @@
+##### NETLOGO COVID-19 MODEL VARIABLES
+##### Globals, Susceptibles, Exposeds, Infecteds, Recovereds
+
+name                    access  description
+
+age                     SEIRD   the age range of the person (0-29, 30-59, 60+)
+already-locked?         G       whether a lockdown in already happening
+closed-system?          G       whether outside infections can occur
+duration                G       length of simulation (years)
+first-lockdown?         G       whether first lockdown occurred
+imm-countdown           R       individual loss of immunity countdown
+immunity-mean           G       mean of the poisson dist for immunity
+imposed-lockdown?       G       whether to simulate gov-imposed lockdown
+inc-countdown           E       individual incubation countdown
+incubation-mean         G       mean of the log-normal dist for incubation
+incubation-stdev        G       stdev of the log-normal dist for incubation
+initial-inf             G       number of infecteds at start of simulation
+lockdown-strictness     G       likelihood a person will obey lockdown
+lockdown-threshold      G       number of infecteds that triggers lockdown
+modify-p-infect?        G       whether add control measures after 1st lockdown
+p-death                 G       probability of dying instead of recovering
+p-infect                S       individual transmission probability
+p-infect-init           G       base transmission probability
+protection-strength     G       strength of measures to reduce transmission
+rec-countdown           I       individual recovery countdown
+recovery-mean           G       mean of the normal dist for recovery
+recovery-stdev          G       stdev of the normal dist for recovery
+removal-or-death?       I       whether I turns to R or D (individual)
+to-become-exposed?      S       whether S turns to E (individual)
+to-become-infected?     E       whether E turns to I (individual)
+to-become-susceptible?  R       whether R returns S (individual)
+travel-strictness       G       probability of outside infections occurring
+z-contact               SEIR    individual radius of contact neighbourhood
+z-contact-init          G       initial radius of contact neighbourhood
