@@ -58,7 +58,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;; SETUP PROCEDURES ;;;;;;;;;;;;;;;;;
 
-to setup-globals ;; no contacts to begin with
+to setup-globals
   set SS-contacts 0
   set SE-contacts 0
   set SI-contacts 0
@@ -76,32 +76,20 @@ end
 
 to setup-turtles
   set-default-shape turtles "person"
-  ask patches
-     [
-       set pcolor white
-       sprout-susceptibles 1 [                  ;; place a susceptible on each patch
-          set color green
-          set to-become-exposed? false
-          set p-infect p-infect-init / 100
-          set z-contact z-contact-init
-          set-age
-        ]
-     ]
-   ask turtles-on (n-of initial-inf patches)    ;; infect n random susceptibles
-     [
-      set breed infecteds
-      set color red
-      set rec-countdown round (normal-dist recovery-mean recovery-stdev)
-      set removal-or-death? false
-      set z-contact z-contact-init
-     ]
-end
 
-to set-age
-  let p (random 100) + 1
-  if p <= 40 [set age "30-59"]                ;; 40% (30-59)
-  if p > 40 and p <= 77 [set age "0-29"]      ;; 37% (0-29)
-  if p > 77 [set age "60+"]                   ;; 23% (60+)
+  ask patches [
+    set pcolor white
+    sprout-susceptibles 1 [
+      set breed susceptibles
+      set color green
+      set to-become-exposed? false
+      set p-infect p-infect-init / 100
+      set z-contact z-contact-init
+      set-age
+    ]
+  ]
+
+  ask turtles-on (n-of initial-inf patches) [set-breed-infected]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -109,7 +97,7 @@ end
 
 to go
   ifelse ticks < (duration * 365)
-;  and (count infecteds + count exposeds) > 0  ;; uncomment to stop simulation when virus stops circulating
+  ;  and (count infecteds + count exposeds) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
     count-contacts       ;; update the number of contacts made before with the ones made at this step after lockdown was modified
     expose-susceptibles  ;; turn susceptibles into exposeds if they had contact with an infected or exposed with probability p-infect
@@ -119,7 +107,7 @@ to go
     update-breeds        ;; update conditions as necessary
     modify-lockdown      ;; modify the lockdown depending on the new number of infecteds
     tick                 ;; go to next day
-  ][
+  ] [
     stop
   ]
 end
@@ -168,9 +156,9 @@ to count-contacts
 
   set-current-plot "num-contacts"
   plot (SS-tick + SE-tick + SI-tick + SR-tick +
-        EE-tick + EI-tick + ER-tick +
-        II-tick + IR-tick +
-        RR-tick)
+    EE-tick + EI-tick + ER-tick +
+    II-tick + IR-tick +
+    RR-tick)
 
   set SS-contacts (SS-contacts + SS-tick)
   set SE-contacts (SE-contacts + SE-tick)
@@ -185,41 +173,24 @@ to count-contacts
 end
 
 to expose-susceptibles
-   ask susceptibles [
+  ask susceptibles [
 
-     let infected-contacts (                                                           ;; number of infected contacts is
+    let infected-contacts (                                                            ;; number of infected contacts is
       (count infecteds in-radius z-contact with [z-contact >= distance myself]) +      ;; the number of actual infecteds plus
       (count exposeds in-radius z-contact with [z-contact >= distance myself])         ;; that of exposeds in the susceptible's z-radius (if the susceptible is in their radius)
     )
 
-    if modify-p-infect? and first-lockdown? [
-      ;; if a lockdown has occurred and the option is on
-      set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)             ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
+    if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
+      set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)           ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
     ]
-     let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                   ;; probability of at least one of these contacts causing infection is
-                                                                                         ;; 1 - the probability that none of them cause infection
-     let p (random 100 + 1)
-     if p <= (infection-prob * 100) [
-      set to-become-exposed? true
-    ]
- ]
 
-  check-travel
-end
-
-to check-travel
-  if not closed-system? and (count infecteds) < lockdown-threshold [  ;; if people can travel and lockdown is not active
-    let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
-    if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
-      ask susceptibles-on (n-of 1 patches) [
-        set breed infecteds
-        set color red
-        set rec-countdown round (normal-dist recovery-mean recovery-stdev)
-        set removal-or-death? false
-        set z-contact z-contact-init
-      ]
-    ]
+    let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                        ;; probability of at least one of these contacts causing infection is
+                                                                                       ;; 1 - the probability that none of them cause infection
+    let p (random 100 + 1)
+    if p <= (infection-prob * 100) [set to-become-exposed? true]
   ]
+
+  if not closed-system? [check-travel]  ;; if the system is open, check for exposure from travel
 end
 
 to infect-exposeds
@@ -233,10 +204,10 @@ end
 to remove-infecteds
   ask infecteds [
     ifelse rec-countdown = 0
-      [set removal-or-death? true]
-      [set rec-countdown (rec-countdown - 1)]
+    [set removal-or-death? true]
+    [set rec-countdown (rec-countdown - 1)]
   ]
- end
+end
 
 to lose-immunity
   ask removeds [
@@ -248,51 +219,19 @@ end
 
 to update-breeds
 
-  ask susceptibles with [to-become-exposed? = true] [
-    set breed exposeds
-    set color yellow
-    set inc-countdown (log-normal incubation-mean incubation-stdev)
-    set to-become-infected? false
-    ifelse z-contact = 0
-    [set shape "person-outline"]
-    [set shape "person"]
-  ]
+  ask susceptibles with [to-become-exposed? = true] [set-breed-exposed]
 
-  ask exposeds with [to-become-infected? = true] [
-    set breed infecteds
-    set color red
-    set rec-countdown (normal-dist recovery-mean recovery-stdev)
-    set removal-or-death? false
-    ifelse z-contact = 0
-    [set shape "person-outline"]
-    [set shape "person"]
-  ]
+  ask exposeds with [to-become-infected? = true] [set-breed-infected]
 
   ask infecteds with [removal-or-death? = true] [
     let p (random 100 + 1)
     let p-death-here (actual-p-death age)
     ifelse (p <= p-death-here)
-    [set breed deads
-      set color black]
-    [set breed removeds
-      set color 8
-      set imm-countdown (poisson-dist immunity-mean)
-      set to-become-susceptible? false
-      ifelse z-contact = 0
-      [set shape "person-outline"]
-      [set shape "person"]
-    ]
+    [set-breed-dead]
+    [set-breed-removed]
   ]
 
-  ask removeds with [to-become-susceptible? = true] [
-    set breed susceptibles
-    set color green
-    set to-become-exposed? false
-    set p-infect p-infect-init
-    ifelse z-contact = 0
-    [set shape "person-outline"]
-    [set shape "person"]
-  ]
+  ask removeds with [to-become-susceptible? = true] [set-breed-susceptible]
 end
 
 to modify-lockdown
@@ -303,13 +242,74 @@ to modify-lockdown
   ]
 end
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;; OTHER PROCEDURES ;;;;;;;;;;;;;;;;;;
+
+to set-age
+  let p (random 100) + 1
+  if p <= 40 [set age "30-59"]                ;; 40% (30-59)
+  if p > 40 and p <= 77 [set age "0-29"]      ;; 37% (0-29)
+  if p > 77 [set age "60+"]                   ;; 23% (60+)
+end
+
+to check-travel
+  if (count infecteds) < lockdown-threshold [                         ;; if people can travel and lockdown is not active
+    let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
+    if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
+      ask susceptibles-on (n-of 1 patches) [set-breed-exposed]
+    ]
+  ]
+end
+
+to set-breed-susceptible
+  set breed susceptibles
+  set color green
+  set to-become-exposed? false
+  set p-infect p-infect-init / 100
+  check-outline
+end
+
+to set-breed-exposed
+  set breed exposeds
+  set color yellow
+  set to-become-infected? false
+  set inc-countdown (log-normal incubation-mean incubation-stdev)
+  check-outline
+end
+
+to set-breed-infected
+  set breed infecteds
+  set color red
+  set removal-or-death? false
+  set rec-countdown (normal-dist recovery-mean recovery-stdev)
+  check-outline
+end
+
+to set-breed-removed
+  set breed removeds
+  set color 8
+  set to-become-susceptible? false
+  set imm-countdown (poisson-dist immunity-mean)
+  check-outline
+end
+
+to set-breed-dead
+  set breed deads
+  set color black
+end
+
+to check-outline
+  ifelse z-contact = 0
+  [set shape "person-outline"]
+  [set shape "person"]
+end
+
 to start-lockdown
   let alives turtles with [not member? self deads]
   if not already-locked? [
     ask alives [
       let p (random 100 + 1)
-      if p <= (lockdown-strictness)
-      [
+      if p <= (lockdown-strictness) [
         set z-contact 0
         set shape "person-outline"
       ]
@@ -329,18 +329,12 @@ to end-lockdown
   ]
 end
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;; UTILITIES ;;;;;;;;;;;;;;;;;;;;;
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;;;;;;;;;
 
 to-report log-normal [mu sigma]
-;  let z (random-normal mu sigma) ;; this was for the original formula I thought was correct
-;  let x (exp (mu + (sigma * z))) ;; but only works if mean and stdev are of the normal dist
+  ;  let z (random-normal mu sigma) ;; this was for the original formula I thought was correct
+  ;  let x (exp (mu + (sigma * z))) ;; but only works if mean and stdev are of the normal dist
   report round (exp random-normal mu sigma)
 end
 
@@ -752,7 +746,7 @@ SWITCH
 620
 closed-system?
 closed-system?
-1
+0
 1
 -1000
 
@@ -765,7 +759,7 @@ travel-strictness
 travel-strictness
 0
 100
-50.0
+0.0
 1
 1
 %
