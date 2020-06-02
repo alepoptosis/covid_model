@@ -82,7 +82,7 @@ to setup-turtles
        sprout-susceptibles 1 [                  ;; place a susceptible on each patch
           set color green
           set to-become-exposed? false
-          set p-infect p-infect-init
+          set p-infect p-infect-init / 100
           set z-contact z-contact-init
           set-age
         ]
@@ -192,12 +192,12 @@ to expose-susceptibles
       (count exposeds in-radius z-contact with [z-contact >= distance myself])         ;; that of exposeds in the susceptible's z-radius (if the susceptible is in their radius)
     )
 
-    if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
-      set p-infect (1 - protection-strength) * (p-infect-init)             ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
+    if modify-p-infect? and first-lockdown? [
+      ;; if a lockdown has occurred and the option is on
+      set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)             ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
     ]
-
-     let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                       ;; probability of at least one of these contacts causing infection is
-                                                                                       ;; 1 - the probability that none of them cause infection
+     let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                   ;; probability of at least one of these contacts causing infection is
+                                                                                         ;; 1 - the probability that none of them cause infection
      let p (random 100 + 1)
      if p <= (infection-prob * 100) [
       set to-become-exposed? true
@@ -210,7 +210,7 @@ end
 to check-travel
   if not closed-system? and (count infecteds) < lockdown-threshold [  ;; if people can travel and lockdown is not active
     let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
-    if p >= (travel-strictness * 100) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
+    if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
       ask susceptibles-on (n-of 1 patches) [
         set breed infecteds
         set color red
@@ -308,7 +308,7 @@ to start-lockdown
   if not already-locked? [
     ask alives [
       let p (random 100 + 1)
-      if p <= (lockdown-strictness * 100)
+      if p <= (lockdown-strictness)
       [
         set z-contact 0
         set shape "person-outline"
@@ -357,15 +357,14 @@ end
 
 to-report actual-p-death [#age]
   let p 0
-  let p-death-per (p-death * 100)
   if #age = "0-29" [
-    set p (p-death-per * 0.6) / (100 - p-death-per + (p-death-per * 0.6))
+    set p (p-death * 0.6) / (100 - p-death + (p-death * 0.6))
   ]
   if #age = "30-59" [
-    set p p-death-per
+    set p p-death
   ]
   if #age = "60+" [
-    set p (p-death-per * 5.1) / ((100 - p-death-per + p-death-per * 5.1))
+    set p (p-death * 5.1) / ((100 - p-death + p-death * 5.1))
   ]
   report p
 end
@@ -439,11 +438,11 @@ SLIDER
 p-infect-init
 p-infect-init
 0
+100
+20.0
 1
-0.2
-0.01
 1
-*100%
+%
 HORIZONTAL
 
 SLIDER
@@ -507,11 +506,11 @@ SLIDER
 lockdown-strictness
 lockdown-strictness
 0
+100
+90.0
 1
-0.9
-0.1
 1
-*100%
+%
 HORIZONTAL
 
 PLOT
@@ -577,11 +576,11 @@ SLIDER
 p-death
 p-death
 0
+100
+2.5
+1.0
 1
-0.02
-0.01
-1
-*100%
+%
 HORIZONTAL
 
 SLIDER
@@ -739,11 +738,11 @@ SLIDER
 protection-strength
 protection-strength
 0
+100
+52.0
 1
-1.0
-0.1
 1
-*100%
+%
 HORIZONTAL
 
 SWITCH
@@ -753,7 +752,7 @@ SWITCH
 620
 closed-system?
 closed-system?
-0
+1
 1
 -1000
 
@@ -765,11 +764,11 @@ SLIDER
 travel-strictness
 travel-strictness
 0
+100
+50.0
 1
-0.5
-0.1
 1
-*100%
+%
 HORIZONTAL
 
 MONITOR
