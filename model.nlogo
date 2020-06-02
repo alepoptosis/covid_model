@@ -358,13 +358,13 @@ end
 to-report actual-p-death [#age]
   let p 0
   if #age = "0-29" [
-    set p (p-death * 0.6) / (100 - p-death + (p-death * 0.6))
+    set p (p-death * 0.6) / (100 - p-death + (p-death * 0.6)) * 100
   ]
   if #age = "30-59" [
     set p p-death
   ]
   if #age = "60+" [
-    set p (p-death * 5.1) / ((100 - p-death + p-death * 5.1))
+    set p (p-death * 5.1) / (100 - p-death + (p-death * 5.1)) * 100
   ]
   report p
 end
