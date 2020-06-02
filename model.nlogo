@@ -99,17 +99,17 @@ end
 
 to set-age
   let p (random 100) + 1
-  if (p <= 40) [set age "30-59"]                ;; 40% (30-59)
-  if (p > 40 and p <= 77) [set age "0-29"]      ;; 37% (0-29)
-  if (p > 77) [set age "60+"]                   ;; 23% (60+)
+  if p <= 40 [set age "30-59"]                ;; 40% (30-59)
+  if p > 40 and p <= 77 [set age "0-29"]      ;; 37% (0-29)
+  if p > 77 [set age "60+"]                   ;; 23% (60+)
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;; GO ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
-  ifelse (ticks < (duration * 365))
-;  and ((count infecteds + count exposeds) > 0)  ;; uncomment to stop simulation when virus stops circulating
+  ifelse ticks < (duration * 365)
+;  and (count infecteds + count exposeds) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
     count-contacts       ;; update the number of contacts made before with the ones made at this step after lockdown was modified
     expose-susceptibles  ;; turn susceptibles into exposeds if they had contact with an infected or exposed with probability p-infect
@@ -193,13 +193,13 @@ to expose-susceptibles
     )
 
     if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
-      set p-infect (1 - protection-strength / 100) * (p-infect-init / 100)             ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
+      set p-infect (1 - protection-strength) * (p-infect-init)             ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
     ]
 
      let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                       ;; probability of at least one of these contacts causing infection is
                                                                                        ;; 1 - the probability that none of them cause infection
      let p (random 100 + 1)
-     if (p <= infection-prob * 100) [
+     if p <= (infection-prob * 100) [
       set to-become-exposed? true
     ]
  ]
@@ -210,7 +210,7 @@ end
 to check-travel
   if not closed-system? and (count infecteds) < lockdown-threshold [  ;; if people can travel and lockdown is not active
     let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
-    if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
+    if p >= (travel-strictness * 100) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
       ask susceptibles-on (n-of 1 patches) [
         set breed infecteds
         set color red
@@ -308,7 +308,7 @@ to start-lockdown
   if not already-locked? [
     ask alives [
       let p (random 100 + 1)
-      if p <= (lockdown-strictness)
+      if p <= (lockdown-strictness * 100)
       [
         set z-contact 0
         set shape "person-outline"
@@ -357,14 +357,15 @@ end
 
 to-report actual-p-death [#age]
   let p 0
+  let p-death-per (p-death * 100)
   if #age = "0-29" [
-    set p (p-death * 0.6) / (100 - p-death + (p-death * 0.6))
+    set p (p-death-per * 0.6) / (100 - p-death-per + (p-death-per * 0.6))
   ]
   if #age = "30-59" [
-    set p p-death
+    set p p-death-per
   ]
   if #age = "60+" [
-    set p (p-death * 5.1) / ((100 - p-death + p-death * 5.1))
+    set p (p-death-per * 5.1) / ((100 - p-death-per + p-death-per * 5.1))
   ]
   report p
 end
@@ -437,12 +438,12 @@ SLIDER
 73
 p-infect-init
 p-infect-init
+0
 1
-100
-30.0
+0.2
+0.01
 1
-1
-%
+*100%
 HORIZONTAL
 
 SLIDER
@@ -501,16 +502,16 @@ HORIZONTAL
 SLIDER
 15
 271
-215
+217
 304
 lockdown-strictness
 lockdown-strictness
 0
-100
-90.0
 1
+0.9
+0.1
 1
-%
+*100%
 HORIZONTAL
 
 PLOT
@@ -576,11 +577,11 @@ SLIDER
 p-death
 p-death
 0
-100
-3.0
-1.0
 1
-%
+0.02
+0.01
+1
+*100%
 HORIZONTAL
 
 SLIDER
@@ -705,7 +706,7 @@ SWITCH
 544
 imposed-lockdown?
 imposed-lockdown?
-1
+0
 1
 -1000
 
@@ -726,7 +727,7 @@ SWITCH
 581
 modify-p-infect?
 modify-p-infect?
-1
+0
 1
 -1000
 
@@ -737,12 +738,12 @@ SLIDER
 344
 protection-strength
 protection-strength
+0
 1
-100
-50.0
+1.0
+0.1
 1
-1
-%
+*100%
 HORIZONTAL
 
 SWITCH
@@ -759,16 +760,16 @@ closed-system?
 SLIDER
 15
 352
-196
+199
 385
 travel-strictness
 travel-strictness
 0
-100
-0.0
 1
+0.5
+0.1
 1
-%
+*100%
 HORIZONTAL
 
 MONITOR
