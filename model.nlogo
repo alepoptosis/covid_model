@@ -314,6 +314,7 @@ to start-lockdown
         set shape "person-outline"
       ]
       set already-locked? true
+      set first-lockdown? true
     ]
   ]
 end
@@ -433,7 +434,7 @@ p-infect-init
 p-infect-init
 0
 100
-20.0
+30.0
 1
 1
 %
@@ -501,7 +502,7 @@ lockdown-strictness
 lockdown-strictness
 0
 100
-90.0
+80.0
 1
 1
 %
@@ -661,7 +662,7 @@ immunity-mean
 immunity-mean
 0
 365
-365.0
+30.0
 1
 1
 days
@@ -733,7 +734,7 @@ protection-strength
 protection-strength
 0
 100
-52.0
+100.0
 1
 1
 %
@@ -759,7 +760,7 @@ travel-strictness
 travel-strictness
 0
 100
-0.0
+50.0
 1
 1
 %
