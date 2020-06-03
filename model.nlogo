@@ -341,9 +341,14 @@ end
 
 to-report normal-dist [mu sigma]
   let x round (random-normal mu sigma)
-  ifelse x > 0                    ;; bad hack to prevent negative days, may need a different dist
-  [report x]
-  [report (x * -1)]
+  let min_days (precision (mu - sigma) 0)
+  ifelse x > min_days
+  [report round x]
+  [
+    ifelse min_days > 0
+    [report min_days]
+    [report 1]
+  ]
 end
 
 to-report poisson-dist [mu]

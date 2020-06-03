@@ -54,3 +54,7 @@
 - Created github repo
 - Changed global variable probabilities from decimals to integers for ease of understanding
 - Separated recurring processed into dedicated procedures
+
+### 3/6
+
+- Added a minimum value for duration of recovery equal to mean - stdev, unless that value is below 0, in which case the minimum is 1 day
