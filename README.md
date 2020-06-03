@@ -12,7 +12,7 @@
 - Removed people now lose immunity after 30-35 days
 - Updated contact counts to include exposeds
 - Infecteds are now removed either with probability p-remove or after a certain number of ticks
-- Infected people have a chance to become dead (D) instead of removed
+- Infected people have a chance to become dead instead of removed
 - Added sliders to control the range of infection, removal and immunity countdowns
 - Temporarely removed the option for susceptibles to be aware of surrounding removeds
 - Changed cyan indicator for lockdown into black outline
@@ -47,7 +47,7 @@
 
 - Implemented two separate start/end lockdown procedures to ensure stable percentages of quarantined population and help readability
 - Impemented three age ranges, 0-29, 30-59, and 60+, assigned to people based on demographics of the UK population
-- Implemented modified probability of death depending on age range (0.6x for under 30, 5.1x for over 60)
+- Implemented modified probability of death depending on age range, 0.6x for under 30 and 5.1x for over 60
 
 ### 2/6
 
