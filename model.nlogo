@@ -15,7 +15,7 @@ globals [
 ]
 
 breed [susceptibles susceptible]  ;; can be infected
-breed [exposeds exposed]          ;; infectious but asymptomatic
+breed [latents latent]          ;; infectious but asymptomatic
 breed [infecteds infected]        ;; infectious and symptomatic
 breed [removeds removed]          ;; recovered and immune
 breed [deads dead]                ;; removed from population
@@ -27,11 +27,11 @@ turtles-own [
 ]
 
 susceptibles-own [
-  to-become-exposed?       ;; whether an S will turn into E
+  to-become-latent?       ;; whether an S will turn into E
   p-infect                 ;; probability of being infected by contact
 ]
 
-exposeds-own [
+latents-own [
   to-become-infected?      ;; whether an E will turn into I
   inc-countdown            ;; time until E develops symptoms
 ]
@@ -83,7 +83,7 @@ to setup-turtles
     sprout-susceptibles 1 [
       set breed susceptibles
       set color green
-      set to-become-exposed? false
+      set to-become-latent? false
       set p-infect p-infect-init / 100
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
@@ -99,11 +99,11 @@ end
 
 to go
   ifelse ticks < (duration * 365)
-  ;  and (count infecteds + count exposeds) > 0  ;; uncomment to stop simulation when virus stops circulating
+  ;  and (count infecteds + count latents) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
     count-contacts       ;; update the number of contacts made before with the ones made at this step after lockdown was modified
-    expose-susceptibles  ;; turn susceptibles into exposeds if they had contact with an infected or exposed with probability p-infect
-    infect-exposeds      ;; turn exposeds into infecteds after inc-countdown ticks
+    expose-susceptibles  ;; turn susceptibles into latents if they had contact with an infected or latent with probability p-infect
+    infect-latents      ;; turn latents into infecteds after inc-countdown ticks
     remove-infecteds     ;; turn infecteds into removeds or deads after rec-countdown ticks, with p-death probability of becoming deads instead of removeds
     lose-immunity        ;; turn removeds back into susceptibles after imm-countdown ticks
     update-breeds        ;; update conditions as necessary
@@ -131,15 +131,15 @@ to count-contacts
 
   ask susceptibles [
     set SS-tick (SS-tick + ((count other susceptibles in-radius z-contact with [z-contact >= distance myself])))
-    set SE-tick (SE-tick + ((count exposeds in-radius z-contact)))
+    set SE-tick (SE-tick + ((count latents in-radius z-contact)))
     set SI-tick (SI-tick + ((count infecteds in-radius z-contact)))
     set SR-tick (SR-tick + ((count removeds in-radius z-contact)))
 
   ]
   set SS-tick (SS-tick / 2)
 
-  ask exposeds [
-    set EE-tick (EE-tick + ((count other exposeds in-radius z-contact with [z-contact >= distance myself])))
+  ask latents [
+    set EE-tick (EE-tick + ((count other latents in-radius z-contact with [z-contact >= distance myself])))
     set EI-tick (EI-tick + ((count infecteds in-radius z-contact)))
     set ER-tick (ER-tick + ((count removeds in-radius z-contact)))
   ]
@@ -179,7 +179,7 @@ to expose-susceptibles
 
     let infected-contacts (                                                            ;; number of infected contacts is
       (count infecteds in-radius z-contact with [z-contact >= distance myself]) +      ;; the number of actual infecteds plus
-      (count exposeds in-radius z-contact with [z-contact >= distance myself])         ;; that of exposeds in the susceptible's z-radius (if the susceptible is in their radius)
+      (count latents in-radius z-contact with [z-contact >= distance myself])         ;; that of latents in the susceptible's z-radius (if the susceptible is in their radius)
     )
 
     if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
@@ -189,14 +189,14 @@ to expose-susceptibles
     let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                        ;; probability of at least one of these contacts causing infection is
                                                                                        ;; 1 - the probability that none of them cause infection
     let p (random 100 + 1)
-    if p <= (infection-prob * 100) [set to-become-exposed? true]
+    if p <= (infection-prob * 100) [set to-become-latent? true]
   ]
 
   if not closed-system? [check-travel]  ;; if the system is open, check for exposure from travel
 end
 
-to infect-exposeds
-  ask exposeds [
+to infect-latents
+  ask latents [
     ifelse inc-countdown = 0
     [set to-become-infected? true]
     [set inc-countdown (inc-countdown - 1)]
@@ -221,9 +221,9 @@ end
 
 to update-breeds
 
-  ask susceptibles with [to-become-exposed? = true] [set-breed-exposed]
+  ask susceptibles with [to-become-latent? = true] [set-breed-latent]
 
-  ask exposeds with [to-become-infected? = true] [set-breed-infected]
+  ask latents with [to-become-infected? = true] [set-breed-infected]
 
   ask infecteds with [removal-or-death? = true] [
     let p (random 100 + 1)
@@ -258,7 +258,7 @@ to check-travel
   if (count infecteds) < lockdown-threshold [                         ;; if people can travel and lockdown is not active
     let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
     if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
-      ask susceptibles-on (n-of 1 patches) [set-breed-exposed]
+      ask susceptibles-on (n-of 1 patches) [set-breed-latent]
     ]
   ]
 end
@@ -266,13 +266,13 @@ end
 to set-breed-susceptible
   set breed susceptibles
   set color green
-  set to-become-exposed? false
+  set to-become-latent? false
   set p-infect p-infect-init / 100
   check-outline
 end
 
-to set-breed-exposed
-  set breed exposeds
+to set-breed-latent
+  set breed latents
   set color yellow
   set to-become-infected? false
   set inc-countdown (log-normal incubation-mean incubation-stdev)
@@ -486,7 +486,7 @@ true
 "" ""
 PENS
 "susceptible" 1.0 0 -10899396 true "" "plot count susceptibles"
-"exposed" 1.0 0 -1184463 true "" "plot count exposeds"
+"exposed" 1.0 0 -1184463 true "" "plot count latents"
 "infected" 1.0 0 -2674135 true "" "plot count infecteds"
 "removed" 1.0 0 -3026479 true "" "plot count removeds"
 "dead" 1.0 0 -16777216 true "" "plot count deads"
@@ -675,8 +675,8 @@ SLIDER
 immunity-mean
 immunity-mean
 0
-365
-30.0
+365 * 3
+365.0
 1
 1
 days
@@ -701,7 +701,7 @@ lockdown-threshold
 lockdown-threshold
 0
 10000
-100.0
+10000.0
 100
 1
 infecteds
@@ -714,7 +714,7 @@ SWITCH
 544
 imposed-lockdown?
 imposed-lockdown?
-1
+0
 1
 -1000
 
@@ -735,7 +735,7 @@ SWITCH
 581
 modify-p-infect?
 modify-p-infect?
-0
+1
 1
 -1000
 
@@ -748,7 +748,7 @@ protection-strength
 protection-strength
 0
 100
-100.0
+50.0
 1
 1
 %
@@ -786,7 +786,7 @@ MONITOR
 671
 703
 exposeds
-count exposeds
+count latents
 0
 1
 11
