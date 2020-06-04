@@ -37,8 +37,10 @@ latents-own [
 ]
 
 infecteds-own [
-  removal-or-death?        ;; whether an I will turn into R or D
+  will-die?        ;; whether an I will turn into R or D
+  to-remove?
   rec-countdown            ;; time until I becomes R or D
+  death-countdown
 ]
 
 removeds-own [
@@ -205,9 +207,17 @@ end
 
 to remove-infecteds
   ask infecteds [
-    ifelse rec-countdown = 0
-    [set removal-or-death? true]
-    [set rec-countdown (rec-countdown - 1)]
+    ifelse will-die?
+    [
+      ifelse death-countdown = 0
+      [set to-remove? true]
+      [set death-countdown (death-countdown - 1)]
+    ]
+    [
+      ifelse rec-countdown = 0
+      [set to-remove? true]
+      [set rec-countdown (rec-countdown - 1)]
+    ]
   ]
 end
 
@@ -225,10 +235,8 @@ to update-breeds
 
   ask latents with [to-become-infected? = true] [set-breed-infected]
 
-  ask infecteds with [removal-or-death? = true] [
-    let p (random 100 + 1)
-    let p-death-here (actual-p-death age)
-    ifelse (p <= p-death-here)
+  ask infecteds with [to-remove? = true] [
+    ifelse will-die?
     [set-breed-dead]
     [set-breed-removed]
   ]
@@ -282,8 +290,15 @@ end
 to set-breed-infected
   set breed infecteds
   set color red
-  set removal-or-death? false
-  set rec-countdown (normal-dist recovery-mean recovery-stdev)
+  set to-remove? false
+  let p (random 100 + 1)
+    let p-death-here (actual-p-death age)
+    ifelse (p <= p-death-here)
+    [set will-die? true]
+    [set will-die? false]
+  ifelse will-die?
+  [set death-countdown (normal-dist death-mean death-stdev)]
+  [set rec-countdown (normal-dist recovery-mean recovery-stdev)]
   check-outline
 end
 
@@ -634,8 +649,8 @@ SLIDER
 recovery-mean
 recovery-mean
 0
-20
-11.5
+50
+20.5
 0.1
 1
 NIL
@@ -650,7 +665,7 @@ recovery-stdev
 recovery-stdev
 0
 10
-5.7
+6.7
 0.1
 1
 NIL
@@ -672,15 +687,15 @@ years
 HORIZONTAL
 
 SLIDER
-306
-285
-478
-318
+307
+365
+479
+398
 immunity-mean
 immunity-mean
 0
 365 * 3
-365.0
+28.0
 1
 1
 days
@@ -705,7 +720,7 @@ lockdown-threshold
 lockdown-threshold
 0
 10000
-10000.0
+100.0
 100
 1
 infecteds
@@ -739,7 +754,7 @@ SWITCH
 581
 modify-p-infect?
 modify-p-infect?
-1
+0
 1
 -1000
 
@@ -890,9 +905,39 @@ MONITOR
 706
 superspreaders
 count turtles with [z-contact-init = (max [z-contact-init] of turtles)]
-17
+0
 1
 11
+
+SLIDER
+307
+286
+479
+319
+death-mean
+death-mean
+0
+50
+16.0
+1.0
+1
+NIL
+HORIZONTAL
+
+SLIDER
+307
+326
+479
+359
+death-stdev
+death-stdev
+0
+10
+8.21
+1.0
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

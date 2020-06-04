@@ -64,3 +64,4 @@
 - Implemented pareto distribution for variation of initial contact neighbourhood size, i.e. z-contact-ini, with alpha = 2
 - Added two possible methods to ensure the minimum value for initial contact neighbourhood is equal to the value of z-contact-min
 - Changed naming convention of exposeds into latents, as they are infectious but not yet symptomatic
+- Created a separate countdown for infecteds that will die instead of recover, as the mean duration of infection is different between these two categories

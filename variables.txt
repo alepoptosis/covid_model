@@ -3,9 +3,12 @@
 
 name                    access  description
 
-age                     SLIRD   the age range of the person (0-29, 30-59, 60+)
+age                     ALL     the age range of the person (0-29, 30-59, 60+)
 already-locked?         G       whether a lockdown in already happening
 closed-system?          G       whether outside infections can occur
+death-countdown         I       individual death countdown
+death-mean              G       mean of the normal dist for death
+death-stdev             G       stdev of the normal dist for death
 duration                G       length of simulation (years)
 first-lockdown?         G       whether first lockdown occurred
 imm-countdown           R       individual loss of immunity countdown
@@ -25,11 +28,12 @@ protection-strength     G       strength of measures to reduce transmission
 rec-countdown           I       individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
-removal-or-death?       I       whether I turns to R or D (individual)
-to-become-latent?       S       whether S turns to L (individual)
-to-become-infected?     L       whether L turns to I (individual)
-to-become-susceptible?  R       whether R returns S (individual)
+to-become-infected?     L       flags a L for symptomatic infection
+to-become-latent?       S       flags a S for exposure
+to-become-susceptible?  R       flags a R for loss of immunity
+to-remove               I       flags an I for removal (recovery or death)
 travel-strictness       G       probability of outside infections occurring
-z-contact               SLIR    individual radius of contact neighbourhood
-z-contact-init          SLIRD   base radius of contact neighbourhood
+will-die?               I       whether the infected will die or recover
+z-contact               ALL     individual radius of contact neighbourhood
+z-contact-init          ALL     base radius of contact neighbourhood
 z-contact-min           G       the minimum radius of contact neighbourhoods
