@@ -21,7 +21,8 @@ breed [removeds removed]          ;; recovered and immune
 breed [deads dead]                ;; removed from population
 
 turtles-own [
-  z-contact                ;; radius of contact neighbourhood
+  z-contact-init           ;; base radius of contact neighbourhood
+  z-contact                ;; current radius of contact neighbourhood
   age                      ;; age range of person (0-29, 30-59, 60+)
 ]
 
@@ -84,6 +85,7 @@ to setup-turtles
       set color green
       set to-become-exposed? false
       set p-infect p-infect-init / 100
+      set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
       set-age
     ]
@@ -138,14 +140,14 @@ to count-contacts
 
   ask exposeds [
     set EE-tick (EE-tick + ((count other exposeds in-radius z-contact with [z-contact >= distance myself])))
-    set EI-tick (EI-tick + ((count infecteds in-radius z-contact-init)))
-    set ER-tick (ER-tick + ((count removeds in-radius z-contact-init)))
+    set EI-tick (EI-tick + ((count infecteds in-radius z-contact)))
+    set ER-tick (ER-tick + ((count removeds in-radius z-contact)))
   ]
   set EE-tick (EE-tick / 2)
 
   ask infecteds [
     set II-tick (II-tick + (count other infecteds in-radius z-contact with [z-contact >= distance myself]))
-    set IR-tick (IR-tick + (count removeds in-radius z-contact-init))
+    set IR-tick (IR-tick + (count removeds in-radius z-contact))
   ]
   set II-tick (II-tick / 2)
 
@@ -333,15 +335,15 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;;;;;;;;;
 
-to-report log-normal [mu sigma]
-  ;  let z (random-normal mu sigma) ;; this was for the original formula I thought was correct
-  ;  let x (exp (mu + (sigma * z))) ;; but only works if mean and stdev are of the normal dist
-  report round (exp random-normal mu sigma)
+to-report log-normal [#mu #sigma]
+  ;  let z (random-normal #mu #sigma) ;; this was for the original formula I thought was correct
+  ;  let x (exp (#mu + (#sigma * z))) ;; but only works if mean and stdev are of the normal dist
+  report round (exp random-normal #mu #sigma)
 end
 
-to-report normal-dist [mu sigma]
-  let x round (random-normal mu sigma)
-  let min_days (precision (mu - sigma) 0)
+to-report normal-dist [#mu #sigma]
+  let x round (random-normal #mu #sigma)
+  let min_days (precision (#mu - #sigma) 0)
   ifelse x > min_days
   [report round x]
   [
@@ -351,8 +353,15 @@ to-report normal-dist [mu sigma]
   ]
 end
 
-to-report poisson-dist [mu]
-  report round (random-poisson mu)
+to-report poisson-dist [#mu]
+  report round (random-poisson #mu)
+end
+
+to-report pareto-dist [#min #alpha]
+  let x (random 100 + 1)
+  let num (#alpha * (#min ^ #alpha))
+  let den (x ^ (#alpha + 1))
+  report round ((num / den) + #min)
 end
 
 to-report actual-p-death [#age]
@@ -488,8 +497,8 @@ SLIDER
 134
 185
 167
-z-contact-init
-z-contact-init
+z-contact-min
+z-contact-min
 0
 71
 2.0
@@ -705,7 +714,7 @@ SWITCH
 544
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
@@ -867,6 +876,17 @@ MONITOR
 % 0-29
 count turtles with [age = \"0-29\"] /\ncount turtles * 100
 1
+1
+11
+
+MONITOR
+1247
+661
+1347
+706
+superspreaders
+count turtles with [z-contact-init = (max [z-contact-init] of turtles)]
+17
 1
 11
 

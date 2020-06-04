@@ -58,3 +58,8 @@
 ### 3/6
 
 - Added a minimum value for duration of recovery equal to mean - stdev, unless that value is below 0, in which case the minimum is 1 day
+
+### 4/6
+
+- Implemented pareto distribution for variation of initial contact neighbourhood size, i.e. z-contact-ini, with alpha = 2
+- Added a minimum value for initial contact neighbourhood equal to the value of z-contact-min

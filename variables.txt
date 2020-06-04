@@ -31,4 +31,5 @@ to-become-infected?     E       whether E turns to I (individual)
 to-become-susceptible?  R       whether R returns S (individual)
 travel-strictness       G       probability of outside infections occurring
 z-contact               SEIR    individual radius of contact neighbourhood
-z-contact-init          G       initial radius of contact neighbourhood
+z-contact-init          SEIRD   base radius of contact neighbourhood
+z-contact-min           G       the minimum radius of contact neighbourhoods
