@@ -1,5 +1,5 @@
 ##### NETLOGO COVID-19 MODEL VARIABLES
-##### Globals, Susceptibles, Latents, Infecteds, Recovereds
+##### Globals, Susceptibles, Latents, Asymptomatics, Infecteds, Recovereds
 
 name                    access  description
 

@@ -14,38 +14,39 @@ globals [
   already-locked?
 ]
 
-breed [susceptibles susceptible]  ;; can be infected
-breed [latents latent]            ;; infectious but still asymptomatic
-breed [infecteds infected]        ;; infectious and symptomatic
-breed [removeds removed]          ;; recovered and immune
-breed [deads dead]                ;; removed from population
+breed [susceptibles susceptible]    ;; can be infected
+breed [latents latent]              ;; infectious but still asymptomatic
+breed [infecteds infected]          ;; infectious and symptomatic
+breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic
+breed [removeds removed]            ;; recovered and immune
+breed [deads dead]                  ;; removed from population
 
 turtles-own [
-  z-contact-init           ;; base radius of contact neighbourhood
-  z-contact                ;; current radius of contact neighbourhood
-  age                      ;; age range of person (0-29, 30-59, 60+)
+  z-contact-init
+  z-contact
+  age
 ]
 
 susceptibles-own [
-  to-become-latent?        ;; whether an S will turn into E
-  p-infect                 ;; probability of being infected by contact
+  to-become-latent?
+  p-infect
 ]
 
 latents-own [
-  to-become-infected?      ;; whether an E will turn into I
-  inc-countdown            ;; time until E develops symptoms
+  to-become-infected?
+  inc-countdown
 ]
 
 infecteds-own [
-  will-die?        ;; whether an I will turn into R or D
+  will-die?
   to-remove?
-  rec-countdown            ;; time until I becomes R or D
+  rec-countdown
   death-countdown
 ]
 
 removeds-own [
-  to-become-susceptible?   ;; whether an R will turn into S
-  imm-countdown            ;; time until R returns to S
+  to-become-susceptible?
+  imm-countdown
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -287,6 +288,12 @@ to set-breed-latent
   check-outline
 end
 
+to set-breed-asymptomatic
+  set breed asymptomatics
+  set color violet
+  check-outline
+end
+
 to set-breed-infected
   set breed infecteds
   set color red
@@ -512,10 +519,10 @@ PENS
 "lockdown" 1.0 0 -11221820 true "" "plot count turtles with [shape = \"person-outline\"]"
 
 SLIDER
-13
-134
-185
-167
+14
+115
+186
+148
 z-contact-min
 z-contact-min
 0
@@ -598,9 +605,9 @@ NIL
 
 SLIDER
 14
-87
+78
 186
-120
+111
 p-death
 p-death
 0
@@ -937,6 +944,21 @@ death-stdev
 1.0
 1
 NIL
+HORIZONTAL
+
+SLIDER
+14
+154
+211
+187
+asymptomatic-incidence
+asymptomatic-incidence
+0
+100
+50.0
+1.0
+1
+%
 HORIZONTAL
 
 @#$#@#$#@
