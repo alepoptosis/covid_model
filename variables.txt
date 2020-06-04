@@ -1,9 +1,9 @@
 ##### NETLOGO COVID-19 MODEL VARIABLES
-##### Globals, Susceptibles, Exposeds, Infecteds, Recovereds
+##### Globals, Susceptibles, Latents, Infecteds, Recovereds
 
 name                    access  description
 
-age                     SEIRD   the age range of the person (0-29, 30-59, 60+)
+age                     SLIRD   the age range of the person (0-29, 30-59, 60+)
 already-locked?         G       whether a lockdown in already happening
 closed-system?          G       whether outside infections can occur
 duration                G       length of simulation (years)
@@ -11,7 +11,7 @@ first-lockdown?         G       whether first lockdown occurred
 imm-countdown           R       individual loss of immunity countdown
 immunity-mean           G       mean of the poisson dist for immunity
 imposed-lockdown?       G       whether to simulate gov-imposed lockdown
-inc-countdown           E       individual incubation countdown
+inc-countdown           L       individual incubation countdown
 incubation-mean         G       mean of the log-normal dist for incubation
 incubation-stdev        G       stdev of the log-normal dist for incubation
 initial-inf             G       number of infecteds at start of simulation
@@ -26,10 +26,10 @@ rec-countdown           I       individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
 removal-or-death?       I       whether I turns to R or D (individual)
-to-become-exposed?      S       whether S turns to E (individual)
-to-become-infected?     E       whether E turns to I (individual)
+to-become-latent?       S       whether S turns to L (individual)
+to-become-infected?     L       whether L turns to I (individual)
 to-become-susceptible?  R       whether R returns S (individual)
 travel-strictness       G       probability of outside infections occurring
-z-contact               SEIR    individual radius of contact neighbourhood
-z-contact-init          SEIRD   base radius of contact neighbourhood
+z-contact               SLIR    individual radius of contact neighbourhood
+z-contact-init          SLIRD   base radius of contact neighbourhood
 z-contact-min           G       the minimum radius of contact neighbourhoods

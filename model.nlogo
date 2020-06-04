@@ -15,7 +15,7 @@ globals [
 ]
 
 breed [susceptibles susceptible]  ;; can be infected
-breed [latents latent]          ;; infectious but asymptomatic
+breed [latents latent]            ;; infectious but still asymptomatic
 breed [infecteds infected]        ;; infectious and symptomatic
 breed [removeds removed]          ;; recovered and immune
 breed [deads dead]                ;; removed from population
@@ -27,7 +27,7 @@ turtles-own [
 ]
 
 susceptibles-own [
-  to-become-latent?       ;; whether an S will turn into E
+  to-become-latent?        ;; whether an S will turn into E
   p-infect                 ;; probability of being infected by contact
 ]
 
@@ -103,7 +103,7 @@ to go
   [
     count-contacts       ;; update the number of contacts made before with the ones made at this step after lockdown was modified
     expose-susceptibles  ;; turn susceptibles into latents if they had contact with an infected or latent with probability p-infect
-    infect-latents      ;; turn latents into infecteds after inc-countdown ticks
+    infect-latents       ;; turn latents into infecteds after inc-countdown ticks
     remove-infecteds     ;; turn infecteds into removeds or deads after rec-countdown ticks, with p-death probability of becoming deads instead of removeds
     lose-immunity        ;; turn removeds back into susceptibles after imm-countdown ticks
     update-breeds        ;; update conditions as necessary
@@ -179,7 +179,7 @@ to expose-susceptibles
 
     let infected-contacts (                                                            ;; number of infected contacts is
       (count infecteds in-radius z-contact with [z-contact >= distance myself]) +      ;; the number of actual infecteds plus
-      (count latents in-radius z-contact with [z-contact >= distance myself])         ;; that of latents in the susceptible's z-radius (if the susceptible is in their radius)
+      (count latents in-radius z-contact with [z-contact >= distance myself])          ;; that of latents in the susceptible's z-radius (if the susceptible is in their radius)
     )
 
     if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
@@ -336,8 +336,8 @@ end
 ;;;;;;;;;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;;;;;;;;;
 
 to-report log-normal [#mu #sigma]
-  ;  let z (random-normal #mu #sigma) ;; this was for the original formula I thought was correct
-  ;  let x (exp (#mu + (#sigma * z))) ;; but only works if mean and stdev are of the normal dist
+  ;  let z (random-normal #mu #sigma)                 ;; this was for the original formula I thought was correct
+  ;  let x (exp (#mu + (#sigma * z)))                 ;; but only works if mean and stdev are of the normal dist
   report round (exp random-normal #mu #sigma)
 end
 
@@ -362,6 +362,10 @@ to-report pareto-dist [#min #alpha]
   let num (#alpha * (#min ^ #alpha))
   let den (x ^ (#alpha + 1))
   report round ((num / den) + #min)
+;  let y round (num / den)                            ;; version with true minimum instead of plus minimum
+;  ifelse y < #min
+;  [report #min]
+;  [report y]
 end
 
 to-report actual-p-death [#age]
