@@ -11,7 +11,7 @@ globals [
   RR-contacts
 
   first-lockdown?
-  already-locked?
+  currently-locked?
 ]
 
 breed [susceptibles susceptible]    ;; can be infected
@@ -42,6 +42,7 @@ infecteds-own [
   to-remove?
   rec-countdown
   death-countdown
+  iso-countdown
 ]
 
 removeds-own [
@@ -75,7 +76,7 @@ to setup-globals
   set RR-contacts 0
 
   set first-lockdown? false
-  set already-locked? false
+  set currently-locked? false
 end
 
 to setup-turtles
@@ -251,6 +252,8 @@ to modify-lockdown
     [start-lockdown]
     [end-lockdown]
   ]
+
+  if isolate-infecteds? and first-lockdown? [isolate-infecteds]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -298,6 +301,7 @@ to set-breed-infected
   set breed infecteds
   set color red
   set to-remove? false
+  set-iso-countdown
   let p (random 100 + 1)
     let p-death-here (actual-p-death age)
     ifelse (p <= p-death-here)
@@ -328,16 +332,23 @@ to check-outline
   [set shape "person"]
 end
 
+to isolate
+  set z-contact 0
+  set shape "person-outline"
+end
+
+to not-isolate
+  set z-contact z-contact-init
+  set shape "person"
+end
+
 to start-lockdown
   let alives turtles with [not member? self deads]
-  if not already-locked? [
+  if not currently-locked? [
     ask alives [
       let p (random 100 + 1)
-      if p <= (lockdown-strictness) [
-        set z-contact 0
-        set shape "person-outline"
-      ]
-      set already-locked? true
+      if p <= (lockdown-strictness) [isolate]
+      set currently-locked? true
       set first-lockdown? true
     ]
   ]
@@ -345,13 +356,28 @@ end
 
 to end-lockdown
   let alives turtles with [not member? self deads]
-  if already-locked? [
-    ask alives [
-      set z-contact z-contact-init
-      set shape "person"
-    ]
-    set already-locked? false
+  if currently-locked? [
+    ask alives [not-isolate]
+    set currently-locked? false
   ]
+end
+
+to isolate-infecteds
+  ask infecteds [
+    ifelse iso-countdown <= 0 and not currently-locked?
+    [not-isolate]
+    [
+      isolate
+      set iso-countdown (iso-countdown - 1)
+    ]
+  ]
+end
+
+to set-iso-countdown
+  let p (random 100 + 1)
+  ifelse p < isolation-strictness
+  [set iso-countdown iso-countdown-max]
+  [set iso-countdown round (iso-countdown-max / 2)]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -481,10 +507,10 @@ p-infect-init
 HORIZONTAL
 
 SLIDER
-1200
-433
-1393
-466
+1202
+408
+1395
+441
 initial-inf
 initial-inf
 0
@@ -496,10 +522,10 @@ NIL
 HORIZONTAL
 
 PLOT
-23
-421
-466
-721
+19
+447
+462
+747
 Simulation populations
 NIL
 NIL
@@ -542,7 +568,7 @@ lockdown-strictness
 lockdown-strictness
 0
 100
-80.0
+100.0
 1
 1
 %
@@ -577,10 +603,10 @@ infection parameters
 1
 
 TEXTBOX
-1249
-401
-1399
-419
+1251
+376
+1401
+394
 model options
 11
 0.0
@@ -619,10 +645,10 @@ p-death
 HORIZONTAL
 
 SLIDER
-310
-117
-482
-150
+303
+56
+475
+89
 incubation-mean
 incubation-mean
 0
@@ -634,10 +660,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-309
-159
-481
-192
+302
+98
+474
+131
 incubation-stdev
 incubation-stdev
 0
@@ -649,10 +675,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-308
-205
-480
-238
+301
+144
+473
+177
 recovery-mean
 recovery-mean
 0
@@ -664,10 +690,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-307
-245
-479
-278
+300
+184
+472
+217
 recovery-stdev
 recovery-stdev
 0
@@ -679,40 +705,40 @@ NIL
 HORIZONTAL
 
 SLIDER
-1200
-471
-1372
-504
+1202
+446
+1374
+479
 duration
 duration
 0
 10
-5.0
+3.0
 1
 1
 years
 HORIZONTAL
 
 SLIDER
-307
-365
-479
-398
+300
+304
+472
+337
 immunity-mean
 immunity-mean
 0
 365 * 3
-28.0
+365.0
 1
 1
 days
 HORIZONTAL
 
 TEXTBOX
-365
-94
-515
-112
+358
+33
+508
+51
 countdowns
 11
 0.0
@@ -734,10 +760,10 @@ infecteds
 HORIZONTAL
 
 SWITCH
-1201
-511
-1363
-544
+1203
+486
+1365
+519
 imposed-lockdown?
 imposed-lockdown?
 0
@@ -755,10 +781,10 @@ lockdown parameters
 1
 
 SWITCH
-1202
-548
-1348
-581
+1204
+523
+1350
+556
 modify-p-infect?
 modify-p-infect?
 0
@@ -781,10 +807,10 @@ protection-strength
 HORIZONTAL
 
 SWITCH
-1202
-587
-1342
-620
+1204
+562
+1344
+595
 closed-system?
 closed-system?
 0
@@ -811,7 +837,7 @@ MONITOR
 658
 671
 703
-exposeds
+latents
 count latents
 0
 1
@@ -917,10 +943,10 @@ count turtles with [z-contact-init = (max [z-contact-init] of turtles)]
 11
 
 SLIDER
-307
-286
-479
-319
+300
+225
+472
+258
 death-mean
 death-mean
 0
@@ -932,10 +958,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-307
-326
-479
-359
+300
+265
+472
+298
 death-stdev
 death-stdev
 0
@@ -957,6 +983,47 @@ asymptomatic-incidence
 100
 50.0
 1.0
+1
+%
+HORIZONTAL
+
+SLIDER
+299
+343
+480
+376
+iso-countdown-max
+iso-countdown-max
+0
+50
+7.0
+1
+1
+days
+HORIZONTAL
+
+SWITCH
+1204
+600
+1356
+633
+isolate-infecteds?
+isolate-infecteds?
+0
+1
+-1000
+
+SLIDER
+15
+393
+187
+426
+isolation-strictness
+isolation-strictness
+0
+100
+50.0
+1
 1
 %
 HORIZONTAL
@@ -1279,39 +1346,73 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="test" repetitions="10" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count turtles</metric>
-    <enumeratedValueSet variable="aware-of-removeds?">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="max-ticks">
-      <value value="10000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="p-infect-init">
-      <value value="0.01"/>
-    </enumeratedValueSet>
+    <metric>count susceptibles</metric>
+    <metric>count latents</metric>
+    <metric>count infecteds</metric>
+    <metric>count removeds</metric>
+    <metric>count deads</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="10"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="z-infection-init">
-      <value value="6"/>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="modify-z-infection?">
+    <enumeratedValueSet variable="imposed-lockdown?">
       <value value="true"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="immunity-mean">
+      <value value="365"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="modify-p-infect?">
-      <value value="false"/>
+      <value value="true"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="z-aware">
-      <value value="1"/>
+    <enumeratedValueSet variable="p-infect-init">
+      <value value="30"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="p-remove">
-      <value value="0.19"/>
+    <enumeratedValueSet variable="protection-strength">
+      <value value="50"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="risk-attitude">
-      <value value="0.1"/>
+    <enumeratedValueSet variable="asymptomatic-incidence">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="travel-strictness">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-death">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-strictness">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>

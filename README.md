@@ -66,3 +66,8 @@
 - Changed naming convention of exposeds into latents, as they are infectious but not yet symptomatic
 - Created a separate countdown for infecteds that will die instead of recover, as the mean duration of infection is different between these two categories
 - Created asymptomatic breed, not yet integrated in the model
+
+### 5/6
+
+- Implemented isolation for infected individuals, currently with isolation-strictness % of people isolating for iso-countdown-max days, and the rest isolating for half that time (applies after first lockdown)
+- Changed already-locked? variable to currently-locked? for clarity

@@ -4,7 +4,7 @@
 name                    access  description
 
 age                     ALL     the age range of the person (0-29, 30-59, 60+)
-already-locked?         G       whether a lockdown in already happening
+currently-locked?       G       whether a lockdown is in progress
 closed-system?          G       whether outside infections can occur
 death-countdown         I       individual death countdown
 death-mean              G       mean of the normal dist for death
@@ -37,3 +37,7 @@ will-die?               I       whether the infected will die or recover
 z-contact               ALL     individual radius of contact neighbourhood
 z-contact-init          ALL     base radius of contact neighbourhood
 z-contact-min           G       the minimum radius of contact neighbourhoods
+iso-countdown           I       individual isolation countdown
+iso-countdown-max       G       maximum isolation period for infecteds
+isolate-infecteds?      G       whether infecteds should be asked to isolate
+isolation-strictness    G       the percentage of people isolating for max days
