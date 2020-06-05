@@ -4,9 +4,10 @@
 name                    access  description
 
 age                     ALL     the age range of the person (0-29, 30-59, 60+)
-currently-locked?       G       whether a lockdown is in progress
+asym-infections         G       the percentage of asymptomatic infecteds
 closed-system?          G       whether outside infections can occur
-death-countdown         I       individual death countdown
+currently-locked?       G       whether a lockdown is in progress
+death-countdown         IA      individual death countdown
 death-mean              G       mean of the normal dist for death
 death-stdev             G       stdev of the normal dist for death
 duration                G       length of simulation (years)
@@ -18,6 +19,10 @@ inc-countdown           L       individual incubation countdown
 incubation-mean         G       mean of the log-normal dist for incubation
 incubation-stdev        G       stdev of the log-normal dist for incubation
 initial-inf             G       number of infecteds at start of simulation
+iso-countdown           I       individual isolation countdown
+iso-countdown-max       G       maximum isolation period for infecteds
+isolate-infecteds?      G       whether infecteds should be asked to isolate
+isolation-strictness    G       the percentage of people isolating for max days
 lockdown-strictness     G       likelihood a person will obey lockdown
 lockdown-threshold      G       number of infecteds that triggers lockdown
 modify-p-infect?        G       whether add control measures after 1st lockdown
@@ -25,19 +30,15 @@ p-death                 G       probability of dying instead of recovering
 p-infect                S       individual transmission probability
 p-infect-init           G       base transmission probability
 protection-strength     G       strength of measures to reduce transmission
-rec-countdown           I       individual recovery countdown
+rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
 to-become-infected?     L       flags a L for symptomatic infection
 to-become-latent?       S       flags a S for exposure
 to-become-susceptible?  R       flags a R for loss of immunity
-to-remove               I       flags an I for removal (recovery or death)
+to-remove               IA      flags an I/A for removal (recovery or death)
 travel-strictness       G       probability of outside infections occurring
-will-die?               I       whether the infected will die or recover
+will-die?               IA      whether the infected will die or recover
 z-contact               ALL     individual radius of contact neighbourhood
 z-contact-init          ALL     base radius of contact neighbourhood
 z-contact-min           G       the minimum radius of contact neighbourhoods
-iso-countdown           I       individual isolation countdown
-iso-countdown-max       G       maximum isolation period for infecteds
-isolate-infecteds?      G       whether infecteds should be asked to isolate
-isolation-strictness    G       the percentage of people isolating for max days

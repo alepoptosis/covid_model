@@ -3,12 +3,17 @@ globals [
   SE-contacts
   SI-contacts
   SR-contacts
+  SA-contacts
   EE-contacts
   EI-contacts
   ER-contacts
+  EA-contacts
   II-contacts
   IR-contacts
+  IA-contacts
   RR-contacts
+  RA-contacts
+  AA-contacts
 
   first-lockdown?
   currently-locked?
@@ -45,6 +50,13 @@ infecteds-own [
   iso-countdown
 ]
 
+asymptomatics-own [
+  will-die?
+  to-remove?
+  rec-countdown
+  death-countdown
+]
+
 removeds-own [
   to-become-susceptible?
   imm-countdown
@@ -68,12 +80,17 @@ to setup-globals
   set SE-contacts 0
   set SI-contacts 0
   set SR-contacts 0
+  set SA-contacts 0
   set EE-contacts 0
   set EI-contacts 0
   set ER-contacts 0
+  set EA-contacts 0
   set II-contacts 0
   set IR-contacts 0
+  set IA-contacts 0
   set RR-contacts 0
+  set RA-contacts 0
+  set AA-contacts 0
 
   set first-lockdown? false
   set currently-locked? false
@@ -126,18 +143,24 @@ to count-contacts
   let SE-tick 0
   let SI-tick 0
   let SR-tick 0
+  let SA-tick 0
   let EE-tick 0
   let EI-tick 0
   let ER-tick 0
+  let EA-tick 0
   let II-tick 0
   let IR-tick 0
+  let IA-tick 0
   let RR-tick 0
+  let RA-tick 0
+  let AA-tick 0
 
   ask susceptibles [
     set SS-tick (SS-tick + ((count other susceptibles in-radius z-contact with [z-contact >= distance myself])))
     set SE-tick (SE-tick + ((count latents in-radius z-contact)))
     set SI-tick (SI-tick + ((count infecteds in-radius z-contact)))
     set SR-tick (SR-tick + ((count removeds in-radius z-contact)))
+    set SA-tick (SA-tick + ((count asymptomatics in-radius z-contact)))
 
   ]
   set SS-tick (SS-tick / 2)
@@ -146,44 +169,61 @@ to count-contacts
     set EE-tick (EE-tick + ((count other latents in-radius z-contact with [z-contact >= distance myself])))
     set EI-tick (EI-tick + ((count infecteds in-radius z-contact)))
     set ER-tick (ER-tick + ((count removeds in-radius z-contact)))
+    set EA-tick (EA-tick + ((count asymptomatics in-radius z-contact)))
   ]
   set EE-tick (EE-tick / 2)
 
   ask infecteds [
     set II-tick (II-tick + (count other infecteds in-radius z-contact with [z-contact >= distance myself]))
     set IR-tick (IR-tick + (count removeds in-radius z-contact))
+    set IA-tick (IA-tick + (count asymptomatics in-radius z-contact))
   ]
   set II-tick (II-tick / 2)
 
   ask removeds [
     set RR-tick (RR-tick + (count other removeds in-radius z-contact with [z-contact >= distance myself]))
+    set RA-tick (RA-tick + (count asymptomatics in-radius z-contact))
   ]
   set RR-tick (RR-tick / 2)
 
+  ask asymptomatics [
+    set AA-tick (AA-tick + (count other asymptomatics in-radius z-contact with [z-contact >= distance myself]))
+  ]
+  set AA-tick (AA-tick / 2)
+
   set-current-plot "num-contacts"
-  plot (SS-tick + SE-tick + SI-tick + SR-tick +
-    EE-tick + EI-tick + ER-tick +
-    II-tick + IR-tick +
-    RR-tick)
+  plot (
+    SS-tick + SE-tick + SI-tick + SR-tick + SA-tick +
+    EE-tick + EI-tick + ER-tick + EA-tick +
+    II-tick + IR-tick + IA-tick +
+    RR-tick + RA-tick +
+    AA-tick
+  )
 
   set SS-contacts (SS-contacts + SS-tick)
   set SE-contacts (SE-contacts + SE-tick)
   set SI-contacts (SI-contacts + SI-tick)
   set SR-contacts (SR-contacts + SR-tick)
+  set SA-contacts (SA-contacts + SA-tick)
   set EE-contacts (EE-contacts + EE-tick)
   set EI-contacts (EI-contacts + EI-tick)
   set ER-contacts (ER-contacts + ER-tick)
+  set EA-contacts (EA-contacts + EA-tick)
   set II-contacts (II-contacts + II-tick)
   set IR-contacts (IR-contacts + IR-tick)
+  set IA-contacts (IA-contacts + IA-tick)
   set RR-contacts (RR-contacts + RR-tick)
+  set RA-contacts (RA-contacts + RA-tick)
+  set AA-contacts (AA-contacts + AA-tick)
 end
 
 to expose-susceptibles
   ask susceptibles [
 
-    let infected-contacts (                                                            ;; number of infected contacts is
-      (count infecteds in-radius z-contact with [z-contact >= distance myself]) +      ;; the number of actual infecteds plus
-      (count latents in-radius z-contact with [z-contact >= distance myself])          ;; that of latents in the susceptible's z-radius (if the susceptible is in their radius)
+    let infected-contacts (                                                              ;; number of infected contacts is (if the S is in their radius)
+      (count infecteds in-radius z-contact with [z-contact >= distance myself])          ;; the number of actual infecteds plus
+      + (count latents in-radius z-contact with [z-contact >= distance myself])          ;; that of latents in the susceptible's z-radius
+      + (count asymptomatics in-radius z-contact with [z-contact >= distance myself])    ;; the number of asymptmatic infecteds
     )
 
     if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
@@ -208,7 +248,9 @@ to infect-latents
 end
 
 to remove-infecteds
-  ask infecteds [
+  let all-infecteds (turtle-set infecteds asymptomatics)
+
+  ask all-infecteds [
     ifelse will-die?
     [
       ifelse death-countdown = 0
@@ -235,9 +277,15 @@ to update-breeds
 
   ask susceptibles with [to-become-latent? = true] [set-breed-latent]
 
-  ask latents with [to-become-infected? = true] [set-breed-infected]
+  ask latents with [to-become-infected? = true] [
+    let p (random 100 + 1)
+    ifelse p <= asym-infections
+    [set-breed-asymptomatic]
+    [set-breed-infected]
+  ]
 
-  ask infecteds with [to-remove? = true] [
+  let all-infecteds (turtle-set infecteds asymptomatics)
+  ask all-infecteds with [to-remove? = true] [
     ifelse will-die?
     [set-breed-dead]
     [set-breed-removed]
@@ -294,6 +342,8 @@ end
 to set-breed-asymptomatic
   set breed asymptomatics
   set color violet
+  set to-remove? false
+  check-death
   check-outline
 end
 
@@ -302,15 +352,19 @@ to set-breed-infected
   set color red
   set to-remove? false
   set-iso-countdown
+  check-death
+  check-outline
+end
+
+to check-death
   let p (random 100 + 1)
-    let p-death-here (actual-p-death age)
-    ifelse (p <= p-death-here)
-    [set will-die? true]
-    [set will-die? false]
+  let p-death-here (actual-p-death age)
+  ifelse (p <= p-death-here)
+  [set will-die? true]
+  [set will-die? false]
   ifelse will-die?
   [set death-countdown (normal-dist death-mean death-stdev)]
   [set rec-countdown (normal-dist recovery-mean recovery-stdev)]
-  check-outline
 end
 
 to set-breed-removed
@@ -375,7 +429,7 @@ end
 
 to set-iso-countdown
   let p (random 100 + 1)
-  ifelse p < isolation-strictness
+  ifelse p <= isolation-strictness
   [set iso-countdown iso-countdown-max]
   [set iso-countdown round (iso-countdown-max / 2)]
 end
@@ -538,11 +592,12 @@ true
 "" ""
 PENS
 "susceptible" 1.0 0 -10899396 true "" "plot count susceptibles"
-"exposed" 1.0 0 -1184463 true "" "plot count latents"
+"latents" 1.0 0 -1184463 true "" "plot count latents"
 "infected" 1.0 0 -2674135 true "" "plot count infecteds"
 "removed" 1.0 0 -3026479 true "" "plot count removeds"
 "dead" 1.0 0 -16777216 true "" "plot count deads"
 "lockdown" 1.0 0 -11221820 true "" "plot count turtles with [shape = \"person-outline\"]"
+"asymptomatics" 1.0 0 -8630108 true "" "plot count asymptomatics"
 
 SLIDER
 14
@@ -568,7 +623,7 @@ lockdown-strictness
 lockdown-strictness
 0
 100
-100.0
+80.0
 1
 1
 %
@@ -975,10 +1030,10 @@ HORIZONTAL
 SLIDER
 14
 154
-211
+214
 187
-asymptomatic-incidence
-asymptomatic-incidence
+asym-infections
+asym-infections
 0
 100
 50.0
@@ -996,7 +1051,7 @@ iso-countdown-max
 iso-countdown-max
 0
 50
-7.0
+14.0
 1
 1
 days
@@ -1027,6 +1082,17 @@ isolation-strictness
 1
 %
 HORIZONTAL
+
+MONITOR
+672
+709
+761
+754
+asymptomatic
+count asymptomatics
+0
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
