@@ -1431,8 +1431,10 @@ NetLogo 6.1.1
     <metric>count susceptibles</metric>
     <metric>count latents</metric>
     <metric>count infecteds</metric>
+    <metric>count asymptomatics</metric>
     <metric>count removeds</metric>
     <metric>count deads</metric>
+    <metric>count turtles with [shape = "person-outline"]</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="10"/>
     </enumeratedValueSet>
@@ -1442,11 +1444,11 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="imposed-lockdown?">
       <value value="true"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="closed-system?">
-      <value value="true"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="death-stdev">
       <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="recovery-stdev">
       <value value="6.7"/>
@@ -1454,26 +1456,32 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="immunity-mean">
       <value value="365"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="modify-p-infect?">
-      <value value="true"/>
+    <enumeratedValueSet variable="iso-countdown-max">
+      <value value="14"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infections">
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="p-infect-init">
       <value value="30"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="protection-strength">
-      <value value="50"/>
+    <enumeratedValueSet variable="modify-p-infect?">
+      <value value="true"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="asymptomatic-incidence">
+    <enumeratedValueSet variable="protection-strength">
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-threshold">
       <value value="100"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="3"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="travel-strictness">
       <value value="50"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="duration">
-      <value value="3"/>
+    <enumeratedValueSet variable="isolation-strictness">
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-stdev">
       <value value="0.4"/>
@@ -1484,6 +1492,9 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="p-death">
       <value value="2.5"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-infecteds?">
+      <value value="true"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="death-mean">
       <value value="16"/>
     </enumeratedValueSet>
@@ -1492,6 +1503,9 @@ NetLogo 6.1.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="z-contact-min">
       <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mean-iso-reduction">
+      <value value="3"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
