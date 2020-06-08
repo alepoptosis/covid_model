@@ -78,3 +78,5 @@
 
 - Fixed the distribution of isolation duration for infected individuals
 - Set up a test experiment for headless running and distributed processing
+- Renamed infecteds to symptomatics and removeds to recovereds
+- Removed possibility of death for asymptomatic infecteds

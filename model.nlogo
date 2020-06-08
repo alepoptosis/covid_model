@@ -20,11 +20,11 @@ globals [
 ]
 
 breed [susceptibles susceptible]    ;; can be infected
-breed [latents latent]              ;; infectious but still asymptomatic
-breed [infecteds infected]          ;; infectious and symptomatic
+breed [latents latent]              ;; infectious but pre-symptomatic
+breed [symptomatics symptomatic]    ;; infectious and symptomatic
 breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic
-breed [removeds removed]            ;; recovered and immune
-breed [deads dead]                  ;; removed from population
+breed [recovereds recovered]        ;; recovered and immune
+breed [deads dead]                  ;; recovered from population
 
 turtles-own [
   z-contact-init
@@ -42,7 +42,7 @@ latents-own [
   inc-countdown
 ]
 
-infecteds-own [
+symptomatics-own [
   will-die?
   to-remove?
   rec-countdown
@@ -51,13 +51,11 @@ infecteds-own [
 ]
 
 asymptomatics-own [
-  will-die?
   to-remove?
   rec-countdown
-  death-countdown
 ]
 
-removeds-own [
+recovereds-own [
   to-become-susceptible?
   imm-countdown
 ]
@@ -120,15 +118,15 @@ end
 
 to go
   ifelse ticks < (duration * 365)
-  ;  and (count infecteds + count latents) > 0  ;; uncomment to stop simulation when virus stops circulating
+  ;  and (count symptomatics + count latents) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
     count-contacts       ;; update the number of contacts made before with the ones made at this step after lockdown was modified
     expose-susceptibles  ;; turn susceptibles into latents if they had contact with an infected or latent with probability p-infect
-    infect-latents       ;; turn latents into infecteds after inc-countdown ticks
-    remove-infecteds     ;; turn infecteds into removeds or deads after rec-countdown ticks, with p-death probability of becoming deads instead of removeds
-    lose-immunity        ;; turn removeds back into susceptibles after imm-countdown ticks
+    infect-latents       ;; turn latents into symptomatics after inc-countdown ticks
+    remove-infecteds  ;; turn symptomatics into recovereds or deads after rec-countdown ticks, with p-death probability of becoming deads instead of recovereds
+    lose-immunity        ;; turn recovereds back into susceptibles after imm-countdown ticks
     update-breeds        ;; update conditions as necessary
-    modify-lockdown      ;; modify the lockdown depending on the new number of infecteds
+    modify-lockdown      ;; modify the lockdown depending on the new number of symptomatics
     tick                 ;; go to next day
   ] [
     stop
@@ -158,8 +156,8 @@ to count-contacts
   ask susceptibles [
     set SS-tick (SS-tick + ((count other susceptibles in-radius z-contact with [z-contact >= distance myself])))
     set SE-tick (SE-tick + ((count latents in-radius z-contact)))
-    set SI-tick (SI-tick + ((count infecteds in-radius z-contact)))
-    set SR-tick (SR-tick + ((count removeds in-radius z-contact)))
+    set SI-tick (SI-tick + ((count symptomatics in-radius z-contact)))
+    set SR-tick (SR-tick + ((count recovereds in-radius z-contact)))
     set SA-tick (SA-tick + ((count asymptomatics in-radius z-contact)))
 
   ]
@@ -167,21 +165,21 @@ to count-contacts
 
   ask latents [
     set EE-tick (EE-tick + ((count other latents in-radius z-contact with [z-contact >= distance myself])))
-    set EI-tick (EI-tick + ((count infecteds in-radius z-contact)))
-    set ER-tick (ER-tick + ((count removeds in-radius z-contact)))
+    set EI-tick (EI-tick + ((count symptomatics in-radius z-contact)))
+    set ER-tick (ER-tick + ((count recovereds in-radius z-contact)))
     set EA-tick (EA-tick + ((count asymptomatics in-radius z-contact)))
   ]
   set EE-tick (EE-tick / 2)
 
-  ask infecteds [
-    set II-tick (II-tick + (count other infecteds in-radius z-contact with [z-contact >= distance myself]))
-    set IR-tick (IR-tick + (count removeds in-radius z-contact))
+  ask symptomatics [
+    set II-tick (II-tick + (count other symptomatics in-radius z-contact with [z-contact >= distance myself]))
+    set IR-tick (IR-tick + (count recovereds in-radius z-contact))
     set IA-tick (IA-tick + (count asymptomatics in-radius z-contact))
   ]
   set II-tick (II-tick / 2)
 
-  ask removeds [
-    set RR-tick (RR-tick + (count other removeds in-radius z-contact with [z-contact >= distance myself]))
+  ask recovereds [
+    set RR-tick (RR-tick + (count other recovereds in-radius z-contact with [z-contact >= distance myself]))
     set RA-tick (RA-tick + (count asymptomatics in-radius z-contact))
   ]
   set RR-tick (RR-tick / 2)
@@ -221,9 +219,9 @@ to expose-susceptibles
   ask susceptibles [
 
     let infected-contacts (                                                              ;; number of infected contacts is (if the S is in their radius)
-      (count infecteds in-radius z-contact with [z-contact >= distance myself])          ;; the number of actual infecteds plus
+      (count symptomatics in-radius z-contact with [z-contact >= distance myself])          ;; the number of actual symptomatics plus
       + (count latents in-radius z-contact with [z-contact >= distance myself])          ;; that of latents in the susceptible's z-radius
-      + (count asymptomatics in-radius z-contact with [z-contact >= distance myself])    ;; the number of asymptmatic infecteds
+      + (count asymptomatics in-radius z-contact with [z-contact >= distance myself])    ;; the number of asymptmatic symptomatics
     )
 
     if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
@@ -248,9 +246,7 @@ to infect-latents
 end
 
 to remove-infecteds
-  let all-infecteds (turtle-set infecteds asymptomatics)
-
-  ask all-infecteds [
+  ask symptomatics [
     ifelse will-die?
     [
       ifelse death-countdown = 0
@@ -263,10 +259,16 @@ to remove-infecteds
       [set rec-countdown (rec-countdown - 1)]
     ]
   ]
+
+  ask asymptomatics [
+    ifelse rec-countdown = 0
+    [set to-remove? true]
+    [set rec-countdown (rec-countdown - 1)]
+  ]
 end
 
 to lose-immunity
-  ask removeds [
+  ask recovereds [
     ifelse imm-countdown = 0
     [set to-become-susceptible? true]
     [set imm-countdown (imm-countdown - 1)]
@@ -284,24 +286,25 @@ to update-breeds
     [set-breed-infected]
   ]
 
-  let all-infecteds (turtle-set infecteds asymptomatics)
-  ask all-infecteds with [to-remove? = true] [
+  ask symptomatics with [to-remove? = true] [
     ifelse will-die?
     [set-breed-dead]
-    [set-breed-removed]
+    [set-breed-recovered]
   ]
 
-  ask removeds with [to-become-susceptible? = true] [set-breed-susceptible]
+  ask asymptomatics with [to-remove? = true] [set-breed-recovered]
+
+  ask recovereds with [to-become-susceptible? = true] [set-breed-susceptible]
 end
 
 to modify-lockdown
   if imposed-lockdown? [
-    ifelse (count infecteds) > lockdown-threshold
+    ifelse (count symptomatics) > lockdown-threshold
     [start-lockdown]
     [end-lockdown]
   ]
 
-  if isolate-infecteds? and first-lockdown? [isolate-infecteds]
+  if isolate-symptomatics? and first-lockdown? [isolate-symptomatics]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -315,7 +318,7 @@ to set-age
 end
 
 to check-travel
-  if (count infecteds) < lockdown-threshold [                         ;; if people can travel and lockdown is not active
+  if (count symptomatics) < lockdown-threshold [                      ;; if people can travel and lockdown is not active
     let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
     if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
       ask susceptibles-on (n-of 1 patches) [set-breed-latent]
@@ -343,17 +346,22 @@ to set-breed-asymptomatic
   set breed asymptomatics
   set color violet
   set to-remove? false
-  check-death
+  set rec-countdown (normal-dist recovery-mean recovery-stdev)
   check-outline
 end
 
 to set-breed-infected
-  set breed infecteds
+  set breed symptomatics
   set color red
   set to-remove? false
   set-iso-countdown
   check-death
   check-outline
+end
+
+to set-iso-countdown
+  let x (round (random-poisson mean-iso-reduction))
+  set iso-countdown (iso-countdown-max - x)
 end
 
 to check-death
@@ -367,8 +375,8 @@ to check-death
   [set rec-countdown (normal-dist recovery-mean recovery-stdev)]
 end
 
-to set-breed-removed
-  set breed removeds
+to set-breed-recovered
+  set breed recovereds
   set color 8
   set to-become-susceptible? false
   set imm-countdown (poisson-dist immunity-mean)
@@ -416,8 +424,8 @@ to end-lockdown
   ]
 end
 
-to isolate-infecteds
-  ask infecteds [
+to isolate-symptomatics
+  ask symptomatics [
     ifelse iso-countdown <= 0 and not currently-locked?
     [not-isolate]
     [
@@ -427,10 +435,6 @@ to isolate-infecteds
   ]
 end
 
-to set-iso-countdown
-  let x (round (random-poisson mean-iso-reduction))
-  set iso-countdown (iso-countdown-max - x)
-end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;;;;;;;;;
@@ -591,8 +595,8 @@ true
 PENS
 "susceptible" 1.0 0 -10899396 true "" "plot count susceptibles"
 "latents" 1.0 0 -1184463 true "" "plot count latents"
-"infected" 1.0 0 -2674135 true "" "plot count infecteds"
-"removed" 1.0 0 -3026479 true "" "plot count removeds"
+"infected" 1.0 0 -2674135 true "" "plot count symptomatics"
+"recovereds" 1.0 0 -3026479 true "" "plot count recovereds"
 "dead" 1.0 0 -16777216 true "" "plot count deads"
 "lockdown" 1.0 0 -11221820 true "" "plot count turtles with [shape = \"person-outline\"]"
 "asymptomatics" 1.0 0 -8630108 true "" "plot count asymptomatics"
@@ -897,13 +901,13 @@ count latents
 11
 
 MONITOR
-684
-659
-748
-704
-infecteds
-count infecteds
-17
+680
+657
+768
+702
+symptomatics
+count symptomatics
+0
 1
 11
 
@@ -919,21 +923,21 @@ count susceptibles
 11
 
 MONITOR
-761
-659
-828
-704
-removeds
-count removeds
+775
+656
+850
+701
+recovereds
+count recovereds
 0
 1
 11
 
 MONITOR
-843
-660
-900
-705
+857
+657
+914
+702
 deads
 count deads
 0
@@ -941,10 +945,10 @@ count deads
 11
 
 MONITOR
-916
-660
-1009
-705
+930
+657
+1023
+702
 % in lockdown
 (count turtles with [shape = \"person-outline\"]) / \ncount turtles with [not member? self deads] \n* 100
 0
@@ -952,10 +956,10 @@ MONITOR
 11
 
 MONITOR
-1101
-660
-1163
-705
+1115
+657
+1177
+702
 % 30-59
 count turtles with [age = \"30-59\"] /\ncount turtles * 100
 1
@@ -963,10 +967,10 @@ count turtles with [age = \"30-59\"] /\ncount turtles * 100
 11
 
 MONITOR
-1177
-660
-1234
-705
+1191
+657
+1248
+702
 % 60+
 count turtles with [age = \"60+\"] /\ncount turtles * 100
 1
@@ -974,10 +978,10 @@ count turtles with [age = \"60+\"] /\ncount turtles * 100
 11
 
 MONITOR
-1026
-661
-1083
-706
+1040
+658
+1097
+703
 % 0-29
 count turtles with [age = \"0-29\"] /\ncount turtles * 100
 1
@@ -985,10 +989,10 @@ count turtles with [age = \"0-29\"] /\ncount turtles * 100
 11
 
 MONITOR
-1247
-661
-1347
-706
+1261
+658
+1361
+703
 superspreaders
 count turtles with [z-contact-init = (max [z-contact-init] of turtles)]
 0
@@ -1034,7 +1038,7 @@ asym-infections
 asym-infections
 0
 100
-50.0
+80.0
 1.0
 1
 %
@@ -1058,10 +1062,10 @@ HORIZONTAL
 SWITCH
 1204
 600
-1356
+1381
 633
-isolate-infecteds?
-isolate-infecteds?
+isolate-symptomatics?
+isolate-symptomatics?
 0
 1
 -1000
@@ -1075,7 +1079,7 @@ isolation-strictness
 isolation-strictness
 0
 100
-50.0
+100.0
 1
 1
 %

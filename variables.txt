@@ -1,10 +1,10 @@
 ##### NETLOGO COVID-19 MODEL VARIABLES
-##### Globals, Susceptibles, Latents, Asymptomatics, Infecteds, Recovereds
+##### Globals, Susceptibles, Latents, Asymptomatics, symptomatIcs, Recovereds
 
 name                    access  description
 
 age                     ALL     the age range of the person (0-29, 30-59, 60+)
-asym-infections         G       the percentage of asymptomatic infecteds
+asym-infections         G       the percentage of asymptomatic symptomatics
 closed-system?          G       whether outside infections can occur
 currently-locked?       G       whether a lockdown is in progress
 death-countdown         IA      individual death countdown
@@ -18,13 +18,13 @@ imposed-lockdown?       G       whether to simulate gov-imposed lockdown
 inc-countdown           L       individual incubation countdown
 incubation-mean         G       mean of the log-normal dist for incubation
 incubation-stdev        G       stdev of the log-normal dist for incubation
-initial-inf             G       number of infecteds at start of simulation
+initial-inf             G       number of symptomatics at start of simulation
 iso-countdown           I       individual isolation countdown
-iso-countdown-max       G       maximum isolation period for infecteds
-isolate-infecteds?      G       whether infecteds should be asked to isolate
+iso-countdown-max       G       maximum isolation period for symptomatics
+isolate-symptomatics?   G       whether symptomatics should be asked to isolate
 isolation-strictness    G       the percentage of people isolating for max days
 lockdown-strictness     G       likelihood a person will obey lockdown
-lockdown-threshold      G       number of infecteds that triggers lockdown
+lockdown-threshold      G       number of symptomatics that triggers lockdown
 mean-iso-reduction      G       mean of the poisson dist for isolation reduction
 modify-p-infect?        G       whether add control measures after 1st lockdown
 p-death                 G       probability of dying instead of recovering
