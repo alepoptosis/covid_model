@@ -72,3 +72,9 @@
 - Implemented isolation for infected individuals, currently with isolation-strictness % of people isolating for iso-countdown-max days, and the rest isolating for half that time (applies after first lockdown)
 - Changed already-locked? variable to currently-locked? for clarity
 - Integrated asymptomatic infecteds in the model, who behave exactly like infecteds but with no isolation option
+
+## Week 4
+### 8/6
+
+- Fixed the distribution of isolation duration for infected individuals
+- Set up a test experiment for headless running and distributed processing
