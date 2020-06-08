@@ -219,16 +219,21 @@ to expose-susceptibles
   ask susceptibles [
 
     let infected-contacts (                                                              ;; number of infected contacts is (if the S is in their radius)
-      (count symptomatics in-radius z-contact with [z-contact >= distance myself])          ;; the number of actual symptomatics plus
+      (count symptomatics in-radius z-contact with [z-contact >= distance myself])       ;; the number of actual symptomatics plus
       + (count latents in-radius z-contact with [z-contact >= distance myself])          ;; that of latents in the susceptible's z-radius
-      + (count asymptomatics in-radius z-contact with [z-contact >= distance myself])    ;; the number of asymptmatic symptomatics
     )
 
+    let infected-asymptomatics (count asymptomatics in-radius z-contact with [z-contact >= distance myself]) * 0.1
+    if infected-asymptomatics < 1 and infected-asymptomatics != 0
+    [set infected-asymptomatics 1]
+
+    let total-infecteds (infected-contacts + infected-asymptomatics)
+    show total-infecteds
     if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)           ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
     ]
 
-    let infection-prob 1 - ((1 - p-infect) ^ infected-contacts)                        ;; probability of at least one of these contacts causing infection is
+    let infection-prob 1 - ((1 - p-infect) ^ total-infecteds)                          ;; probability of at least one of these contacts causing infection is
                                                                                        ;; 1 - the probability that none of them cause infection
     let p (random 100 + 1)
     if p <= (infection-prob * 100) [set to-become-latent? true]
@@ -823,7 +828,7 @@ SWITCH
 519
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
@@ -844,7 +849,7 @@ SWITCH
 556
 modify-p-infect?
 modify-p-infect?
-0
+1
 1
 -1000
 
@@ -870,7 +875,7 @@ SWITCH
 595
 closed-system?
 closed-system?
-0
+1
 1
 -1000
 
@@ -1038,7 +1043,7 @@ asym-infections
 asym-infections
 0
 100
-80.0
+100.0
 1.0
 1
 %
@@ -1066,7 +1071,7 @@ SWITCH
 633
 isolate-symptomatics?
 isolate-symptomatics?
-0
+1
 1
 -1000
 

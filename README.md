@@ -80,3 +80,4 @@
 - Set up a test experiment for headless running and distributed processing
 - Renamed infecteds to symptomatics and removeds to recovereds
 - Removed possibility of death for asymptomatic infecteds
+- Reduced infectiousness of asymptomatic infecteds by only counting 10% of the actual asymptomatic agents in the contact radius
