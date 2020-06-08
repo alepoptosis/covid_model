@@ -25,6 +25,7 @@ isolate-infecteds?      G       whether infecteds should be asked to isolate
 isolation-strictness    G       the percentage of people isolating for max days
 lockdown-strictness     G       likelihood a person will obey lockdown
 lockdown-threshold      G       number of infecteds that triggers lockdown
+mean-iso-reduction      G       mean of the poisson dist for isolation reduction
 modify-p-infect?        G       whether add control measures after 1st lockdown
 p-death                 G       probability of dying instead of recovering
 p-infect                S       individual transmission probability

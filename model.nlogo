@@ -428,10 +428,8 @@ to isolate-infecteds
 end
 
 to set-iso-countdown
-  let p (random 100 + 1)
-  ifelse p <= isolation-strictness
-  [set iso-countdown iso-countdown-max]
-  [set iso-countdown round (iso-countdown-max / 2)]
+  let x (round (random-poisson mean-iso-reduction))
+  set iso-countdown (iso-countdown-max - x)
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1093,6 +1091,21 @@ count asymptomatics
 0
 1
 11
+
+SLIDER
+297
+381
+483
+414
+mean-iso-reduction
+mean-iso-reduction
+0
+10
+3.0
+1
+1
+days
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
