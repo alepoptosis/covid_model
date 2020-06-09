@@ -862,7 +862,7 @@ protection-strength
 protection-strength
 0
 100
-50.0
+60.0
 1
 1
 %
@@ -888,7 +888,7 @@ travel-strictness
 travel-strictness
 0
 100
-50.0
+40.0
 1
 1
 %
@@ -1043,7 +1043,7 @@ asym-infections
 asym-infections
 0
 100
-49.0
+60.0
 1.0
 1
 %
@@ -1443,6 +1443,7 @@ NetLogo 6.1.1
     <metric>count asymptomatics</metric>
     <metric>count recovereds</metric>
     <metric>count deads</metric>
+    <metric>count turtles with [shape = "person-outline"]</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="10"/>
     </enumeratedValueSet>
@@ -1450,49 +1451,49 @@ NetLogo 6.1.1
       <value value="1.6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="imposed-lockdown?">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="closed-system?">
-      <value value="false"/>
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="death-stdev">
       <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="recovery-stdev">
       <value value="6.7"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolate-symptomatics?">
-      <value value="false"/>
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="immunity-mean">
       <value value="365"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="modify-p-infect?">
-      <value value="false"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="asym-infections">
-      <value value="100"/>
+      <value value="60"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="p-infect-init">
-      <value value="30"/>
+    <enumeratedValueSet variable="modify-p-infect?">
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="iso-countdown-max">
       <value value="14"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="protection-strength">
-      <value value="50"/>
+    <enumeratedValueSet variable="p-infect-init">
+      <value value="30"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="lockdown-threshold">
-      <value value="100"/>
+    <enumeratedValueSet variable="protection-strength">
+      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="duration">
       <value value="3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="travel-strictness">
-      <value value="50"/>
+      <value value="40"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-strictness">
-      <value value="100"/>
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-stdev">
       <value value="0.4"/>
