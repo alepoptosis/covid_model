@@ -81,3 +81,7 @@
 - Renamed infecteds to symptomatics and removeds to recovereds
 - Removed possibility of death for asymptomatic infecteds
 - Reduced infectiousness of asymptomatic infecteds by only counting 10% of the actual asymptomatic agents in the contact radius
+
+### 9/6
+
+- Set up a test0 experiment for testing with Condor cluster
