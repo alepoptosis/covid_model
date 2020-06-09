@@ -12,7 +12,7 @@ death-mean              G       mean of the normal dist for death
 death-stdev             G       stdev of the normal dist for death
 duration                G       length of simulation (years)
 first-lockdown?         G       whether first lockdown occurred
-imm-countdown           R       individual loss of immunity countdown
+imm-countdown           R       c
 immunity-mean           G       mean of the poisson dist for immunity
 imposed-lockdown?       G       whether to simulate gov-imposed lockdown
 inc-countdown           L       individual incubation countdown
@@ -34,7 +34,7 @@ protection-strength     G       strength of measures to reduce transmission
 rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
-to-become-infected?     L       flags a L for symptomatic infection
+to-become-infected?     L       flags a L for beginning of infection
 to-become-latent?       S       flags a S for exposure
 to-become-susceptible?  R       flags a R for loss of immunity
 to-remove               IA      flags an I/A for removal (recovery or death)

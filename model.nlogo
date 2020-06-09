@@ -19,45 +19,45 @@ globals [
   currently-locked?
 ]
 
-breed [susceptibles susceptible]    ;; can be infected
-breed [latents latent]              ;; infectious but pre-symptomatic
-breed [symptomatics symptomatic]    ;; infectious and symptomatic
-breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic
-breed [recovereds recovered]        ;; recovered and immune
-breed [deads dead]                  ;; recovered from population
+breed [susceptibles susceptible]    ;; can be infected (S)
+breed [latents latent]              ;; infectious but pre-symptomatic (L)
+breed [symptomatics symptomatic]    ;; infectious and symptomatic (I)
+breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
+breed [recovereds recovered]        ;; recovered and immune (R)
+breed [deads dead]                  ;; removed from population (D)
 
 turtles-own [
-  z-contact-init
-  z-contact
-  age
+  z-contact-init            ;; base radius of contact neighbourhood
+  z-contact                 ;; individual radius of contact neighbourhood
+  age                       ;; age range of the person (0-29, 30-59, 60+)
 ]
 
 susceptibles-own [
-  to-become-latent?
-  p-infect
+  to-become-latent?         ;; flags a S for exposure
+  p-infect                  ;; individual transmission probability
 ]
 
-latents-own [
-  to-become-infected?
-  inc-countdown
+latents-own [              
+  to-become-infected?       ;; flags a L for beginning of infection
+  inc-countdown             ;; individual incubation countdown
 ]
 
 symptomatics-own [
-  will-die?
-  to-remove?
-  rec-countdown
-  death-countdown
-  iso-countdown
+  will-die?                 ;; whether the infected will die or recover
+  to-remove?                ;; flags an I for removal (recovery or death)
+  rec-countdown             ;; individual recovery countdown
+  death-countdown           ;; individual death countdown
+  iso-countdown             ;; idnividual isolation countdown
 ]
 
 asymptomatics-own [
-  to-remove?
-  rec-countdown
+  to-remove?                ;; flags an A for recovery
+  rec-countdown             ;; individual recovery countdown
 ]
 
 recovereds-own [
-  to-become-susceptible?
-  imm-countdown
+  to-become-susceptible?    ;; flags a R for loss of immunity
+  imm-countdown             ;; individual loss of immunity countdown
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -99,17 +99,17 @@ to setup-turtles
 
   ask patches [
     set pcolor white
-    sprout-susceptibles 1 [
+    sprout-susceptibles 1 [       ;; create a S on each patch
       set breed susceptibles
       set color green
-      set to-become-latent? false
+      set to-become-latent? false ;; set up breed-specific variables
       set p-infect p-infect-init / 100
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
       set-age
     ]
   ]
-
+  ;; randomly infect initial-inf susceptibles
   ask turtles-on (n-of initial-inf patches) [set-breed-infected]
 end
 
@@ -120,14 +120,14 @@ to go
   ifelse ticks < (duration * 365)
   ;  and (count symptomatics + count latents) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
-    count-contacts       ;; update the number of contacts made before with the ones made at this step after lockdown was modified
-    expose-susceptibles  ;; turn susceptibles into latents if they had contact with an infected or latent with probability p-infect
-    infect-latents       ;; turn latents into symptomatics after inc-countdown ticks
-    remove-infecteds  ;; turn symptomatics into recovereds or deads after rec-countdown ticks, with p-death probability of becoming deads instead of recovereds
-    lose-immunity        ;; turn recovereds back into susceptibles after imm-countdown ticks
-    update-breeds        ;; update conditions as necessary
-    modify-lockdown      ;; modify the lockdown depending on the new number of symptomatics
-    tick                 ;; go to next day
+    count-contacts            ;; update the number of contacts made
+    expose-susceptibles       ;; turn S into L if they had contact with an infected (I/A) or L based on p-infect, or if they have travelled
+    infect-latents            ;; turn L into I after inc-countdown ticks
+    remove-infecteds          ;; turn I into R after rec-countdown ticks or D after death-countdown ticks
+    lose-immunity             ;; turn R back into S after imm-countdown ticks
+    update-breeds             ;; update breeds as necessary
+    modify-lockdown           ;; modify the lockdown depending on the new number of S, and isolate S for iso-countdown ticks
+    tick                      ;; go to next day
   ] [
     stop
   ]
@@ -218,27 +218,36 @@ end
 to expose-susceptibles
   ask susceptibles [
 
-    let infected-contacts (                                                              ;; number of infected contacts is (if the S is in their radius)
-      (count symptomatics in-radius z-contact with [z-contact >= distance myself])       ;; the number of actual symptomatics plus
-      + (count latents in-radius z-contact with [z-contact >= distance myself])          ;; that of latents in the susceptible's z-radius
+    ;; the number of infected contacts is the number of S + L in z-contact radius who are not isolating
+    let infected-contacts (
+      (count symptomatics in-radius z-contact with [z-contact >= distance myself])
+      + (count latents in-radius z-contact with [z-contact >= distance myself])
     )
 
+    ;; A are counted separately to account for a lower probability of transmission (10%)
+    ;; if the new number is between 0 and 1 it is set to one as raising a number to a decimal lowers it
     let infected-asymptomatics (count asymptomatics in-radius z-contact with [z-contact >= distance myself]) * 0.1
     if infected-asymptomatics < 1 and infected-asymptomatics != 0
     [set infected-asymptomatics 1]
 
+    ;; total number of infecteds after lowered impact of A
     let total-infecteds (infected-contacts + infected-asymptomatics)
 
-    if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
-      set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)           ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
+    ;; if a lockdown has occurred and the option is on, p-infect is reduced based on protection-strength
+    ;; this represents measures such as the use of masks, 2 meter distancing, etc.
+    if modify-p-infect? and first-lockdown? [                                          
+      set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)
     ]
 
-    let infection-prob 1 - ((1 - p-infect) ^ total-infecteds)                          ;; probability of at least one of these contacts causing infection is
-                                                                                       ;; 1 - the probability that none of them cause infection
+    ;; the probability of at least one contact causing infection is 1 - the probability that none do
+    let infection-prob 1 - ((1 - p-infect) ^ total-infecteds)
+
+    ;; if S fails the check, it is flagged to become L
     let p (random 100 + 1)
     if p <= (infection-prob * 100) [set to-become-latent? true]
   ]
 
+  ;; if the system is open, there is a chance for a S to become L even if their contacts are S
   if not closed-system? [check-travel]  ;; if the system is open, check for exposure from travel
 end
 

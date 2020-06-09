@@ -85,3 +85,4 @@
 ### 9/6
 
 - Set up a test0 experiment for testing with Condor cluster
+- Started commenting model code
