@@ -490,6 +490,13 @@ to-report actual-p-death [#age]
   ]
   report p
 end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;; TEST REPORTERS ;;;;;;;;;;;;;;;;;;;;;
+
+to-report count.lockdown
+  report count turtles with [shape = "person-outline"]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 513
@@ -1434,7 +1441,7 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="test0" repetitions="100" runMetricsEveryStep="true">
+  <experiment name="test0" repetitions="10" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
@@ -1443,7 +1450,7 @@ NetLogo 6.1.1
     <metric>count asymptomatics</metric>
     <metric>count recovereds</metric>
     <metric>count deads</metric>
-    <metric>count turtles with [shape = "person-outline"]</metric>
+    <metric>count.lockdown</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="10"/>
     </enumeratedValueSet>
