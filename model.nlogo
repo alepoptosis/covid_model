@@ -228,7 +228,7 @@ to expose-susceptibles
     [set infected-asymptomatics 1]
 
     let total-infecteds (infected-contacts + infected-asymptomatics)
-    show total-infecteds
+
     if modify-p-infect? and first-lockdown? [                                          ;; if a lockdown has occurred and the option is on
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)           ;; p-infect is reduced depending on the protection strength (e.g. how many people use masks)
     ]
@@ -828,7 +828,7 @@ SWITCH
 519
 imposed-lockdown?
 imposed-lockdown?
-1
+0
 1
 -1000
 
@@ -849,7 +849,7 @@ SWITCH
 556
 modify-p-infect?
 modify-p-infect?
-1
+0
 1
 -1000
 
@@ -1043,7 +1043,7 @@ asym-infections
 asym-infections
 0
 100
-100.0
+49.0
 1.0
 1
 %
@@ -1071,7 +1071,7 @@ SWITCH
 633
 isolate-symptomatics?
 isolate-symptomatics?
-1
+0
 1
 -1000
 
@@ -1084,16 +1084,16 @@ isolation-strictness
 isolation-strictness
 0
 100
-100.0
+50.0
 1
 1
 %
 HORIZONTAL
 
 MONITOR
-672
+681
 709
-761
+770
 754
 asymptomatic
 count asymptomatics
@@ -1434,16 +1434,15 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="test" repetitions="10" runMetricsEveryStep="true">
+  <experiment name="test0" repetitions="100" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
     <metric>count latents</metric>
-    <metric>count infecteds</metric>
+    <metric>count symptomatics</metric>
     <metric>count asymptomatics</metric>
-    <metric>count removeds</metric>
+    <metric>count recovereds</metric>
     <metric>count deads</metric>
-    <metric>count turtles with [shape = "person-outline"]</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="10"/>
     </enumeratedValueSet>
@@ -1451,31 +1450,34 @@ NetLogo 6.1.1
       <value value="1.6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="imposed-lockdown?">
-      <value value="true"/>
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="death-stdev">
       <value value="8.21"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="closed-system?">
-      <value value="true"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="recovery-stdev">
       <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="immunity-mean">
       <value value="365"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="iso-countdown-max">
-      <value value="14"/>
+    <enumeratedValueSet variable="modify-p-infect?">
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="asym-infections">
-      <value value="50"/>
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="p-infect-init">
       <value value="30"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="modify-p-infect?">
-      <value value="true"/>
+    <enumeratedValueSet variable="iso-countdown-max">
+      <value value="14"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="protection-strength">
       <value value="50"/>
@@ -1490,7 +1492,7 @@ NetLogo 6.1.1
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-strictness">
-      <value value="50"/>
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-stdev">
       <value value="0.4"/>
@@ -1501,20 +1503,17 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="p-death">
       <value value="2.5"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="isolate-infecteds?">
-      <value value="true"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="death-mean">
       <value value="16"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="lockdown-strictness">
-      <value value="80"/>
+    <enumeratedValueSet variable="mean-iso-reduction">
+      <value value="3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="z-contact-min">
       <value value="2"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="mean-iso-reduction">
-      <value value="3"/>
+    <enumeratedValueSet variable="lockdown-strictness">
+      <value value="80"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
