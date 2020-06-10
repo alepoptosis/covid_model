@@ -97,20 +97,21 @@ end
 to setup-turtles
   set-default-shape turtles "person"
 
+  ;; creates a susceptible on each patch and initialises first variables
   ask patches [
     set pcolor white
-    sprout-susceptibles 1 [       ;; create a S on each patch
+    sprout-susceptibles 1 [
       set breed susceptibles
       set color green
-      set to-become-latent? false ;; set up breed-specific variables
+      set to-become-latent? false
       set p-infect p-infect-init / 100
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
       set-age
     ]
   ]
-  ;; randomly infect initial-inf susceptibles
-  ask turtles-on (n-of initial-inf patches) [set-breed-infected]
+  ;; randomly infects initial-inf susceptibles
+  ask turtles-on (n-of initial-inf patches) [set-breed-symptomatic]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -120,14 +121,14 @@ to go
   ifelse ticks < (duration * 365)
   ;  and (count symptomatics + count latents) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
-    count-contacts            ;; update the number of contacts made
-    expose-susceptibles       ;; turn S into L if they had contact with an infected (I/A) or L based on p-infect, or if they have travelled
-    infect-latents            ;; turn L into I after inc-countdown ticks
-    remove-infecteds          ;; turn I into R after rec-countdown ticks or D after death-countdown ticks
-    lose-immunity             ;; turn R back into S after imm-countdown ticks
-    update-breeds             ;; update breeds as necessary
-    modify-lockdown           ;; modify the lockdown depending on the new number of S, and isolate S for iso-countdown ticks
-    tick                      ;; go to next day
+    count-contacts            ;; updates the number of contacts made
+    expose-susceptibles       ;; turns S into L if they had contact with an I, A or L based on p-infect, and checks if they have travelled
+    infect-latents            ;; turns L into I after inc-countdown ticks
+    remove-infecteds          ;; turns I into R after rec-countdown ticks or D after death-countdown ticks
+    lose-immunity             ;; turns R back into S after imm-countdown ticks
+    update-breeds             ;; updates breeds as necessary
+    modify-lockdown           ;; modifies the lockdown depending on the new number of S, and isolates S for iso-countdown ticks
+    tick                      ;; goes to next day
   ] [
     stop
   ]
@@ -224,8 +225,8 @@ to expose-susceptibles
       + (count latents in-radius z-contact with [z-contact >= distance myself])
     )
 
-    ;; A are counted separately to account for a lower probability of transmission (10%)
-    ;; if the new number is between 0 and 1 it is set to one as raising a number to a decimal lowers it
+    ;; A are counted separately to account for their lower probability of transmission (currently 10%)
+    ;; if the new number is between 0 and 1 it is set to 1, as raising a number to a decimal lowers it
     let infected-asymptomatics (count asymptomatics in-radius z-contact with [z-contact >= distance myself]) * 0.1
     if infected-asymptomatics < 1 and infected-asymptomatics != 0
     [set infected-asymptomatics 1]
@@ -233,8 +234,8 @@ to expose-susceptibles
     ;; total number of infecteds after lowered impact of A
     let total-infecteds (infected-contacts + infected-asymptomatics)
 
-    ;; if a lockdown has occurred and the option is on, p-infect is reduced based on protection-strength
-    ;; this represents measures such as the use of masks, 2 meter distancing, etc.
+    ;; if a lockdown has already occurred and the option is on, p-infect is reduced based on protection-strength
+    ;; this represents measures such as the use of masks, 2 metre distancing, etc.
     if modify-p-infect? and first-lockdown? [
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)
     ]
@@ -242,16 +243,16 @@ to expose-susceptibles
     ;; the probability of at least one contact causing infection is 1 - the probability that none do
     let infection-prob 1 - ((1 - p-infect) ^ total-infecteds)
 
-    ;; if S fails the check, it is flagged to become L
+    ;; if the S fails the check, it is flagged to become L
     let p (random 100 + 1)
     if p <= (infection-prob * 100) [set to-become-latent? true]
   ]
 
   ;; if the system is open, there is a chance for a S to become L even if their contacts are S
-  if not closed-system? [check-travel]  ;; if the system is open, check for exposure from travel
+  if not closed-system? [check-travel]
 end
 
-to infect-latents
+to infect-latents    ;; infects L that have reached the end of their incubation countdown
   ask latents [
     ifelse inc-countdown = 0
     [set to-become-infected? true]
@@ -259,8 +260,8 @@ to infect-latents
   ]
 end
 
-to remove-infecteds
-  ask symptomatics [
+to remove-infecteds      ;; removes infecteds that have reached the end of their countdown
+  ask symptomatics [     ;; for symptomatics (I), this is either the death or recovery countdown
     ifelse will-die?
     [
       ifelse death-countdown = 0
@@ -274,14 +275,14 @@ to remove-infecteds
     ]
   ]
 
-  ask asymptomatics [
+  ask asymptomatics [    ;; for asymptomatics (A), it can only be the recovery countdown
     ifelse rec-countdown = 0
     [set to-remove? true]
     [set rec-countdown (rec-countdown - 1)]
   ]
 end
 
-to lose-immunity
+to lose-immunity    ;; makes susceptible the R that have reached the end of their immunity period
   ask recovereds [
     ifelse imm-countdown = 0
     [set to-become-susceptible? true]
@@ -295,13 +296,13 @@ to update-breeds
 
   ask latents with [to-become-infected? = true] [
     let p (random 100 + 1)
-    ifelse p <= asym-infections
+    ifelse p <= asym-infections    ;; decides whether the infection will be symptomatic or asymptomatic
     [set-breed-asymptomatic]
-    [set-breed-infected]
+    [set-breed-symptomatic]
   ]
 
   ask symptomatics with [to-remove? = true] [
-    ifelse will-die?
+    ifelse will-die?               ;; decides whether the symptomatic infected will die or recover
     [set-breed-dead]
     [set-breed-recovered]
   ]
@@ -318,11 +319,14 @@ to modify-lockdown
     [end-lockdown]
   ]
 
+  ;; if a lockdown has already occurred and the option is on, isolates S with probability isolation-strictness
   if isolate-symptomatics? and first-lockdown? [isolate-symptomatics]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;; OTHER PROCEDURES ;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;; SUPPORTING PROCEDURES ;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;; SETUP SUPPORT ;;;;;;;;;;;;;;;;;;;;;
 
 to set-age
   let p (random 100) + 1
@@ -331,14 +335,18 @@ to set-age
   if p > 77 [set age "60+"]                   ;; 23% (60+)
 end
 
+;;;;;;;;;;;;;;;;;;; GO SUPPORT ;;;;;;;;;;;;;;;;;;;;;;
+
 to check-travel
-  if (count symptomatics) < lockdown-threshold [                      ;; if people can travel and lockdown is not active
-    let p (random 100 + 1)                                            ;; one person gets randomly infected per tick depending on travel strictness
-    if p >= (travel-strictness) [                                     ;; 1% chance if 100% strictness, 100% chance if 0% strictness
+  if (count symptomatics) < lockdown-threshold [              ;; if people can travel and lockdown is not active
+    let p (random 100 + 1)                                    ;; one person gets randomly infected per tick depending on travel strictness
+    if p >= (travel-strictness) [                             ;; 1% chance if 100% strictness, 100% chance if 0% strictness
       ask susceptibles-on (n-of 1 patches) [set-breed-latent]
     ]
   ]
 end
+
+;; change a turtle's breed and set associated variables
 
 to set-breed-susceptible
   set breed susceptibles
@@ -364,29 +372,13 @@ to set-breed-asymptomatic
   check-outline
 end
 
-to set-breed-infected
+to set-breed-symptomatic    ;; also used in setup-turtles
   set breed symptomatics
   set color red
   set to-remove? false
-  set-iso-countdown
+  set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
   check-death
   check-outline
-end
-
-to set-iso-countdown
-  let x (round (random-poisson mean-iso-reduction))
-  set iso-countdown (iso-countdown-max - x)
-end
-
-to check-death
-  let p (random 100 + 1)
-  let p-death-here (actual-p-death age)
-  ifelse (p <= p-death-here)
-  [set will-die? true]
-  [set will-die? false]
-  ifelse will-die?
-  [set death-countdown (normal-dist death-mean death-stdev)]
-  [set rec-countdown (normal-dist recovery-mean recovery-stdev)]
 end
 
 to set-breed-recovered
@@ -402,91 +394,112 @@ to set-breed-dead
   set color black
 end
 
-to check-outline
+to start-lockdown                                         ;; triggers possibility of self-isolation for non-dead agents
+  let alives turtles with [not member? self deads]        ;; groups non-dead turtles
+  if not currently-locked? [                              ;; if the lockdown was not on in the previous tick
+    ask alives [
+      let p (random 100 + 1)                              ;; checks whether the agent will isolate
+      if p <= (lockdown-strictness) [isolate]             ;; if yes, z-contact is set to 0
+      set currently-locked? true                          ;; lockdown is flagged as currently happening
+      set first-lockdown? true                            ;; and the first lockdown is flagged as occurred
+    ]                                                     ;; otherwise, the turtle maintains z-contact-init
+  ]
+end
+
+to end-lockdown                                           ;; end lockdown by returning all alive turtles to initial z-contact
+  let alives turtles with [not member? self deads]        ;; groups non-dead turtles
+  if currently-locked? [                                  ;; if lockdown is currently happening
+    ask alives [not-isolate]                              ;; set z-contact to z-contact init for all alive turtles
+    set currently-locked? false                           ;; and flag lockdown as not currently happening
+  ]
+end
+
+to isolate-symptomatics
+  ask symptomatics [                                      ;; for each symptomatic
+    ifelse iso-countdown <= 0                             ;; if their isolation period is over
+    [
+      ifelse currently-locked?                            ;; but the lockdown is still on
+      [isolate]                                           ;; keep isolating
+      [not-isolate]                                       ;; otherwise, return to initial z-contact
+    ]                                                     ;; (note: not sure if this could be done simply as "if not currently-locked? [not-isolate]")
+    [                                                     ;; if the isolation period is not over
+      isolate                                             ;; keep isolating
+      set iso-countdown (iso-countdown - 1)               ;; and lower countdown by 1 day
+    ]
+  ]
+end
+
+to check-outline    ;; ensures turtles maintain correct shape when changing breed
   ifelse z-contact = 0
   [set shape "person-outline"]
   [set shape "person"]
 end
 
-to isolate
+to check-death                          ;; checks whether an infected will die or recover and assigns correct countdown
+  let p (random 100 + 1)
+  let p-death-here (actual-p-death age)
+  ifelse (p <= p-death-here)
+  [set will-die? true]                  ;; if agent fails the check, it's flagged as will-die
+  [set will-die? false]
+  ifelse will-die?                      ;; those that will die receive a death countdown, others receive a recovery one
+  [set death-countdown
+    (normal-dist death-mean death-stdev)]
+  [set rec-countdown
+    (normal-dist recovery-mean recovery-stdev)]
+end
+
+to isolate        ;; sets z-contact and shape for self-isolation
   set z-contact 0
   set shape "person-outline"
 end
 
-to not-isolate
+to not-isolate    ;; returns turtle to default z-contact and shape
   set z-contact z-contact-init
   set shape "person"
 end
 
-to start-lockdown
-  let alives turtles with [not member? self deads]
-  if not currently-locked? [
-    ask alives [
-      let p (random 100 + 1)
-      if p <= (lockdown-strictness) [isolate]
-      set currently-locked? true
-      set first-lockdown? true
-    ]
-  ]
-end
-
-to end-lockdown
-  let alives turtles with [not member? self deads]
-  if currently-locked? [
-    ask alives [not-isolate]
-    set currently-locked? false
-  ]
-end
-
-to isolate-symptomatics
-  ask symptomatics [
-    ifelse iso-countdown <= 0 and not currently-locked?
-    [not-isolate]
-    [
-      isolate
-      set iso-countdown (iso-countdown - 1)
-    ]
-  ]
-end
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;;;;;;;;;
 
-to-report log-normal [#mu #sigma]
-  ;  let z (random-normal #mu #sigma)                 ;; this was for the original formula I thought was correct
+to-report log-normal [#mu #sigma]                     ;; reports value from a log-normal distribution with mean #mu and stdev #sigma
+  ;  let z (random-normal #mu #sigma)                 ;; this was the original formula I thought was correct
   ;  let x (exp (#mu + (#sigma * z)))                 ;; but only works if mean and stdev are of the normal dist
-  report round (exp random-normal #mu #sigma)
+  report round (exp random-normal #mu #sigma)         ;; this works if the mean and stdev are of the log-normal dist (comment as needed)
 end
 
-to-report normal-dist [#mu #sigma]
-  let x round (random-normal #mu #sigma)
-  let min_days (precision (#mu - #sigma) 0)
-  ifelse x > min_days
-  [report round x]
-  [
-    ifelse min_days > 0
-    [report min_days]
-    [report 1]
+to-report normal-dist [#mu #sigma]                    ;; reports value from a normal distribution with mean #mu and stdev #sigma
+  let x round (random-normal #mu #sigma)              ;; draw a value x from the normal distribution
+  let min_days (precision (#mu - #sigma) 0)           ;; let the minimum number be mean - stdev
+  ifelse x > min_days                                 ;; if the resulting value is above the minimum
+  [report round x]                                    ;; then it can be reported
+  [                                                   ;; otherwise, if it's below the minimum
+    ifelse min_days > 0                               ;; and the minimum is positive (i.e. valid)
+    [report min_days]                                 ;; the value reported is the minimum
+    [report 1]                                        ;; otherwise, if the minimum happens to be negative, 1 is reported
   ]
 end
 
-to-report poisson-dist [#mu]
+to-report poisson-dist [#mu]                          ;; reports value from a poisson distribution with mean #mu
   report round (random-poisson #mu)
 end
 
-to-report pareto-dist [#min #alpha]
+to-report rev-poisson [#maxv #meanr]                  ;; reports value from a sort of "reverse" poisson distribution
+  let x (round (random-poisson #meanr))               ;; where #maxv is the maximum value that we want the value to be
+  report (#maxv - x)                                  ;; and x is derived from a poisson dist with mean #meanr ("mean reduction")
+end
+
+to-report pareto-dist [#min #alpha]                   ;; reports value from a pareto distribution with minimum #min and shape #alpha
   let x (random 100 + 1)
   let num (#alpha * (#min ^ #alpha))
   let den (x ^ (#alpha + 1))
   report round ((num / den) + #min)
 ;  let y round (num / den)                            ;; version with true minimum instead of plus minimum
-;  ifelse y < #min
-;  [report #min]
+;  ifelse y < #min                                    ;; as the version above always sums the minimum to all results
+;  [report #min]                                      ;; while this simply reports the minimum if the results falls under it
 ;  [report y]
 end
 
-to-report actual-p-death [#age]
+to-report actual-p-death [#age]                       ;; returns probability of death adjusted for age range
   let p 0
   if #age = "0-29" [
     set p (p-death * 0.6) / (100 - p-death + (p-death * 0.6)) * 100
@@ -500,10 +513,7 @@ to-report actual-p-death [#age]
   report p
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;; TEST REPORTERS ;;;;;;;;;;;;;;;;;;;;;
-
-to-report count.lockdown
+to-report count.lockdown    ;; reporter for experiments
   report count turtles with [shape = "person-outline"]
 end
 @#$#@#$#@
