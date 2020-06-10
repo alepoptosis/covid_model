@@ -86,3 +86,7 @@
 
 - Set up a test0 experiment for testing with Condor cluster
 - Started commenting model code
+
+### 10/6
+
+- Set up tests for different world sizes
