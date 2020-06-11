@@ -96,3 +96,4 @@
 ### 11/6
 
 - Decoupled the lockdown and control measures options, so that each can be switched on independently from the other
+- Added a number of contacts variable to report during tests

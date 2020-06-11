@@ -17,6 +17,7 @@ globals [
 
   first-lockdown?
   currently-locked?
+  num-contacts
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
@@ -190,8 +191,7 @@ to count-contacts
   ]
   set AA-tick (AA-tick / 2)
 
-  set-current-plot "num-contacts"
-  plot (
+  set num-contacts (
     SS-tick + SE-tick + SI-tick + SR-tick + SA-tick +
     EE-tick + EI-tick + ER-tick + EA-tick +
     II-tick + IR-tick + IA-tick +
@@ -668,7 +668,7 @@ PLOT
 35
 1438
 277
-num-contacts
+contacts
 NIL
 NIL
 0.0
@@ -679,7 +679,7 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" ""
+"contacts" 1.0 0 -16777216 true "" "plot num-contacts"
 
 TEXTBOX
 62
@@ -1461,7 +1461,7 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="test0" repetitions="10" runMetricsEveryStep="true">
+  <experiment name="test0" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
@@ -1471,6 +1471,7 @@ NetLogo 6.1.1
     <metric>count recovereds</metric>
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
+    <metric>num-contacts</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="10"/>
     </enumeratedValueSet>
@@ -1566,6 +1567,7 @@ NetLogo 6.1.1
     <metric>count recovereds</metric>
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
+    <metric>num-contacts</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="40"/>
     </enumeratedValueSet>
@@ -1661,6 +1663,7 @@ NetLogo 6.1.1
     <metric>count recovereds</metric>
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
+    <metric>num-contacts</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="1000"/>
     </enumeratedValueSet>

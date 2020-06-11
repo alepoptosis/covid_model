@@ -43,3 +43,4 @@ will-die?               IA      whether the infected will die or recover
 z-contact               ALL     individual radius of contact neighbourhood
 z-contact-init          ALL     base radius of contact neighbourhood
 z-contact-min           G       the minimum radius of contact neighbourhoods
+num-contacts            G       the number of contacts occurring at that tick
