@@ -1566,7 +1566,7 @@ NetLogo 6.1.1
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
     <enumeratedValueSet variable="initial-inf">
-      <value value="10"/>
+      <value value="40"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-mean">
       <value value="1.6"/>
@@ -1611,7 +1611,7 @@ NetLogo 6.1.1
       <value value="40"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-threshold">
-      <value value="100"/>
+      <value value="400"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-strictness">
       <value value="50"/>
@@ -1661,7 +1661,7 @@ NetLogo 6.1.1
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
     <enumeratedValueSet variable="initial-inf">
-      <value value="10"/>
+      <value value="1000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-mean">
       <value value="1.6"/>
@@ -1706,7 +1706,7 @@ NetLogo 6.1.1
       <value value="40"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-threshold">
-      <value value="100"/>
+      <value value="10000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-strictness">
       <value value="50"/>
