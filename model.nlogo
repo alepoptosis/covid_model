@@ -234,9 +234,10 @@ to expose-susceptibles
     ;; total number of infecteds after lowered impact of A
     let total-infecteds (infected-contacts + infected-asymptomatics)
 
-    ;; if a lockdown has already occurred and the option is on, p-infect is reduced based on protection-strength
-    ;; this represents measures such as the use of masks, 2 metre distancing, etc.
-    if modify-p-infect? and first-lockdown? [
+    ;; if the option is on and the first lockdown has happened,
+    ;; or, if lockdowns are not happening, the number of infecteds is past the threshold
+    ;; lower probability of transmissions through measures such as the use of masks, 2 metre distancing, etc.
+    if modify-p-infect? and (first-lockdown? or (count symptomatics) > lockdown-threshold) [
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)
     ]
 
