@@ -97,3 +97,8 @@
 
 - Decoupled the lockdown and control measures options, so that each can be switched on independently from the other
 - Added a number of contacts variable to report during tests
+
+### 12/6
+
+- Added reporters for age of deads to use in tests
+- Edited tests to find an ideal world size between 100x100 and 500x500

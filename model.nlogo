@@ -514,8 +514,23 @@ to-report actual-p-death [#age]                       ;; returns probability of 
   report p
 end
 
-to-report count.lockdown    ;; reporter for experiments
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;; EXPERIMENT REPORTERS ;;;;;;;;;;;;;;;;
+
+to-report count.lockdown
   report count turtles with [shape = "person-outline"]
+end
+
+to-report dead-0-29
+  report count deads with [age = "0-29"]
+end
+
+to-report dead-30-59
+  report count deads with [age = "30-59"]
+end
+
+to-report dead-60+
+  report count deads with [age = "60+"]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -1461,7 +1476,7 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="test0" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="test0" repetitions="10" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
@@ -1472,6 +1487,9 @@ NetLogo 6.1.1
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
     <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="10"/>
     </enumeratedValueSet>
@@ -1551,10 +1569,10 @@ NetLogo 6.1.1
       <value value="0"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pxcor">
-      <value value="49"/>
+      <value value="199"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pycor">
-      <value value="49"/>
+      <value value="199"/>
     </enumeratedValueSet>
   </experiment>
   <experiment name="test1" repetitions="10" runMetricsEveryStep="true">
@@ -1568,6 +1586,9 @@ NetLogo 6.1.1
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
     <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="40"/>
     </enumeratedValueSet>
@@ -1647,10 +1668,10 @@ NetLogo 6.1.1
       <value value="0"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pxcor">
-      <value value="99"/>
+      <value value="299"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pycor">
-      <value value="99"/>
+      <value value="299"/>
     </enumeratedValueSet>
   </experiment>
   <experiment name="test2" repetitions="10" runMetricsEveryStep="true">
@@ -1664,6 +1685,9 @@ NetLogo 6.1.1
     <metric>count deads</metric>
     <metric>count.lockdown</metric>
     <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
     <enumeratedValueSet variable="initial-inf">
       <value value="1000"/>
     </enumeratedValueSet>
@@ -1743,10 +1767,10 @@ NetLogo 6.1.1
       <value value="0"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pxcor">
-      <value value="499"/>
+      <value value="399"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pycor">
-      <value value="499"/>
+      <value value="399"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
