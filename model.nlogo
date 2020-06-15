@@ -1496,7 +1496,7 @@ NetLogo 6.1.1
     <metric>dead-30-59</metric>
     <metric>dead-60+</metric>
     <enumeratedValueSet variable="initial-inf">
-      <value value="10"/>
+      <value value="0.4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-mean">
       <value value="1.6"/>
@@ -1541,7 +1541,7 @@ NetLogo 6.1.1
       <value value="40"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-threshold">
-      <value value="100"/>
+      <value value="4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-strictness">
       <value value="50"/>
@@ -1595,7 +1595,7 @@ NetLogo 6.1.1
     <metric>dead-30-59</metric>
     <metric>dead-60+</metric>
     <enumeratedValueSet variable="initial-inf">
-      <value value="40"/>
+      <value value="0.4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-mean">
       <value value="1.6"/>
@@ -1640,7 +1640,7 @@ NetLogo 6.1.1
       <value value="40"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-threshold">
-      <value value="400"/>
+      <value value="4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-strictness">
       <value value="50"/>
@@ -1694,7 +1694,7 @@ NetLogo 6.1.1
     <metric>dead-30-59</metric>
     <metric>dead-60+</metric>
     <enumeratedValueSet variable="initial-inf">
-      <value value="1000"/>
+      <value value="0.4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="incubation-mean">
       <value value="1.6"/>
@@ -1739,7 +1739,7 @@ NetLogo 6.1.1
       <value value="40"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-threshold">
-      <value value="10000"/>
+      <value value="4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-strictness">
       <value value="50"/>
