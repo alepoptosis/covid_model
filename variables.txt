@@ -24,12 +24,15 @@ iso-countdown-max       G       maximum isolation period for symptomatics
 isolate-symptomatics?   G       whether symptomatics should be asked to isolate
 isolation-strictness    G       the percentage of people isolating for max days
 lockdown-strictness     G       likelihood a person will obey lockdown
-lockdown-threshold      G       number of symptomatics that triggers lockdown
+lockdown-threshold      G       percentage of symptomatics to trigger lockdown
+lockdown-threshold-num  G       number of symptomatics to trigger lockdown
 mean-iso-reduction      G       mean of the poisson dist for isolation reduction
 modify-p-infect?        G       whether add control measures after 1st lockdown
+num-contacts            G       the number of contacts occurring at that tick
 p-death                 G       probability of dying instead of recovering
 p-infect                S       individual transmission probability
 p-infect-init           G       base transmission probability
+pop-size                G       the number of agents in the simulation
 protection-strength     G       strength of measures to reduce transmission
 rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
@@ -43,4 +46,3 @@ will-die?               IA      whether the infected will die or recover
 z-contact               ALL     individual radius of contact neighbourhood
 z-contact-init          ALL     base radius of contact neighbourhood
 z-contact-min           G       the minimum radius of contact neighbourhoods
-num-contacts            G       the number of contacts occurring at that tick

@@ -18,6 +18,8 @@ globals [
   first-lockdown?
   currently-locked?
   num-contacts
+  pop-size
+  lockdown-threshold-num
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
@@ -66,13 +68,35 @@ recovereds-own [
 
 to setup
   clear-all
-  setup-globals
   setup-turtles
+  setup-globals
   reset-ticks
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;; SETUP PROCEDURES ;;;;;;;;;;;;;;;;;
+
+to setup-turtles
+  set-default-shape turtles "person"
+
+  ;; creates a susceptible on each patch and initialises first variables
+  ask patches [
+    set pcolor white
+    sprout-susceptibles 1 [
+      set breed susceptibles
+      set color green
+      set to-become-latent? false
+      set p-infect p-infect-init / 100
+      set z-contact-init (pareto-dist z-contact-min 2)
+      set z-contact z-contact-init
+      set-age
+    ]
+  ]
+  ;; randomly infects initial-inf susceptibles
+  set pop-size (count susceptibles)
+  let to-infect round (initial-inf * pop-size / 100)
+  ask turtles-on (n-of to-infect patches) [set-breed-symptomatic]
+end
 
 to setup-globals
   set SS-contacts 0
@@ -93,26 +117,7 @@ to setup-globals
 
   set first-lockdown? false
   set currently-locked? false
-end
-
-to setup-turtles
-  set-default-shape turtles "person"
-
-  ;; creates a susceptible on each patch and initialises first variables
-  ask patches [
-    set pcolor white
-    sprout-susceptibles 1 [
-      set breed susceptibles
-      set color green
-      set to-become-latent? false
-      set p-infect p-infect-init / 100
-      set z-contact-init (pareto-dist z-contact-min 2)
-      set z-contact z-contact-init
-      set-age
-    ]
-  ]
-  ;; randomly infects initial-inf susceptibles
-  ask turtles-on (n-of initial-inf patches) [set-breed-symptomatic]
+  set lockdown-threshold-num round (lockdown-threshold * pop-size / 100)
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -237,7 +242,7 @@ to expose-susceptibles
     ;; if the option is on and the first lockdown has happened,
     ;; or, if lockdowns are not happening, the number of infecteds is past the threshold
     ;; lower probability of transmissions through measures such as the use of masks, 2 metre distancing, etc.
-    if modify-p-infect? and (first-lockdown? or (count symptomatics) > lockdown-threshold) [
+    if modify-p-infect? and (first-lockdown? or (count symptomatics) > lockdown-threshold-num) [
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)
     ]
 
@@ -315,7 +320,7 @@ end
 
 to modify-lockdown
   if imposed-lockdown? [
-    ifelse (count symptomatics) > lockdown-threshold
+    ifelse (count symptomatics) > lockdown-threshold-num
     [start-lockdown]
     [end-lockdown]
   ]
@@ -339,7 +344,7 @@ end
 ;;;;;;;;;;;;;;;;;;; GO SUPPORT ;;;;;;;;;;;;;;;;;;;;;;
 
 to check-travel
-  if (count symptomatics) < lockdown-threshold [              ;; if people can travel and lockdown is not active
+  if (count symptomatics) < lockdown-threshold-num [              ;; if people can travel and lockdown is not active
     let p (random 100 + 1)                                    ;; one person gets randomly infected per tick depending on travel strictness
     if p >= (travel-strictness) [                             ;; 1% chance if 100% strictness, 100% chance if 0% strictness
       ask susceptibles-on (n-of 1 patches) [set-breed-latent]
@@ -618,10 +623,10 @@ initial-inf
 initial-inf
 0
 100
-10.0
+0.4
+1.00
 1
-1
-NIL
+%
 HORIZONTAL
 
 PLOT
@@ -851,16 +856,16 @@ countdowns
 SLIDER
 15
 228
-240
+256
 261
 lockdown-threshold
 lockdown-threshold
 0
-10000
-100.0
 100
+4.0
+1.00
 1
-infecteds
+% infecteds
 HORIZONTAL
 
 SWITCH

@@ -102,3 +102,8 @@
 
 - Added reporters for age of deads to use in tests
 - Edited tests to find an ideal world size between 100x100 and 500x500
+
+## Week 5
+### 15/6
+
+- Changed initial-inf and lockdown-threshold from absolute values to population percentages to help scaling during world size tests
