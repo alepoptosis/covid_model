@@ -6,13 +6,16 @@ name                    access  description
 age                     ALL     the age range of the person (0-29, 30-59, 60+)
 asym-infections         G       the percentage of asymptomatic symptomatics
 closed-system?          G       whether outside infections can occur
+control-measures?       G       whether add control measures after 1st lockdown
+control-threshold       G       percentage of symptomatics to trigger mask use
+control-threshold-num   G       number of symptomatics to trigger mask use
 currently-locked?       G       whether a lockdown is in progress
 death-countdown         IA      individual death countdown
 death-mean              G       mean of the normal dist for death
 death-stdev             G       stdev of the normal dist for death
 duration                G       length of simulation (years)
 first-lockdown?         G       whether first lockdown occurred
-imm-countdown           R       c
+imm-countdown           R       individual immunity period
 immunity-mean           G       mean of the poisson dist for immunity
 imposed-lockdown?       G       whether to simulate gov-imposed lockdown
 inc-countdown           L       individual incubation countdown
@@ -22,12 +25,13 @@ initial-inf             G       number of symptomatics at start of simulation
 iso-countdown           I       individual isolation countdown
 iso-countdown-max       G       maximum isolation period for symptomatics
 isolate-symptomatics?   G       whether symptomatics should be asked to isolate
+isolate-threshold       G       percentage of symptomatics to trigger isolation
+isolate-threshold-num   G       number of symptomatics to trigger isolation
 isolation-strictness    G       the percentage of people isolating for max days
 lockdown-strictness     G       likelihood a person will obey lockdown
 lockdown-threshold      G       percentage of symptomatics to trigger lockdown
 lockdown-threshold-num  G       number of symptomatics to trigger lockdown
 mean-iso-reduction      G       mean of the poisson dist for isolation reduction
-modify-p-infect?        G       whether add control measures after 1st lockdown
 num-contacts            G       the number of contacts occurring at that tick
 p-death                 G       probability of dying instead of recovering
 p-infect                S       individual transmission probability
@@ -37,6 +41,7 @@ protection-strength     G       strength of measures to reduce transmission
 rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
+start-isolation?        G       whether isolation of symptomatics should start
 to-become-infected?     L       flags a L for beginning of infection
 to-become-latent?       S       flags a S for exposure
 to-become-susceptible?  R       flags a R for loss of immunity

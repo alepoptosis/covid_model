@@ -17,9 +17,12 @@ globals [
 
   first-lockdown?
   currently-locked?
+  start-isolation?
   num-contacts
   pop-size
   lockdown-threshold-num
+  control-threshold-num
+  isolate-threshold-num
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
@@ -117,7 +120,10 @@ to setup-globals
 
   set first-lockdown? false
   set currently-locked? false
-  set lockdown-threshold-num round (lockdown-threshold * pop-size / 100)
+  set start-isolation? false
+  set lockdown-threshold-num (absolute-threshold lockdown-threshold)
+  set control-threshold-num (absolute-threshold control-threshold)
+  set isolate-threshold-num (absolute-threshold isolate-threshold)
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -242,7 +248,7 @@ to expose-susceptibles
     ;; if the option is on and the first lockdown has happened,
     ;; or, if lockdowns are not happening, the number of infecteds is past the threshold
     ;; lower probability of transmissions through measures such as the use of masks, 2 metre distancing, etc.
-    if modify-p-infect? and (first-lockdown? or (count symptomatics) > lockdown-threshold-num) [
+    if control-measures? and (first-lockdown? or (count symptomatics) > control-threshold-num) [
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)
     ]
 
@@ -326,7 +332,10 @@ to modify-lockdown
   ]
 
   ;; if a lockdown has already occurred and the option is on, isolates S with probability isolation-strictness
-  if isolate-symptomatics? and first-lockdown? [isolate-symptomatics]
+  if not start-isolation? and count symptomatics > isolate-threshold-num
+  [set start-isolation? true]
+
+  if isolate-symptomatics? and start-isolation? [isolate-symptomatics]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -414,7 +423,7 @@ end
 
 to end-lockdown                                           ;; end lockdown by returning all alive turtles to initial z-contact
   let alives turtles with [not member? self deads]        ;; groups non-dead turtles
-  if currently-locked? [                                  ;; if lockdown is currently happening
+  if currently-locked? [                                  ;; if lockdown was on in the previous tick
     ask alives [not-isolate]                              ;; set z-contact to z-contact init for all alive turtles
     set currently-locked? false                           ;; and flag lockdown as not currently happening
   ]
@@ -517,6 +526,10 @@ to-report actual-p-death [#age]                       ;; returns probability of 
     set p (p-death * 5.1) / (100 - p-death + (p-death * 5.1)) * 100
   ]
   report p
+end
+
+to-report absolute-threshold [#per]
+  report round (#per * pop-size / 100)
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -630,10 +643,10 @@ initial-inf
 HORIZONTAL
 
 PLOT
-19
-447
-462
-747
+40
+510
+448
+714
 Simulation populations
 NIL
 NIL
@@ -669,10 +682,10 @@ radius
 HORIZONTAL
 
 SLIDER
-15
-271
-217
-304
+16
+344
+218
+377
 lockdown-strictness
 lockdown-strictness
 0
@@ -892,19 +905,19 @@ lockdown parameters
 SWITCH
 1204
 523
-1350
+1361
 556
-modify-p-infect?
-modify-p-infect?
+control-measures?
+control-measures?
 0
 1
 -1000
 
 SLIDER
-14
-311
-222
-344
+15
+384
+223
+417
 protection-strength
 protection-strength
 0
@@ -916,10 +929,10 @@ protection-strength
 HORIZONTAL
 
 SWITCH
-1204
-562
-1344
-595
+1205
+602
+1345
+635
 closed-system?
 closed-system?
 1
@@ -927,10 +940,10 @@ closed-system?
 -1000
 
 SLIDER
-15
-352
-199
-385
+16
+425
+200
+458
 travel-strictness
 travel-strictness
 0
@@ -1113,9 +1126,9 @@ HORIZONTAL
 
 SWITCH
 1204
-600
+563
 1381
-633
+596
 isolate-symptomatics?
 isolate-symptomatics?
 0
@@ -1123,10 +1136,10 @@ isolate-symptomatics?
 -1000
 
 SLIDER
-15
-393
-187
-426
+16
+466
+188
+499
 isolation-strictness
 isolation-strictness
 0
@@ -1157,10 +1170,40 @@ mean-iso-reduction
 mean-iso-reduction
 0
 10
-3.0
+1.0
 1
 1
 days
+HORIZONTAL
+
+SLIDER
+16
+306
+228
+339
+isolate-threshold
+isolate-threshold
+0
+100
+4.0
+1.00
+1
+% infecteds
+HORIZONTAL
+
+SLIDER
+15
+269
+230
+302
+control-threshold
+control-threshold
+0
+100
+4.0
+1.00
+1
+% infecteds
 HORIZONTAL
 
 @#$#@#$#@
