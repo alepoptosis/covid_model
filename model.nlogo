@@ -1553,20 +1553,23 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="closed-system?">
       <value value="false"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="recovery-stdev">
       <value value="6.7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="isolate-symptomatics?">
-      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="immunity-mean">
       <value value="365"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="asym-infections">
       <value value="60"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="modify-p-infect?">
-      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="iso-countdown-max">
       <value value="14"/>
@@ -1602,13 +1605,16 @@ NetLogo 6.1.1
       <value value="16"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="mean-iso-reduction">
-      <value value="3"/>
+      <value value="1"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="z-contact-min">
-      <value value="2"/>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-strictness">
       <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="min-pxcor">
       <value value="0"/>
@@ -1652,20 +1658,23 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="closed-system?">
       <value value="false"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="recovery-stdev">
       <value value="6.7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="isolate-symptomatics?">
-      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="immunity-mean">
       <value value="365"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="asym-infections">
       <value value="60"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="modify-p-infect?">
-      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="iso-countdown-max">
       <value value="14"/>
@@ -1701,13 +1710,16 @@ NetLogo 6.1.1
       <value value="16"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="mean-iso-reduction">
-      <value value="3"/>
+      <value value="1"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="z-contact-min">
-      <value value="2"/>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-strictness">
       <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="min-pxcor">
       <value value="0"/>
@@ -1751,20 +1763,23 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="closed-system?">
       <value value="false"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="recovery-stdev">
       <value value="6.7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="isolate-symptomatics?">
-      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="immunity-mean">
       <value value="365"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="asym-infections">
       <value value="60"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="modify-p-infect?">
-      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="iso-countdown-max">
       <value value="14"/>
@@ -1800,13 +1815,16 @@ NetLogo 6.1.1
       <value value="16"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="mean-iso-reduction">
-      <value value="3"/>
+      <value value="1"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="z-contact-min">
-      <value value="2"/>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-strictness">
       <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="min-pxcor">
       <value value="0"/>
