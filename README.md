@@ -107,3 +107,4 @@
 ### 15/6
 
 - Changed initial-inf and lockdown-threshold from absolute values to population percentages to help scaling during world size tests
+- Changed initial infecteds from symptomatics to latents

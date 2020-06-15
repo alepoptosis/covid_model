@@ -95,7 +95,7 @@ to setup-turtles
   ;; randomly infects initial-inf susceptibles
   set pop-size (count susceptibles)
   let to-infect round (initial-inf * pop-size / 100)
-  ask turtles-on (n-of to-infect patches) [set-breed-symptomatic]
+  ask turtles-on (n-of to-infect patches) [set-breed-latent]
 end
 
 to setup-globals
@@ -1481,7 +1481,7 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="test0" repetitions="10" runMetricsEveryStep="true">
+  <experiment name="test0" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
@@ -1580,7 +1580,7 @@ NetLogo 6.1.1
       <value value="199"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="test1" repetitions="10" runMetricsEveryStep="true">
+  <experiment name="test1" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
@@ -1679,7 +1679,7 @@ NetLogo 6.1.1
       <value value="299"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="test2" repetitions="10" runMetricsEveryStep="true">
+  <experiment name="test2" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
