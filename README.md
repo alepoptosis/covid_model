@@ -111,3 +111,7 @@
 - Renamed modify-p-infect? as control-measures? for clarity
 - Decoupled isolation of symptomatics from lockdown, now isolation begins above a threshold and continues indefinitely. Note: fix occurence agents recover before the end of isolation period and continue isolating indefinitely (happens when lockdown off but isolation on)
 - Added separate thresholds for lockdown, control measures, and isolation of symptomatics
+
+### 16/6
+
+- Created experiments for extremes validation
