@@ -115,3 +115,8 @@
 ### 16/6
 
 - Created experiments for extremes validation
+
+### 17/6
+
+- Fixed contacts number bug where a spike in contacts happened before second lockdown
+- Changed contact variable names from E for exposeds to L for latents
