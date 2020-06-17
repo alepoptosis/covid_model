@@ -1,13 +1,13 @@
 globals [
   SS-contacts
-  SE-contacts
+  SL-contacts
   SI-contacts
   SR-contacts
   SA-contacts
-  EE-contacts
-  EI-contacts
-  ER-contacts
-  EA-contacts
+  LL-contacts
+  LI-contacts
+  LR-contacts
+  LA-contacts
   II-contacts
   IR-contacts
   IA-contacts
@@ -103,14 +103,14 @@ end
 
 to setup-globals
   set SS-contacts 0
-  set SE-contacts 0
+  set SL-contacts 0
   set SI-contacts 0
   set SR-contacts 0
   set SA-contacts 0
-  set EE-contacts 0
-  set EI-contacts 0
-  set ER-contacts 0
-  set EA-contacts 0
+  set LL-contacts 0
+  set LI-contacts 0
+  set LR-contacts 0
+  set LA-contacts 0
   set II-contacts 0
   set IR-contacts 0
   set IA-contacts 0
@@ -151,14 +151,14 @@ end
 
 to count-contacts
   let SS-tick 0
-  let SE-tick 0
+  let SL-tick 0
   let SI-tick 0
   let SR-tick 0
   let SA-tick 0
-  let EE-tick 0
-  let EI-tick 0
-  let ER-tick 0
-  let EA-tick 0
+  let LL-tick 0
+  let LI-tick 0
+  let LR-tick 0
+  let LA-tick 0
   let II-tick 0
   let IR-tick 0
   let IA-tick 0
@@ -168,32 +168,31 @@ to count-contacts
 
   ask susceptibles [
     set SS-tick (SS-tick + ((count other susceptibles in-radius z-contact with [z-contact >= distance myself])))
-    set SE-tick (SE-tick + ((count latents in-radius z-contact)))
-    set SI-tick (SI-tick + ((count symptomatics in-radius z-contact)))
-    set SR-tick (SR-tick + ((count recovereds in-radius z-contact)))
-    set SA-tick (SA-tick + ((count asymptomatics in-radius z-contact)))
-
+    set SL-tick (SL-tick + ((count latents in-radius z-contact with [z-contact >= distance myself])))
+    set SI-tick (SI-tick + ((count symptomatics in-radius z-contact with [z-contact >= distance myself])))
+    set SR-tick (SR-tick + ((count recovereds in-radius z-contact with [z-contact >= distance myself])))
+    set SA-tick (SA-tick + ((count asymptomatics in-radius z-contact with [z-contact >= distance myself])))
   ]
   set SS-tick (SS-tick / 2)
 
   ask latents [
-    set EE-tick (EE-tick + ((count other latents in-radius z-contact with [z-contact >= distance myself])))
-    set EI-tick (EI-tick + ((count symptomatics in-radius z-contact)))
-    set ER-tick (ER-tick + ((count recovereds in-radius z-contact)))
-    set EA-tick (EA-tick + ((count asymptomatics in-radius z-contact)))
+    set LL-tick (LL-tick + ((count other latents in-radius z-contact with [z-contact >= distance myself])))
+    set LI-tick (LI-tick + ((count symptomatics in-radius z-contact with [z-contact >= distance myself])))
+    set LR-tick (LR-tick + ((count recovereds in-radius z-contact with [z-contact >= distance myself])))
+    set LA-tick (LA-tick + ((count asymptomatics in-radius z-contact with [z-contact >= distance myself])))
   ]
-  set EE-tick (EE-tick / 2)
+  set LL-tick (LL-tick / 2)
 
   ask symptomatics [
     set II-tick (II-tick + (count other symptomatics in-radius z-contact with [z-contact >= distance myself]))
-    set IR-tick (IR-tick + (count recovereds in-radius z-contact))
-    set IA-tick (IA-tick + (count asymptomatics in-radius z-contact))
+    set IR-tick (IR-tick + (count recovereds in-radius z-contact with [z-contact >= distance myself]))
+    set IA-tick (IA-tick + (count asymptomatics in-radius z-contact with [z-contact >= distance myself]))
   ]
   set II-tick (II-tick / 2)
 
   ask recovereds [
     set RR-tick (RR-tick + (count other recovereds in-radius z-contact with [z-contact >= distance myself]))
-    set RA-tick (RA-tick + (count asymptomatics in-radius z-contact))
+    set RA-tick (RA-tick + (count asymptomatics in-radius z-contact with [z-contact >= distance myself]))
   ]
   set RR-tick (RR-tick / 2)
 
@@ -203,22 +202,22 @@ to count-contacts
   set AA-tick (AA-tick / 2)
 
   set num-contacts (
-    SS-tick + SE-tick + SI-tick + SR-tick + SA-tick +
-    EE-tick + EI-tick + ER-tick + EA-tick +
+    SS-tick + SL-tick + SI-tick + SR-tick + SA-tick +
+    LL-tick + LI-tick + LR-tick + LA-tick +
     II-tick + IR-tick + IA-tick +
     RR-tick + RA-tick +
     AA-tick
   )
 
   set SS-contacts (SS-contacts + SS-tick)
-  set SE-contacts (SE-contacts + SE-tick)
+  set SL-contacts (SL-contacts + SL-tick)
   set SI-contacts (SI-contacts + SI-tick)
   set SR-contacts (SR-contacts + SR-tick)
   set SA-contacts (SA-contacts + SA-tick)
-  set EE-contacts (EE-contacts + EE-tick)
-  set EI-contacts (EI-contacts + EI-tick)
-  set ER-contacts (ER-contacts + ER-tick)
-  set EA-contacts (EA-contacts + EA-tick)
+  set LL-contacts (LL-contacts + LL-tick)
+  set LI-contacts (LI-contacts + LI-tick)
+  set LR-contacts (LR-contacts + LR-tick)
+  set LA-contacts (LA-contacts + LA-tick)
   set II-contacts (II-contacts + II-tick)
   set IR-contacts (IR-contacts + IR-tick)
   set IA-contacts (IA-contacts + IA-tick)
@@ -690,17 +689,17 @@ lockdown-strictness
 lockdown-strictness
 0
 100
-80.0
+100.0
 1
 1
 %
 HORIZONTAL
 
 PLOT
-1143
-35
-1438
-277
+1150
+23
+1451
+295
 contacts
 NIL
 NIL
