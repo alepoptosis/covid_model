@@ -151,6 +151,10 @@ deads_long = deads %>% pivot_longer (
   values_to = "count"
 )
 
+deads_long = deads_long %>%
+  group_by(run_num,age) %>%
+  mutate(new_deaths = c(0,diff(count)))
+
 deads_aggr = deads_long %>%
   group_by(step, age) %>%
   summarise(mean = mean(count), stdev = sd(count))
@@ -192,3 +196,22 @@ non_aggr_plot = function(line_data, lock_data, breeds) {
 
 non_aggr_plot(data_long, ld, c("deads", "recovereds", "susceptibles"))
 non_aggr_plot(data_long, ld, c("latents", "symptomatics", "asymptomatics"))
+
+ggplot(subset(data_long, breed == "susceptibles"),
+       aes(x=step, y=count)) +
+  geom_area(data = ld, aes(x = step, y = pop_size * lockdown, fill = as.factor(run_num)),
+            inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2, show.legend = FALSE) +
+  geom_point(aes(color=breed), alpha=0.7, size = 1) +
+  scale_color_brewer(palette="Set3") +
+  scale_fill_manual(values = c("lightgrey","lightgrey","lightgrey","lightgrey","lightgrey",
+                               "lightgrey","lightgrey","lightgrey","lightgrey","lightgrey")) +
+  coord_cartesian(ylim = c(0, pop_size))
+
+######### NON-AGGR NEW DEATHS PLOT
+
+ggplot(deads_long, aes(x=step, y=new_deaths)) +
+  geom_point(aes(color=age), alpha=0.8, size = 1) +
+  geom_line(data = ld, aes(x = step, y = max(deads_long$new_deaths) * lockdown),
+            inherit.aes = FALSE, color = "grey", alpha = 0.5) +
+  scale_color_brewer(palette="Set3") +
+  scale_fill_brewer(palette="Set3")
