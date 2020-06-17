@@ -335,6 +335,12 @@ to modify-lockdown
   [set start-isolation? true]
 
   if isolate-symptomatics? and start-isolation? [isolate-symptomatics]
+
+  ;; ensures if Is become Rs before their iso-countdown is done
+  ;; and there is not end lockdown to release them, they are not stuck in isolation
+  if isolate-symptomatics? and not imposed-lockdown?  [
+    ask recovereds with [shape = "person-outline"] [not-isolate]
+  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -887,7 +893,7 @@ SWITCH
 519
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
@@ -908,7 +914,7 @@ SWITCH
 556
 control-measures?
 control-measures?
-0
+1
 1
 -1000
 
