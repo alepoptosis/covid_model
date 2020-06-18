@@ -73,6 +73,11 @@ aggr_ld = data_aggr %>%
   mutate(lockdown = mean > 0) %>%
   select(c("step", "lockdown"))
 
+# remove lockdown info from other datasets
+
+data_long = data_long %>% filter(breed != "lockdown")
+data_aggr = data_aggr %>% filter(breed != "lockdown")
+
 # subset containing info on contacts
 contact = raw[ ,grepl("run_num|step|num_contacts", names(raw))]
 
@@ -124,7 +129,8 @@ non_aggr_plot = function(line_data, lock_data, breeds) {
     geom_line(aes(color=breed), alpha=0.7, size = 1) +
     scale_color_brewer(palette="Set3") +
     scale_fill_manual(values = rep("lightgrey", num_runs)) +
-    coord_cartesian(ylim = c(0, pop_size))
+    coord_cartesian(ylim = c(0, pop_size)) +
+    labs(x = "day", y = "count")
 }
 
 non_aggr_plot(data_long, ld, c("deads", "recovereds", "susceptibles"))
@@ -151,7 +157,8 @@ ggplot(deads_long, aes(x=step, y=new_deaths)) +
             show.legend = FALSE) +
   geom_line(aes(color=age), alpha=0.8, size = 1) +
   scale_color_brewer(palette="Set3") +
-  scale_fill_manual(values = rep("lightgrey", num_runs))
+  scale_fill_manual(values = rep("lightgrey", num_runs)) +
+  labs(x = "day", y = "new deaths")
 
 ############################# AGGREGATED PLOTS ################################
 
@@ -193,4 +200,4 @@ ggplot(deads_aggr, aes(x=step, y=mean, group=age)) +
   scale_fill_brewer(palette="Set3") +
   scale_y_continuous(labels = scales::comma) +
   scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
-  labs(x = "day", y = sprintf("mean death count by age over %s runs", num_runs))
+  labs(x = "day", y = sprintf("mean death count over %s runs", num_runs))
