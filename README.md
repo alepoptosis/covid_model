@@ -120,3 +120,7 @@
 
 - Fixed contacts number bug where a spike in contacts happened before second lockdown
 - Changed contact variable names from E for exposeds to L for latents
+
+### 18/6
+
+- Fixed R script for non-aggregating plots, incorpoated the non-aggregated lockdown visualisation with an aggregated min-max lineplot for the breed counts

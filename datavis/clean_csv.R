@@ -1,6 +1,7 @@
 library(tidyverse)
 library(RColorBrewer)
 library(stringr)
+library(ggnewscale)
 theme_set(theme_minimal())
 
 
@@ -9,30 +10,38 @@ theme_set(theme_minimal())
 
 ############################## DATA WRANGLING #################################
 
-# raw dataset (single csv)
-# raw = read.csv("results/2020-06-12_sizetest2.csv", header = TRUE, skip = 6)
-
 # raw dataset (multiple csvs)
-path = "results"
-pattern = "2020-06-15_sizetest2_" # date and test name
+path = "results/2020-06-15_sizetest1"
+pattern = "2020-06-15_sizetest1_" # date and test name
 
-# get list of csvs
-csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
-
-# merge in one csv and add a run_num id while removing the useless one
-raw = csvs %>%
-  set_names() %>%
-  map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
-           .id = "run_num", stringsAsFactors=FALSE) %>% 
-  select(-"[run number]") %>%
-  mutate_at("run_num", ~gsub(sprintf("%s/%s|.csv", path, pattern), "", .)) %>%
-  mutate_at("run_num", as.numeric) %>%
-  mutate_at("run_num", ~ run_num + 1)
-
-# clean column names
-names(raw) = gsub("\\[|\\]|", "", names(raw))
-names(raw) = gsub("\\.", " ", names(raw))
-names(raw) = gsub("\\-", "_", names(raw))
+if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
+  
+  raw = read.csv(sprintf("%s/%sfull.csv", path, pattern), 
+                 stringsAsFactors=FALSE, check.names = FALSE)
+  
+} else {
+  
+  # get list of csvs
+  csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
+  
+  # merge in one csv and add a run_num id while removing the useless one
+  raw = csvs %>%
+    set_names() %>%
+    map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
+             .id = "run_num", stringsAsFactors=FALSE, check.names = FALSE) %>% 
+    select(-"[run number]") %>%
+    mutate_at("run_num", ~gsub(sprintf("%s/%s|.csv", path, pattern), "", .)) %>%
+    mutate_at("run_num", as.numeric) %>%
+    mutate_at("run_num", ~ run_num + 1)
+  
+  # clean column names
+  names(raw) = gsub("\\[|\\]|", "", names(raw))
+  names(raw) = gsub("\\.", " ", names(raw))
+  names(raw) = gsub("\\-", "_", names(raw))
+  
+  write.csv(raw, sprintf("%s/%sfull.csv", path, pattern), row.names = FALSE)
+  
+}
 
 # subset containing only data on counts, run number and step
 data = raw[ ,grepl("^count|^step|^run_num", names(raw))]
@@ -49,16 +58,11 @@ data_long = data %>% pivot_longer (
     values_to = "count"
     )
 
-# set order of breeds for legend
-order = c("susceptibles", "latents", "asymptomatics",
-          "symptomatics", "recovereds", "deads", "lockdown")
-
-data_long$breed = factor(data_long$breed, levels=order)
-
 # aggregates data from all runs into an average count and stdev
 data_aggr = data_long %>%
   group_by(step, breed) %>%
-  summarise(mean = mean(count), stdev = sd(count)) %>%
+  summarise(mean = mean(count), stdev = sd(count),
+            max = max(count), min = min(count)) %>%
   mutate(lower = mean - stdev, upper = mean + stdev)
 
 # move lockdown info into its own df (non-aggregated)
@@ -74,7 +78,6 @@ aggr_ld = data_aggr %>%
   select(c("step", "lockdown"))
 
 # remove lockdown info from other datasets
-
 data_long = data_long %>% filter(breed != "lockdown")
 data_aggr = data_aggr %>% filter(breed != "lockdown")
 
@@ -115,26 +118,35 @@ num_runs = max(data_long$run_num) # num runs for ylabel
 num_ticks = max(data_aggr$step) # num ticks for xaxis
 max_cont = max(cont_aggr$mean) # max contacts for ylim (contacts plot)
 
+# set order of breeds for legend
+order = c("susceptibles", "latents", "asymptomatics",
+          "symptomatics", "recovereds", "deads")
+
+data_long$breed = factor(data_long$breed, levels=order)
+data_aggr$breed = factor(data_aggr$breed, levels=order)
+
 ########################### NON-AGGREGATED PLOTS ##############################
 
 ######### BREED COUNTS OVER TIME PLOT
 
-non_aggr_plot = function(line_data, lock_data, breeds) {
-  ggplot(subset(line_data, breed %in% breeds),
-         aes(x=step, y=count)) +
-    geom_area(data = ld,
-              aes(x = step, y = pop_size * lockdown, fill = as.factor(run_num)),
-              inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
-              show.legend = FALSE) +
-    geom_line(aes(color=breed), alpha=0.7, size = 1) +
-    scale_color_brewer(palette="Set3") +
-    scale_fill_manual(values = rep("lightgrey", num_runs)) +
-    coord_cartesian(ylim = c(0, pop_size)) +
-    labs(x = "day", y = "count")
-}
-
-non_aggr_plot(data_long, ld, c("deads", "recovereds", "susceptibles"))
-non_aggr_plot(data_long, ld, c("latents", "symptomatics", "asymptomatics"))
+# non_aggr_plot = function(line_data, lock_data, breeds) {
+#   ggplot(subset(line_data, breed %in% breeds),
+#          aes(x=step, y=count)) +
+#     geom_area(data = ld,
+#               aes(x = step, y = pop_size * lockdown, fill = as.factor(run_num)),
+#               inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
+#               show.legend = FALSE) +
+#     geom_line(aes(color=breed), alpha=0.7, size = 1) +
+#     scale_color_brewer(palette="Set3") +
+#     scale_fill_manual(values = rep("lightgrey", num_runs)) +
+#     coord_cartesian(ylim = c(0, pop_size)) +
+#     labs(x = "day", y = "count")
+# }
+# 
+# non_aggr_plot(data_long, ld, c("deads", "recovereds", "susceptibles",
+#                                "latents", "symptomatics", "asymptomatics"))
+# non_aggr_plot(data_long, ld, c("deads", "recovereds", "susceptibles"))
+# non_aggr_plot(data_long, ld, c("latents", "symptomatics", "asymptomatics"))
 
 # ggplot(subset(data_long, breed == "susceptibles"),
 #        aes(x=step, y=count)) +
@@ -151,24 +163,44 @@ non_aggr_plot(data_long, ld, c("latents", "symptomatics", "asymptomatics"))
 
 ggplot(deads_long, aes(x=step, y=new_deaths)) +
   geom_area(data = ld,
-            aes(x = step, y = max(deads_long$new_deaths) * lockdown,
+            aes(x = step, y = max(deads_long$new_deaths) + 1 * lockdown,
                 fill = as.factor(run_num)),
             inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
             show.legend = FALSE) +
   geom_line(aes(color=age), alpha=0.8, size = 1) +
   scale_color_brewer(palette="Set3") +
   scale_fill_manual(values = rep("lightgrey", num_runs)) +
+  coord_cartesian(ylim = c(- max(deads_long$new_deaths), max(deads_long$new_deaths))) +
   labs(x = "day", y = "new deaths")
 
 ############################# AGGREGATED PLOTS ################################
 
-######### BREEDS AVERAGE COUNT OVER TIME PLOT
+######### BREEDS AVERAGE COUNT OVER TIME PLOT, AGGR LOCKDOWN
 
-ggplot(data_aggr, aes(x=step, y=mean, group=breed)) + 
-  geom_area(data = aggr_ld, aes(x = step, y = pop_size * lockdown),
-            inherit.aes = FALSE, fill = "lightgray", alpha = 0.4) +
+# ggplot(data_aggr, aes(x=step, y=mean, group=breed)) + 
+#   geom_area(data = aggr_ld, aes(x = step, y = pop_size * lockdown),
+#             inherit.aes = FALSE, fill = "lightgray", alpha = 0.4) +
+#   geom_line(aes(color=breed), size = 1) +
+#   geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
+#   coord_cartesian(ylim = c(0, pop_size)) +
+#   scale_color_brewer(palette="Set3") +
+#   scale_fill_brewer(palette="Set3") +
+#   scale_y_continuous(labels = scales::comma) +
+#   scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+#   labs(x = "day", y = sprintf("mean count over %s runs", num_runs))
+
+######### BREEDS AVERAGE COUNT OVER TIME PLOT, NON-AGGR LOCKDOWN
+
+ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
+  geom_area(data = ld,
+            aes(x = step, y = pop_size * lockdown, 
+                fill = as.factor(run_num)),
+            inherit.aes = FALSE, position=position_dodge(0), 
+            alpha = 0.1, show.legend = FALSE) +
+  scale_fill_manual(values = rep("lightgrey", num_runs)) +
+  new_scale_fill() +
+  geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
   geom_line(aes(color=breed), size = 1) +
-  geom_ribbon(aes(ymin=lower, ymax=upper, fill = breed), alpha=0.2) +
   coord_cartesian(ylim = c(0, pop_size)) +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
@@ -178,26 +210,26 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
 
 ######### AVERAGE CONTACTS OVER TIME PLOT
 
-ggplot(cont_aggr, aes(x=step, y=mean)) +
-  geom_area(data = aggr_ld, aes(x = step, y = max_cont * lockdown),
-            inherit.aes = FALSE, fill = "lightgray", alpha = 0.4) +
-  geom_line(size = 1, color = "orange") +
-  geom_ribbon(aes(ymin=lower, ymax=upper), alpha=0.2, fill = "orange") +
-  coord_cartesian(ylim = c(0, max_cont)) +
-  scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
-  labs(x = "day", y = sprintf("mean contacts over %s runs", num_runs))
+# ggplot(cont_aggr, aes(x=step, y=mean)) +
+#   geom_area(data = aggr_ld, aes(x = step, y = max_cont * lockdown),
+#             inherit.aes = FALSE, fill = "lightgray", alpha = 0.4) +
+#   geom_line(size = 1, color = "orange") +
+#   geom_ribbon(aes(ymin=lower, ymax=upper), alpha=0.2, fill = "orange") +
+#   coord_cartesian(ylim = c(0, max_cont)) +
+#   scale_y_continuous(labels = scales::comma) +
+#   scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+#   labs(x = "day", y = sprintf("mean contacts over %s runs", num_runs))
 
 ######### AVERAGE DEATH STATISTICS PLOT
 
-ggplot(deads_aggr, aes(x=step, y=mean, group=age)) +
-  geom_line(aes(color=age), size = 1) +
-  geom_area(data = aggr_ld, aes(x = step, y = pop_size * lockdown),
-            inherit.aes = FALSE, fill = "lightgray", alpha = 0.4) +
-  geom_ribbon(aes(ymin=lower, ymax=upper, fill = age), alpha=0.2) +
-  coord_cartesian(ylim = c(0, max(deads_aggr$upper))) +
-  scale_color_brewer(palette="Set3") +
-  scale_fill_brewer(palette="Set3") +
-  scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
-  labs(x = "day", y = sprintf("mean death count over %s runs", num_runs))
+# ggplot(deads_aggr, aes(x=step, y=mean, group=age)) +
+#   geom_line(aes(color=age), size = 1) +
+#   geom_area(data = aggr_ld, aes(x = step, y = pop_size * lockdown),
+#             inherit.aes = FALSE, fill = "lightgray", alpha = 0.4) +
+#   geom_ribbon(aes(ymin=lower, ymax=upper, fill = age), alpha=0.2) +
+#   coord_cartesian(ylim = c(0, max(deads_aggr$upper))) +
+#   scale_color_brewer(palette="Set3") +
+#   scale_fill_brewer(palette="Set3") +
+#   scale_y_continuous(labels = scales::comma) +
+#   scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+#   labs(x = "day", y = sprintf("mean death count over %s runs", num_runs))
