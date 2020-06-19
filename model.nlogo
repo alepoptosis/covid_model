@@ -38,6 +38,7 @@ turtles-own [
   z-contact                 ;; individual radius of contact neighbourhood
   age                       ;; age range of the person (0-29, 30-59, 60+)
   iso-countdown             ;; individual isolation countdown
+  traced?
 ]
 
 susceptibles-own [
@@ -100,6 +101,10 @@ to setup-turtles
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
       set-age
+        if test-and-trace? [
+        set traced? false
+        set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
+      ]
     ]
   ]
   ;; randomly infects initial-inf susceptibles
@@ -369,7 +374,7 @@ to modify-lockdown
     if count(symptomatics) >= testtrace-threshold-num [
       test
       trace
-      isolate-contacts
+      isolate-all
     ]
   ]
 end
@@ -404,6 +409,9 @@ to set-breed-susceptible
   set color green
   set to-become-latent? false
   set p-infect p-infect-init / 100
+  if test-and-trace? [
+    set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
+  ]
   check-outline
 end
 
@@ -412,8 +420,22 @@ to set-breed-latent
   set color yellow
   set to-become-infected? false
   set inc-countdown (log-normal incubation-mean incubation-stdev)
-  set contact-list []
-  set tested? false
+  if test-and-trace? [
+    set contact-list []
+    set tested? false
+    set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
+  ]
+  check-outline
+end
+
+to set-breed-symptomatic    ;; also used in setup-turtles
+  set breed symptomatics
+  set color red
+  set to-remove? false
+  if isolate-symptomatics? [
+    set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
+  ]
+  check-death
   check-outline
 end
 
@@ -422,19 +444,6 @@ to set-breed-asymptomatic
   set color violet
   set to-remove? false
   set rec-countdown (normal-dist recovery-mean recovery-stdev)
-  set contact-list []
-  set tested? false
-  check-outline
-end
-
-to set-breed-symptomatic    ;; also used in setup-turtles
-  set breed symptomatics
-  set color red
-  set to-remove? false
-  set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
-  set contact-list []
-  set tested? false
-  check-death
   check-outline
 end
 
@@ -472,18 +481,7 @@ to end-lockdown                                           ;; end lockdown by ret
 end
 
 to isolate-symptomatics
-  ask symptomatics [                                      ;; for each symptomatic
-    ifelse iso-countdown <= 0                             ;; if their isolation period is over
-    [
-      ifelse currently-locked?                            ;; but the lockdown is still on
-      [isolate]                                           ;; keep isolating
-      [not-isolate]                                       ;; otherwise, return to initial z-contact
-    ]                                                     ;; (note: not sure if this could be done simply as "if not currently-locked? [not-isolate]")
-    [                                                     ;; if the isolation period is not over
-      isolate                                             ;; keep isolating
-      set iso-countdown (iso-countdown - 1)               ;; and lower countdown by 1 day
-    ]
-  ]
+  ask symptomatics [check-isolation]
 end
 
 to check-outline    ;; ensures turtles maintain correct shape when changing breed
@@ -515,39 +513,56 @@ to not-isolate    ;; returns turtle to default z-contact and shape
   set shape "person"
 end
 
-to test    ;; tests symptomatics and other infecteds based on respective test coverage
-  ask symptomatics [
+to test    ;; tests infecteds based on respective test coverage
+  ask symptomatics with [tested? = false] [
     let p (random 100 + 1)
-    if p <= symp-test-coverage [set tested? true]
+    if p <= sym-test-coverage [set tested? true]
   ]
   let other-infecteds (turtle-set latents asymptomatics)
-  ask other-infecteds [
+  ask other-infecteds with [tested? = false] [
     let p (random 100 + 1)
-    if p <= test-coverage [set tested? true]
+    if p <= asym-test-coverage [set tested? true]
   ]
 end
 
-to trace    ;; asks contacts of tested infecteds to isolate and gives them a countdown
+to trace    ;; flags contacts of tested infecteds as traced, they will be asked to isolate
   let infecteds (turtle-set latents symptomatics asymptomatics)
   ask infecteds with [tested? = true] [
-    foreach contact-list [contact -> ask contact [
-      isolate
-      set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
-      ]
+    foreach contact-list [
+      contact -> ask contact [set traced? true]
     ]
   ]
 end
 
-to isolate-contacts    ;; checks if isolated contacts need to keep isolating
-  ;; the check for non-symptomatic is to prevent overlap with symptomatic isolation
-  let contacts turtles with [not member? self symptomatics]
-  ask contacts [
-    ifelse iso-countdown <= 0
-    [not-isolate]
+to isolate-all
+  ;; isolate original tested
+  let infecteds (turtle-set latents symptomatics asymptomatics)
+
+  ;; this check is to prevent overriding symptomatic isolation
+  ifelse not isolate-symptomatics? [
+    ask infecteds with [tested? = true] [check-isolation]
+  ]
+  [
+    ask infecteds with [not member? self symptomatics and tested? = true] [check-isolation]
+  ]
+
+  ;; isolate contacts
+  ask turtles with [traced? = true] [check-isolation]
+end
+
+to check-isolation    ;; generic procedure for checking isolation countdown
+  ifelse iso-countdown <= 0
+  [
+    ifelse imposed-lockdown? and currently-locked?    ;; keeps people isolated
+    [isolate]                                         ;; if they finish isolation and lockdown is on
     [
-      isolate
-      set iso-countdown (iso-countdown - 1)
+      not-isolate
+      set traced? false
     ]
+  ]
+  [
+    isolate
+    set iso-countdown (iso-countdown - 1)
   ]
 end
 
@@ -954,7 +969,7 @@ lockdown-threshold
 lockdown-threshold
 0
 100
-4.0
+10.0
 1.00
 1
 % infecteds
@@ -967,7 +982,7 @@ SWITCH
 485
 imposed-lockdown?
 imposed-lockdown?
-1
+0
 1
 -1000
 
@@ -995,7 +1010,7 @@ control-measures?
 SLIDER
 7
 405
-215
+211
 438
 protection-strength
 protection-strength
@@ -1014,7 +1029,7 @@ SWITCH
 646
 closed-system?
 closed-system?
-1
+0
 1
 -1000
 
@@ -1223,7 +1238,7 @@ isolation-strictness
 isolation-strictness
 0
 100
-50.0
+100.0
 1
 1
 %
@@ -1314,10 +1329,10 @@ HORIZONTAL
 SLIDER
 212
 492
-432
+473
 525
-test-coverage
-test-coverage
+asym-test-coverage
+asym-test-coverage
 0
 100
 100.0
@@ -1331,8 +1346,8 @@ SLIDER
 453
 440
 486
-symp-test-coverage
-symp-test-coverage
+sym-test-coverage
+sym-test-coverage
 0
 100
 100.0
