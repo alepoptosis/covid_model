@@ -127,4 +127,4 @@
 
 ### 19/6
 
-- Implemented test and trace, but not a system to stop self-isolation yet
+- Implemented full test and trace, applied to the asymptomatic or pre-symptomatic infecteds with probability test-coverage, and to symptomatics with probability symp-test-coverage, with contacts isolating in the same fashion as the isolate-symptomatics? procedure

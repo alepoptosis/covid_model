@@ -23,6 +23,7 @@ globals [
   lockdown-threshold-num
   control-threshold-num
   isolate-threshold-num
+  testtrace-threshold-num
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
@@ -36,6 +37,7 @@ turtles-own [
   z-contact-init            ;; base radius of contact neighbourhood
   z-contact                 ;; individual radius of contact neighbourhood
   age                       ;; age range of the person (0-29, 30-59, 60+)
+  iso-countdown             ;; individual isolation countdown
 ]
 
 susceptibles-own [
@@ -46,6 +48,7 @@ susceptibles-own [
 latents-own [
   to-become-infected?       ;; flags a L for beginning of infection
   inc-countdown             ;; individual incubation countdown
+  tested?
   contact-list
 ]
 
@@ -54,13 +57,15 @@ symptomatics-own [
   to-remove?                ;; flags an I for removal (recovery or death)
   rec-countdown             ;; individual recovery countdown
   death-countdown           ;; individual death countdown
-  iso-countdown             ;; idnividual isolation countdown
+  tested?
   contact-list
 ]
 
 asymptomatics-own [
   to-remove?                ;; flags an A for recovery
   rec-countdown             ;; individual recovery countdown
+  tested?
+  contact-list
 ]
 
 recovereds-own [
@@ -126,6 +131,7 @@ to setup-globals
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
   set control-threshold-num (absolute-threshold control-threshold)
   set isolate-threshold-num (absolute-threshold isolate-threshold)
+  set testtrace-threshold-num (absolute-threshold testtrace-threshold)
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -136,12 +142,13 @@ to go
   ;  and (count symptomatics + count latents) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
     count-contacts            ;; updates the number of contacts made
+    trace-contacts            ;; if test-and-trace is on, updates contact list
     expose-susceptibles       ;; turns S into L if they had contact with an I, A or L based on p-infect, and checks if they have travelled
     infect-latents            ;; turns L into I after inc-countdown ticks
     remove-infecteds          ;; turns I into R after rec-countdown ticks or D after death-countdown ticks
     lose-immunity             ;; turns R back into S after imm-countdown ticks
     update-breeds             ;; updates breeds as necessary
-    modify-lockdown           ;; modifies the lockdown depending on the new number of S, and isolates S for iso-countdown ticks
+    modify-lockdown           ;; modifies the lockdown depending on the new number of S, and implements isolation of Is and test-and-trace
     tick                      ;; goes to next day
   ] [
     stop
@@ -182,9 +189,6 @@ to count-contacts
     set LI-tick (LI-tick + ((count symptomatics in-radius z-contact with [z-contact >= distance myself])))
     set LR-tick (LR-tick + ((count recovereds in-radius z-contact with [z-contact >= distance myself])))
     set LA-tick (LA-tick + ((count asymptomatics in-radius z-contact with [z-contact >= distance myself])))
-
-    let trace [self] of susceptibles in-radius z-contact with [z-contact >= distance myself]
-    foreach trace [contact -> set contact-list lput contact contact-list]
   ]
   set LL-tick (LL-tick / 2)
 
@@ -229,6 +233,19 @@ to count-contacts
   set RR-contacts (RR-contacts + RR-tick)
   set RA-contacts (RA-contacts + RA-tick)
   set AA-contacts (AA-contacts + AA-tick)
+end
+
+to trace-contacts
+  if test-and-trace? [
+    if count(symptomatics) >= testtrace-threshold-num [
+      let infecteds (turtle-set latents symptomatics asymptomatics) ;; selects all types of infecteds
+      ask infecteds [
+        ;; makes list of contacts for that infected and adds them to the list one at a time
+        let contacts [self] of susceptibles in-radius z-contact with [z-contact >= distance myself]
+        foreach contacts [contact -> set contact-list lput contact contact-list]
+      ]
+    ]
+  ]
 end
 
 to expose-susceptibles
@@ -347,14 +364,12 @@ to modify-lockdown
     ask recovereds with [shape = "person-outline"] [not-isolate]
   ]
 
+  ;; tests Ls, Is and As, traces their contacts and isolates them under right conditions
   if test-and-trace? [
-  ask symptomatics [
-      let p (random 100 + 1)
-      if p <= test-coverage [
-        foreach contact-list
-        [contact -> ask contact [isolate]
-        ]
-      ]
+    if count(symptomatics) >= testtrace-threshold-num [
+      test
+      trace
+      isolate-contacts
     ]
   ]
 end
@@ -398,6 +413,7 @@ to set-breed-latent
   set to-become-infected? false
   set inc-countdown (log-normal incubation-mean incubation-stdev)
   set contact-list []
+  set tested? false
   check-outline
 end
 
@@ -406,6 +422,8 @@ to set-breed-asymptomatic
   set color violet
   set to-remove? false
   set rec-countdown (normal-dist recovery-mean recovery-stdev)
+  set contact-list []
+  set tested? false
   check-outline
 end
 
@@ -414,6 +432,8 @@ to set-breed-symptomatic    ;; also used in setup-turtles
   set color red
   set to-remove? false
   set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
+  set contact-list []
+  set tested? false
   check-death
   check-outline
 end
@@ -494,6 +514,43 @@ to not-isolate    ;; returns turtle to default z-contact and shape
   set z-contact z-contact-init
   set shape "person"
 end
+
+to test    ;; tests symptomatics and other infecteds based on respective test coverage
+  ask symptomatics [
+    let p (random 100 + 1)
+    if p <= symp-test-coverage [set tested? true]
+  ]
+  let other-infecteds (turtle-set latents asymptomatics)
+  ask other-infecteds [
+    let p (random 100 + 1)
+    if p <= test-coverage [set tested? true]
+  ]
+end
+
+to trace    ;; asks contacts of tested infecteds to isolate and gives them a countdown
+  let infecteds (turtle-set latents symptomatics asymptomatics)
+  ask infecteds with [tested? = true] [
+    foreach contact-list [contact -> ask contact [
+      isolate
+      set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
+      ]
+    ]
+  ]
+end
+
+to isolate-contacts    ;; checks if isolated contacts need to keep isolating
+  ;; the check for non-symptomatic is to prevent overlap with symptomatic isolation
+  let contacts turtles with [not member? self symptomatics]
+  ask contacts [
+    ifelse iso-countdown <= 0
+    [not-isolate]
+    [
+      isolate
+      set iso-countdown (iso-countdown - 1)
+    ]
+  ]
+end
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;;;;;;;;;
@@ -635,10 +692,10 @@ NIL
 1
 
 SLIDER
-14
-40
-228
-73
+7
+30
+221
+63
 p-infect-init
 p-infect-init
 0
@@ -665,10 +722,10 @@ initial-inf
 HORIZONTAL
 
 PLOT
-12
-530
-420
-734
+11
+541
+495
+745
 Simulation populations
 NIL
 NIL
@@ -689,10 +746,10 @@ PENS
 "asymptomatics" 1.0 0 -8630108 true "" "plot count asymptomatics"
 
 SLIDER
-14
-115
-186
-148
+7
+105
+179
+138
 z-contact-min
 z-contact-min
 0
@@ -704,10 +761,10 @@ radius
 HORIZONTAL
 
 SLIDER
-15
-368
-217
-401
+8
+365
+210
+398
 lockdown-strictness
 lockdown-strictness
 0
@@ -737,10 +794,10 @@ PENS
 "contacts" 1.0 0 -16777216 true "" "plot num-contacts"
 
 TEXTBOX
-62
-14
-212
-32
+56
+10
+206
+28
 infection parameters
 11
 0.0
@@ -774,10 +831,10 @@ NIL
 0
 
 SLIDER
-14
-78
-186
-111
+7
+68
+179
+101
 p-death
 p-death
 0
@@ -789,10 +846,10 @@ p-death
 HORIZONTAL
 
 SLIDER
-303
-56
-475
-89
+294
+33
+466
+66
 incubation-mean
 incubation-mean
 0
@@ -804,10 +861,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-302
-98
-474
-131
+293
+75
+465
+108
 incubation-stdev
 incubation-stdev
 0
@@ -819,10 +876,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-301
-144
-473
-177
+292
+121
+464
+154
 recovery-mean
 recovery-mean
 0
@@ -834,10 +891,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-300
-184
-472
-217
+291
+161
+463
+194
 recovery-stdev
 recovery-stdev
 0
@@ -864,10 +921,10 @@ years
 HORIZONTAL
 
 SLIDER
-300
-304
-472
-337
+291
+281
+463
+314
 immunity-mean
 immunity-mean
 0
@@ -879,20 +936,20 @@ days
 HORIZONTAL
 
 TEXTBOX
-358
-33
-508
-51
+349
+10
+499
+28
 countdowns
 11
 0.0
 1
 
 SLIDER
-16
-219
-257
-252
+6
+206
+221
+239
 lockdown-threshold
 lockdown-threshold
 0
@@ -905,20 +962,20 @@ HORIZONTAL
 
 SWITCH
 1135
-495
+452
 1297
-528
+485
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
 TEXTBOX
-54
+45
+185
 195
-204
-213
+203
 control measures parameters
 11
 0.0
@@ -926,20 +983,20 @@ control measures parameters
 
 SWITCH
 1136
-532
+489
 1293
-565
+522
 control-measures?
 control-measures?
-0
+1
 1
 -1000
 
 SLIDER
-14
-408
-222
-441
+7
+405
+215
+438
 protection-strength
 protection-strength
 0
@@ -952,9 +1009,9 @@ HORIZONTAL
 
 SWITCH
 1137
-611
+613
 1277
-644
+646
 closed-system?
 closed-system?
 1
@@ -963,9 +1020,9 @@ closed-system?
 
 SLIDER
 15
-449
+450
 199
-482
+483
 travel-strictness
 travel-strictness
 0
@@ -1010,10 +1067,10 @@ count susceptibles
 11
 
 MONITOR
-775
-656
-850
-701
+873
+657
+948
+702
 recovereds
 count recovereds
 0
@@ -1021,10 +1078,10 @@ count recovereds
 11
 
 MONITOR
-857
-657
-914
-702
+955
+658
+1012
+703
 deads
 count deads
 0
@@ -1032,10 +1089,10 @@ count deads
 11
 
 MONITOR
-930
-657
-1023
-702
+1028
+658
+1121
+703
 % in lockdown
 (count turtles with [shape = \"person-outline\"]) / \ncount turtles with [not member? self deads] \n* 100
 0
@@ -1043,10 +1100,10 @@ MONITOR
 11
 
 MONITOR
-1115
-657
-1177
-702
+1213
+658
+1275
+703
 % 30-59
 count turtles with [age = \"30-59\"] /\ncount turtles * 100
 1
@@ -1054,10 +1111,10 @@ count turtles with [age = \"30-59\"] /\ncount turtles * 100
 11
 
 MONITOR
-1191
-657
-1248
-702
+1289
+658
+1346
+703
 % 60+
 count turtles with [age = \"60+\"] /\ncount turtles * 100
 1
@@ -1065,10 +1122,10 @@ count turtles with [age = \"60+\"] /\ncount turtles * 100
 11
 
 MONITOR
-1040
-658
-1097
-703
+1138
+659
+1195
+704
 % 0-29
 count turtles with [age = \"0-29\"] /\ncount turtles * 100
 1
@@ -1076,10 +1133,10 @@ count turtles with [age = \"0-29\"] /\ncount turtles * 100
 11
 
 MONITOR
-1261
-658
-1361
-703
+1359
+659
+1451
+704
 superspreaders
 count turtles with [z-contact-init = (max [z-contact-init] of turtles)]
 0
@@ -1087,10 +1144,10 @@ count turtles with [z-contact-init = (max [z-contact-init] of turtles)]
 11
 
 SLIDER
-300
-225
-472
-258
+291
+202
+463
+235
 death-mean
 death-mean
 0
@@ -1102,10 +1159,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-300
-265
-472
-298
+291
+242
+463
+275
 death-stdev
 death-stdev
 0
@@ -1117,10 +1174,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-154
-214
-187
+7
+144
+207
+177
 asym-infections
 asym-infections
 0
@@ -1132,10 +1189,10 @@ asym-infections
 HORIZONTAL
 
 SLIDER
-299
-343
-480
-376
+290
+320
+471
+353
 iso-countdown-max
 iso-countdown-max
 0
@@ -1148,20 +1205,20 @@ HORIZONTAL
 
 SWITCH
 1136
-572
-1313
-605
+529
+1295
+562
 isolate-symptomatics?
 isolate-symptomatics?
-0
+1
 1
 -1000
 
 SLIDER
 15
-490
+491
 187
-523
+524
 isolation-strictness
 isolation-strictness
 0
@@ -1173,10 +1230,10 @@ isolation-strictness
 HORIZONTAL
 
 MONITOR
-681
-709
-770
-754
+773
+658
+862
+703
 asymptomatic
 count asymptomatics
 0
@@ -1184,10 +1241,10 @@ count asymptomatics
 11
 
 SLIDER
-297
-381
-483
-414
+288
+358
+474
+391
 mean-iso-reduction
 mean-iso-reduction
 0
@@ -1199,10 +1256,10 @@ days
 HORIZONTAL
 
 SLIDER
-17
-297
-229
-330
+7
+284
+219
+317
 isolate-threshold
 isolate-threshold
 0
@@ -1214,10 +1271,10 @@ isolate-threshold
 HORIZONTAL
 
 SLIDER
-16
-260
-231
-293
+6
+247
+221
+280
 control-threshold
 control-threshold
 0
@@ -1229,10 +1286,10 @@ control-threshold
 HORIZONTAL
 
 SWITCH
-1313
-457
-1455
-490
+1137
+572
+1279
+605
 test-and-trace?
 test-and-trace?
 0
@@ -1240,25 +1297,25 @@ test-and-trace?
 -1000
 
 SLIDER
-266
-434
-493
-467
+6
+321
+220
+354
 testtrace-threshold
 testtrace-threshold
 0
 100
-0.0
+4.0
 1.00
 1
 % infecteds
 HORIZONTAL
 
 SLIDER
-266
-473
-479
-506
+212
+492
+432
+525
 test-coverage
 test-coverage
 0
@@ -1266,7 +1323,22 @@ test-coverage
 100.0
 1
 1
-% of infecteds
+% of population
+HORIZONTAL
+
+SLIDER
+212
+453
+440
+486
+symp-test-coverage
+symp-test-coverage
+0
+100
+100.0
+1
+1
+% of cases
 HORIZONTAL
 
 @#$#@#$#@
