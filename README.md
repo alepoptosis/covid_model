@@ -123,4 +123,8 @@
 
 ### 18/6
 
-- Fixed R script for non-aggregating plots, incorpoated the non-aggregated lockdown visualisation with an aggregated min-max lineplot for the breed counts
+- Cleaned up and updated R visualisation script
+
+### 19/6
+
+- Implemented test and trace, but not a system to stop self-isolation yet

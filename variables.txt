@@ -6,6 +6,7 @@ name                    access  description
 age                     ALL     the age range of the person (0-29, 30-59, 60+)
 asym-infections         G       the percentage of asymptomatic symptomatics
 closed-system?          G       whether outside infections can occur
+contact-list            LI      list of susceptibles the agent interacted with
 control-measures?       G       whether add control measures after 1st lockdown
 control-threshold       G       percentage of symptomatics to trigger mask use
 control-threshold-num   G       number of symptomatics to trigger mask use
@@ -42,6 +43,9 @@ rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
 start-isolation?        G       whether isolation of symptomatics should start
+test-and-trace?         G       whether the test and trace system is in place
+test-coverage           G       percentage of symptomatic cases tested
+testtrace-threshold     G       number of symptomatics to start testing (TBA)
 to-become-infected?     L       flags a L for beginning of infection
 to-become-latent?       S       flags a S for exposure
 to-become-susceptible?  R       flags a R for loss of immunity

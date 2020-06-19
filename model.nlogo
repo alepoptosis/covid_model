@@ -46,6 +46,7 @@ susceptibles-own [
 latents-own [
   to-become-infected?       ;; flags a L for beginning of infection
   inc-countdown             ;; individual incubation countdown
+  contact-list
 ]
 
 symptomatics-own [
@@ -54,6 +55,7 @@ symptomatics-own [
   rec-countdown             ;; individual recovery countdown
   death-countdown           ;; individual death countdown
   iso-countdown             ;; idnividual isolation countdown
+  contact-list
 ]
 
 asymptomatics-own [
@@ -180,6 +182,9 @@ to count-contacts
     set LI-tick (LI-tick + ((count symptomatics in-radius z-contact with [z-contact >= distance myself])))
     set LR-tick (LR-tick + ((count recovereds in-radius z-contact with [z-contact >= distance myself])))
     set LA-tick (LA-tick + ((count asymptomatics in-radius z-contact with [z-contact >= distance myself])))
+
+    let trace [self] of susceptibles in-radius z-contact with [z-contact >= distance myself]
+    foreach trace [contact -> set contact-list lput contact contact-list]
   ]
   set LL-tick (LL-tick / 2)
 
@@ -341,6 +346,17 @@ to modify-lockdown
   if isolate-symptomatics? and not imposed-lockdown?  [
     ask recovereds with [shape = "person-outline"] [not-isolate]
   ]
+
+  if test-and-trace? [
+  ask symptomatics [
+      let p (random 100 + 1)
+      if p <= test-coverage [
+        foreach contact-list
+        [contact -> ask contact [isolate]
+        ]
+      ]
+    ]
+  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -358,7 +374,7 @@ end
 ;;;;;;;;;;;;;;;;;;; GO SUPPORT ;;;;;;;;;;;;;;;;;;;;;;
 
 to check-travel
-  if (count symptomatics) < lockdown-threshold-num [              ;; if people can travel and lockdown is not active
+  if (count symptomatics) < lockdown-threshold-num [          ;; if people can travel and lockdown is not active
     let p (random 100 + 1)                                    ;; one person gets randomly infected per tick depending on travel strictness
     if p >= (travel-strictness) [                             ;; 1% chance if 100% strictness, 100% chance if 0% strictness
       ask susceptibles-on (n-of 1 patches) [set-breed-latent]
@@ -381,6 +397,7 @@ to set-breed-latent
   set color yellow
   set to-become-infected? false
   set inc-countdown (log-normal incubation-mean incubation-stdev)
+  set contact-list []
   check-outline
 end
 
@@ -633,10 +650,10 @@ p-infect-init
 HORIZONTAL
 
 SLIDER
-1202
-408
-1395
-441
+1134
+373
+1327
+406
 initial-inf
 initial-inf
 0
@@ -648,10 +665,10 @@ initial-inf
 HORIZONTAL
 
 PLOT
-40
-510
-448
-714
+12
+530
+420
+734
 Simulation populations
 NIL
 NIL
@@ -687,10 +704,10 @@ radius
 HORIZONTAL
 
 SLIDER
-16
-344
-218
-377
+15
+368
+217
+401
 lockdown-strictness
 lockdown-strictness
 0
@@ -730,10 +747,10 @@ infection parameters
 1
 
 TEXTBOX
-1251
-376
-1401
-394
+1252
+355
+1402
+373
 model options
 11
 0.0
@@ -832,10 +849,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1202
-446
-1374
-479
+1134
+411
+1306
+444
 duration
 duration
 0
@@ -872,10 +889,10 @@ countdowns
 1
 
 SLIDER
-15
-228
-256
-261
+16
+219
+257
+252
 lockdown-threshold
 lockdown-threshold
 0
@@ -887,42 +904,42 @@ lockdown-threshold
 HORIZONTAL
 
 SWITCH
-1203
-486
-1365
-519
+1135
+495
+1297
+528
 imposed-lockdown?
 imposed-lockdown?
-1
+0
 1
 -1000
 
 TEXTBOX
-53
+54
+195
 204
-203
-222
-lockdown parameters
+213
+control measures parameters
 11
 0.0
 1
 
 SWITCH
-1204
-523
-1361
-556
+1136
+532
+1293
+565
 control-measures?
 control-measures?
-1
+0
 1
 -1000
 
 SLIDER
-15
-384
-223
-417
+14
+408
+222
+441
 protection-strength
 protection-strength
 0
@@ -934,10 +951,10 @@ protection-strength
 HORIZONTAL
 
 SWITCH
-1205
-602
-1345
-635
+1137
+611
+1277
+644
 closed-system?
 closed-system?
 1
@@ -945,10 +962,10 @@ closed-system?
 -1000
 
 SLIDER
-16
-425
-200
-458
+15
+449
+199
+482
 travel-strictness
 travel-strictness
 0
@@ -1130,10 +1147,10 @@ days
 HORIZONTAL
 
 SWITCH
-1204
-563
-1381
-596
+1136
+572
+1313
+605
 isolate-symptomatics?
 isolate-symptomatics?
 0
@@ -1141,10 +1158,10 @@ isolate-symptomatics?
 -1000
 
 SLIDER
-16
-466
-188
-499
+15
+490
+187
+523
 isolation-strictness
 isolation-strictness
 0
@@ -1182,10 +1199,10 @@ days
 HORIZONTAL
 
 SLIDER
-16
-306
-228
-339
+17
+297
+229
+330
 isolate-threshold
 isolate-threshold
 0
@@ -1197,10 +1214,10 @@ isolate-threshold
 HORIZONTAL
 
 SLIDER
-15
-269
-230
-302
+16
+260
+231
+293
 control-threshold
 control-threshold
 0
@@ -1209,6 +1226,47 @@ control-threshold
 1.00
 1
 % infecteds
+HORIZONTAL
+
+SWITCH
+1313
+457
+1455
+490
+test-and-trace?
+test-and-trace?
+0
+1
+-1000
+
+SLIDER
+266
+434
+493
+467
+testtrace-threshold
+testtrace-threshold
+0
+100
+0.0
+1.00
+1
+% infecteds
+HORIZONTAL
+
+SLIDER
+266
+473
+479
+506
+test-coverage
+test-coverage
+0
+100
+100.0
+1
+1
+% of infecteds
 HORIZONTAL
 
 @#$#@#$#@
