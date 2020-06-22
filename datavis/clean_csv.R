@@ -4,6 +4,17 @@ library(stringr)
 library(ggnewscale)
 theme_set(theme_minimal())
 
+# various snippets
+
+# final death count
+# deads_aggr %>%
+#   group_by(step) %>%
+#   filter(step == 365) %>%
+#   summarise(sum(mean))
+
+# max count of a breed at any time
+# max(data_aggr[data_aggr$breed == "symptomatics",]$mean)
+
 
 # TO-DO: 
 # - find a way to add a legend clarifying lockdown colour
@@ -11,8 +22,8 @@ theme_set(theme_minimal())
 ############################## DATA WRANGLING #################################
 
 # raw dataset (multiple csvs)
-path = "results/2020-06-15_sizetest1"
-pattern = "2020-06-15_sizetest1_" # date and test name
+path = "results/2020-06-19_slow-weak"
+pattern = "2020-06-19_slow-weak_" # date and test name
 
 if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
   
@@ -201,11 +212,11 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
   new_scale_fill() +
   geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
   geom_line(aes(color=breed), size = 1) +
-  coord_cartesian(ylim = c(0, pop_size)) +
+  coord_cartesian(ylim = c(0, pop_size), xlim = c(0, 182)) +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
   scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
   labs(x = "day", y = sprintf("mean count over %s runs", num_runs))
 
 ######### AVERAGE CONTACTS OVER TIME PLOT

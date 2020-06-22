@@ -629,10 +629,6 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;; EXPERIMENT REPORTERS ;;;;;;;;;;;;;;;;
 
-to-report count.lockdown
-  report count turtles with [shape = "person-outline"]
-end
-
 to-report dead-0-29
   report count deads with [age = "0-29"]
 end
@@ -730,7 +726,7 @@ initial-inf
 initial-inf
 0
 100
-0.4
+0.1
 1.00
 1
 %
@@ -769,7 +765,7 @@ z-contact-min
 z-contact-min
 0
 71
-300.0
+2.0
 1
 1
 radius
@@ -784,7 +780,7 @@ lockdown-strictness
 lockdown-strictness
 0
 100
-80.0
+90.0
 1
 1
 %
@@ -929,7 +925,7 @@ duration
 duration
 0
 10
-3.0
+1.0
 1
 1
 years
@@ -969,7 +965,7 @@ lockdown-threshold
 lockdown-threshold
 0
 100
-4.0
+0.0
 1.00
 1
 % infecteds
@@ -1016,7 +1012,7 @@ protection-strength
 protection-strength
 0
 100
-60.0
+70.0
 1
 1
 %
@@ -1042,7 +1038,7 @@ travel-strictness
 travel-strictness
 0
 100
-40.0
+100.0
 1
 1
 %
@@ -1238,7 +1234,7 @@ isolation-strictness
 isolation-strictness
 0
 100
-50.0
+100.0
 1
 1
 %
@@ -1279,7 +1275,7 @@ isolate-threshold
 isolate-threshold
 0
 100
-4.0
+0.0
 1.00
 1
 % infecteds
@@ -1294,7 +1290,7 @@ control-threshold
 control-threshold
 0
 100
-4.0
+0.0
 1.00
 1
 % infecteds
@@ -1307,7 +1303,7 @@ SWITCH
 605
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1320,7 +1316,7 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-4.0
+0.0
 1.00
 1
 % infecteds
@@ -1335,7 +1331,7 @@ asym-test-coverage
 asym-test-coverage
 0
 100
-100.0
+6.0
 1
 1
 % of population
@@ -1674,111 +1670,6 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="base" repetitions="1" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <metric>count susceptibles</metric>
-    <metric>count latents</metric>
-    <metric>count symptomatics</metric>
-    <metric>count asymptomatics</metric>
-    <metric>count recovereds</metric>
-    <metric>count deads</metric>
-    <metric>count.lockdown</metric>
-    <metric>num-contacts</metric>
-    <metric>dead-0-29</metric>
-    <metric>dead-30-59</metric>
-    <metric>dead-60+</metric>
-    <enumeratedValueSet variable="initial-inf">
-      <value value="0.4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="incubation-mean">
-      <value value="1.6"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="imposed-lockdown?">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="death-stdev">
-      <value value="8.21"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="closed-system?">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="control-threshold">
-      <value value="4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="recovery-stdev">
-      <value value="6.7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="immunity-mean">
-      <value value="365"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="isolate-symptomatics?">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="control-measures?">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="asym-infections">
-      <value value="60"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="iso-countdown-max">
-      <value value="14"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="p-infect-init">
-      <value value="30"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="protection-strength">
-      <value value="60"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="duration">
-      <value value="3"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="travel-strictness">
-      <value value="40"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="lockdown-threshold">
-      <value value="4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="isolation-strictness">
-      <value value="50"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="incubation-stdev">
-      <value value="0.4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="recovery-mean">
-      <value value="20.5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="p-death">
-      <value value="2.5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="death-mean">
-      <value value="16"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="mean-iso-reduction">
-      <value value="1"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="isolate-threshold">
-      <value value="4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="lockdown-strictness">
-      <value value="80"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="z-contact-min">
-      <value value="2"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="min-pxcor">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="min-pycor">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="max-pxcor">
-      <value value="299"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="max-pycor">
-      <value value="299"/>
-    </enumeratedValueSet>
-  </experiment>
   <experiment name="p-death-0" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
@@ -2536,6 +2427,585 @@ NetLogo 6.1.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="z-contact-min">
       <value value="2"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="slow-weak" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count susceptibles</metric>
+    <metric>count latents</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
+    <metric>count.lockdown</metric>
+    <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
+    <enumeratedValueSet variable="initial-inf">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-test-coverage">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="immunity-mean">
+      <value value="365"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protection-strength">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mean-iso-reduction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sym-test-coverage">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="0.16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infections">
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="iso-countdown-max">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-init">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="travel-strictness">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-strictness">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-death">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-strictness">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="0.16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pxcor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pycor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pxcor">
+      <value value="299"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pycor">
+      <value value="299"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="slow-strong" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count susceptibles</metric>
+    <metric>count latents</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
+    <metric>count.lockdown</metric>
+    <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
+    <enumeratedValueSet variable="initial-inf">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-test-coverage">
+      <value value="8"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="immunity-mean">
+      <value value="365"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protection-strength">
+      <value value="70"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mean-iso-reduction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sym-test-coverage">
+      <value value="90"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="0.15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infections">
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="iso-countdown-max">
+      <value value="14"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-init">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="travel-strictness">
+      <value value="90"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-strictness">
+      <value value="90"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-death">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-strictness">
+      <value value="90"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pxcor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pycor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pxcor">
+      <value value="299"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pycor">
+      <value value="299"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="fast-weak" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count susceptibles</metric>
+    <metric>count latents</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
+    <metric>count.lockdown</metric>
+    <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
+    <enumeratedValueSet variable="initial-inf">
+      <value value="0.01"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-test-coverage">
+      <value value="0.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="immunity-mean">
+      <value value="365"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protection-strength">
+      <value value="70"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mean-iso-reduction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sym-test-coverage">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infections">
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="iso-countdown-max">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-init">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="travel-strictness">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-strictness">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-death">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-strictness">
+      <value value="90"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pxcor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pycor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pxcor">
+      <value value="299"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pycor">
+      <value value="299"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="fast-strong" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count susceptibles</metric>
+    <metric>count latents</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
+    <metric>count.lockdown</metric>
+    <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
+    <enumeratedValueSet variable="initial-inf">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-test-coverage">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="immunity-mean">
+      <value value="365"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protection-strength">
+      <value value="70"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mean-iso-reduction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sym-test-coverage">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infections">
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="iso-countdown-max">
+      <value value="14"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-init">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="travel-strictness">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-strictness">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-death">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-strictness">
+      <value value="90"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pxcor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-pycor">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pxcor">
+      <value value="299"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pycor">
+      <value value="299"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="base" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count susceptibles</metric>
+    <metric>count latents</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
+    <metric>num-contacts</metric>
+    <metric>dead-0-29</metric>
+    <metric>dead-30-59</metric>
+    <metric>dead-60+</metric>
+    <metric>currently-locked?</metric>
+    <enumeratedValueSet variable="initial-inf">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-test-coverage">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="immunity-mean">
+      <value value="365"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protection-strength">
+      <value value="70"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mean-iso-reduction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="closed-system?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="sym-test-coverage">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="control-measures?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="iso-countdown-max">
+      <value value="14"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infections">
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-init">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="travel-strictness">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-strictness">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-death">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-strictness">
+      <value value="90"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolate-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="z-contact-min">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pxcor">
+      <value value="49"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pycor">
+      <value value="49"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
