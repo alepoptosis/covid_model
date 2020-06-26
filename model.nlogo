@@ -24,6 +24,7 @@ globals [
   control-threshold-num
   isolate-threshold-num
   testtrace-threshold-num
+  shelter-threshold-num
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
@@ -101,8 +102,10 @@ to setup-turtles
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
       set-age
-        if test-and-trace? [
+      if test-and-trace? [
         set traced? false
+      ]
+      if shelter-at-risk? or test-and-trace? [
         set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
       ]
     ]
@@ -137,6 +140,7 @@ to setup-globals
   set control-threshold-num (absolute-threshold control-threshold)
   set isolate-threshold-num (absolute-threshold isolate-threshold)
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
+  set shelter-threshold-num (absolute-threshold shelter-threshold)
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -365,16 +369,30 @@ to modify-lockdown
 
   ;; ensures if Is become Rs before their iso-countdown is done
   ;; and there is not end lockdown to release them, they are not stuck in isolation
-  if isolate-symptomatics? and not imposed-lockdown?  [
+  ;; same for elder agents who are told to isolate because traced contacts
+  if not imposed-lockdown? and (isolate-symptomatics? or test-and-trace?) [
     ask recovereds with [shape = "person-outline"] [not-isolate]
   ]
 
   ;; tests Ls, Is and As, traces their contacts and isolates them under right conditions
-  if test-and-trace? [
-    if count(symptomatics) >= testtrace-threshold-num [
+  if test-and-trace? and count(symptomatics) >= testtrace-threshold-num [
       test
       trace
       isolate-all
+  ]
+
+  if shelter-at-risk? [
+    ifelse count(symptomatics) >= shelter-threshold-num
+    [
+      ask susceptibles with [age = "60+"] [
+      let p (random 100 + 1)
+      if p <= shelter-adherance [isolate]
+      ]
+    ]
+    [
+      if not currently-locked? [
+        ask susceptibles with [age = "60+"] [not-isolate]
+      ]
     ]
   ]
 end
@@ -409,7 +427,7 @@ to set-breed-susceptible
   set color green
   set to-become-latent? false
   set p-infect p-infect-init / 100
-  if test-and-trace? [
+  if shelter-at-risk? or test-and-trace? [
     set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
   ]
   check-outline
@@ -553,8 +571,10 @@ end
 to check-isolation    ;; generic procedure for checking isolation countdown
   ifelse iso-countdown <= 0
   [
-    ifelse imposed-lockdown? and currently-locked?    ;; keeps people isolated
-    [isolate]                                         ;; if they finish isolation and lockdown is on
+    ifelse imposed-lockdown? and currently-locked?    ;; keeps people isolated if they finish isolation and lockdown is on
+    [
+      isolate
+    ]
     [
       not-isolate
       set traced? false
@@ -628,6 +648,10 @@ end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;; EXPERIMENT REPORTERS ;;;;;;;;;;;;;;;;
+
+to-report count.locked
+  report count turtles with [shape = "person-outline"]
+end
 
 to-report dead-0-29
   report count deads with [age = "0-29"]
@@ -734,9 +758,9 @@ HORIZONTAL
 
 PLOT
 11
-541
+539
 495
-745
+743
 Simulation populations
 NIL
 NIL
@@ -773,14 +797,14 @@ HORIZONTAL
 
 SLIDER
 8
-365
+363
 210
-398
+396
 lockdown-strictness
 lockdown-strictness
 0
 100
-90.0
+100.0
 1
 1
 %
@@ -857,10 +881,10 @@ p-death
 HORIZONTAL
 
 SLIDER
-294
-33
-466
-66
+317
+32
+489
+65
 incubation-mean
 incubation-mean
 0
@@ -872,10 +896,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-293
-75
-465
-108
+316
+74
+488
+107
 incubation-stdev
 incubation-stdev
 0
@@ -887,10 +911,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-292
-121
-464
-154
+315
+120
+487
+153
 recovery-mean
 recovery-mean
 0
@@ -902,10 +926,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-291
-161
-463
-194
+314
+160
+486
+193
 recovery-stdev
 recovery-stdev
 0
@@ -932,10 +956,10 @@ years
 HORIZONTAL
 
 SLIDER
-291
-281
-463
 314
+280
+486
+313
 immunity-mean
 immunity-mean
 0
@@ -965,7 +989,7 @@ lockdown-threshold
 lockdown-threshold
 0
 100
-0.0
+8.0
 1.00
 1
 % infecteds
@@ -978,7 +1002,7 @@ SWITCH
 485
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
@@ -999,15 +1023,15 @@ SWITCH
 522
 control-measures?
 control-measures?
-0
+1
 1
 -1000
 
 SLIDER
 7
-405
+403
 211
-438
+436
 protection-strength
 protection-strength
 0
@@ -1025,15 +1049,15 @@ SWITCH
 646
 closed-system?
 closed-system?
-1
+0
 1
 -1000
 
 SLIDER
 15
-450
+448
 199
-483
+481
 travel-strictness
 travel-strictness
 0
@@ -1105,7 +1129,7 @@ MONITOR
 1121
 703
 % in lockdown
-(count turtles with [shape = \"person-outline\"]) / \ncount turtles with [not member? self deads] \n* 100
+count.locked / \ncount turtles with [not member? self deads] \n* 100
 0
 1
 11
@@ -1155,10 +1179,10 @@ count turtles with [z-contact-init = (max [z-contact-init] of turtles)]
 11
 
 SLIDER
-291
-202
-463
-235
+314
+201
+486
+234
 death-mean
 death-mean
 0
@@ -1170,10 +1194,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-291
-242
-463
-275
+314
+241
+486
+274
 death-stdev
 death-stdev
 0
@@ -1200,10 +1224,10 @@ asym-infections
 HORIZONTAL
 
 SLIDER
-290
-320
-471
-353
+313
+319
+494
+352
 iso-countdown-max
 iso-countdown-max
 0
@@ -1221,15 +1245,15 @@ SWITCH
 562
 isolate-symptomatics?
 isolate-symptomatics?
-0
+1
 1
 -1000
 
 SLIDER
 15
-491
+489
 187
-524
+522
 isolation-strictness
 isolation-strictness
 0
@@ -1252,10 +1276,10 @@ count asymptomatics
 11
 
 SLIDER
-288
-358
-474
-391
+311
+357
+497
+390
 mean-iso-reduction
 mean-iso-reduction
 0
@@ -1290,7 +1314,7 @@ control-threshold
 control-threshold
 0
 100
-0.0
+4.0
 1.00
 1
 % infecteds
@@ -1316,17 +1340,17 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-0.0
+8.0
 1.00
 1
 % infecteds
 HORIZONTAL
 
 SLIDER
-212
-492
-473
-525
+215
+493
+476
+526
 asym-test-coverage
 asym-test-coverage
 0
@@ -1338,10 +1362,10 @@ asym-test-coverage
 HORIZONTAL
 
 SLIDER
-212
-453
-440
-486
+215
+454
+443
+487
 sym-test-coverage
 sym-test-coverage
 0
@@ -1351,6 +1375,47 @@ sym-test-coverage
 1
 % of cases
 HORIZONTAL
+
+SWITCH
+1310
+453
+1449
+486
+shelter-at-risk?
+shelter-at-risk?
+1
+1
+-1000
+
+SLIDER
+220
+407
+429
+440
+shelter-adherance
+shelter-adherance
+0
+100
+100.0
+1
+1
+% of 60+
+HORIZONTAL
+
+SLIDER
+230
+206
+267
+393
+shelter-threshold
+shelter-threshold
+0
+100
+4.0
+1
+1
+% infecteds
+VERTICAL
 
 @#$#@#$#@
 ## WHAT IS IT?

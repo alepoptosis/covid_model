@@ -129,6 +129,12 @@
 
 - Implemented full test and trace, applied to the asymptomatic or pre-symptomatic infecteds with probability test-coverage, and to symptomatics with probability symp-test-coverage, with contacts isolating in the same fashion as the isolate-symptomatics? procedure
 
-## week 6
+## Week 6
+
+### 23/6
 
 - Changed visualisation to use number of cases against threshold to determine whether lockdown is on instead of number of isolated agents
+
+### 26/6
+
+- Implemented shelter in place system for agents in the 60+ range

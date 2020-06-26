@@ -43,6 +43,10 @@ protection-strength     G       strength of measures to reduce transmission
 rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
+shelter-adherance       G       what percentage of 60+ isolate
+shelter-at-risk?        G       whether susceptible 60+ are asked to isolate
+shelter-threshold       G       percentage of symptomatics to trigger sheltering
+shelter-threshold-num   G       number of symptomatics to trigger sheltering 
 start-isolation?        G       whether isolation of symptomatics should start
 sym-test-coverage       G       percentage of symptomatic cases tested
 test-and-trace?         G       whether the test and trace system is in place
