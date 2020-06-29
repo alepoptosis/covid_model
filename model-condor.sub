@@ -9,4 +9,4 @@ when_to_transfer_output = ON_EXIT
 log = DATE_NAME.log
 error = DATE_NAME.err
 output = DATE_NAME_$(Process).csv
-Queue 100
+Queue 10

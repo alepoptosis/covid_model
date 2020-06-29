@@ -138,3 +138,12 @@
 ### 26/6
 
 - Implemented shelter in place system for agents in the 60+ range
+- Designed experiments for testing different combinations of control measures
+- Reintroduced count of locked agents as a reporter
+
+## Week 7
+
+### 29/6
+
+- Renamed R script to base_vis
+- Streamlined R script options so only first line has to be changed
