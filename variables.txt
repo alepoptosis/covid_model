@@ -11,6 +11,9 @@ contact-list            LIA     list of susceptibles the person interacted with
 control-measures?       G       whether add control measures after 1st lockdown
 control-threshold       G       percentage of symptomatics to trigger mask use
 control-threshold-num   G       number of symptomatics to trigger mask use
+count-infecteds-0-29    G       running total of I and A with age 0-29  
+count-infecteds-30-59   G       running total of I and A with age 30-59  
+count-infecteds-60+     G       running total of I and A with age 60+  
 currently-locked?       G       whether a lockdown is in progress
 death-countdown         I       individual death countdown
 death-mean              G       mean of the normal dist for death
@@ -43,10 +46,10 @@ protection-strength     G       strength of measures to reduce transmission
 rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
-shelter-adherance       G       what percentage of 60+ isolate
-shelter-at-risk?        G       whether susceptible 60+ are asked to isolate
-shelter-threshold       G       percentage of symptomatics to trigger sheltering
-shelter-threshold-num   G       number of symptomatics to trigger sheltering 
+shield-adherance        G       what percentage of 60+ isolate
+shield-at-risk?         G       whether susceptible 60+ are asked to isolate
+shield-threshold        G       percentage of symptomatics to trigger shielding
+shield-threshold-num    G       number of symptomatics to trigger shielding 
 start-isolation?        G       whether isolation of symptomatics should start
 sym-test-coverage       G       percentage of symptomatic cases tested
 test-and-trace?         G       whether the test and trace system is in place

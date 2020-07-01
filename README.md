@@ -147,3 +147,11 @@
 
 - Renamed R script to base_vis
 - Streamlined R script options so only first line has to be changed
+
+### 30/6
+
+- Created an R script to streamline visualisation of varying parameter experiments
+
+### 1/6
+
+- Changed wording of shelter-at-risk mechanism to shield-at-risk to be more coherent with UK terminology
