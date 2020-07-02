@@ -2,6 +2,7 @@ library(tidyverse)
 library(RColorBrewer)
 library(stringr)
 library(ggnewscale)
+library(viridis)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
@@ -69,18 +70,24 @@ if (length(varying_par) == 1) {
     geom_line(aes(color = metric)) +
     coord_cartesian(ylim = c(0, 35000)) +
     labs(x = varying_par)
+  
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%sdeath-peak.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
 } 
 
 if (length(varying_par) == 2) {
   summary_aggr = summary %>%
     group_by(asym_test_coverage, sym_test_coverage, metric) %>%
-    summarise(mean = mean(count))
+    summarise(mean = mean(count), stdev = sd(count))
   
   ggplot(subset(summary_aggr, metric == "death_toll"), 
          aes(x = get(varying_par[1]), y = get(varying_par[2]),
                       fill = mean)) +
     geom_tile(aes(fill = mean)) +
-    geom_text(aes(label = round(mean, 0))) +
+    geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
     scale_fill_viridis() +
     scale_y_continuous(breaks = seq(0, 100, by = 25)) +
     scale_x_continuous(breaks = seq(0, 100, by = 25)) +
@@ -97,7 +104,7 @@ if (length(varying_par) == 2) {
          aes(x = get(varying_par[1]), y = get(varying_par[2]),
              fill = mean)) +
     geom_tile(aes(fill = mean)) +
-    geom_text(aes(label = round(mean, 0))) +
+    geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
     scale_fill_viridis() +
     scale_y_continuous(breaks = seq(0, 100, by = 25)) +
     scale_x_continuous(breaks = seq(0, 100, by = 25)) +
@@ -110,9 +117,4 @@ if (length(varying_par) == 2) {
            width = g_width, height = g_height)
   }
   
-}
-
-if (export_plots) {
-  ggsave(sprintf("%s/%sdeath-peak.pdf", dest_path, pattern), 
-         width = g_width, height = g_height)
 }

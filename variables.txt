@@ -8,9 +8,9 @@ asym-infections         G       the percentage of asymptomatic symptomatics
 asym-test-coverage      G       percentage of symptomless population tested
 closed-system?          G       whether outside infections can occur
 contact-list            LIA     list of susceptibles the agent interacted with
-control-measures?       G       whether add control measures after 1st lockdown
-control-threshold       G       percentage of symptomatics to trigger mask use
-control-threshold-num   G       number of symptomatics to trigger mask use
+personal-protection?    G       whether add personal measures after 1st lockdown
+personal-threshold      G       percentage of symptomatics to trigger mask use
+personal-threshold-num  G       number of symptomatics to trigger mask use
 count-infecteds-0-29    G       running total of I and A with age 0-29  
 count-infecteds-30-59   G       running total of I and A with age 30-59  
 count-infecteds-60+     G       running total of I and A with age 60+  

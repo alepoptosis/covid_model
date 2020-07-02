@@ -160,3 +160,4 @@
 ### 2/6
 
 - Edited script for visualisation of varying parameter experiments to support two varying parameters by using a heatmap instead of a line chart
+- Changed the name of the mechanic describing the use of masks/social distancing/hand washing from control measures to personal protection
