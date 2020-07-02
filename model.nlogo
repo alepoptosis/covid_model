@@ -164,7 +164,7 @@ to go
     remove-infecteds          ;; turns I into R after rec-countdown ticks or D after death-countdown ticks
     lose-immunity             ;; turns R back into S after imm-countdown ticks
     update-breeds             ;; updates breeds as necessary
-    modify-lockdown           ;; modifies the lockdown depending on the new number of S, and implements isolation of Is and test-and-trace
+    modify-measures           ;; modifies the lockdown depending on the new number of S, and implements isolation of Is and test-and-trace
     tick                      ;; goes to next day
   ] [
     stop
@@ -361,7 +361,7 @@ to update-breeds
   ask recovereds with [to-become-susceptible? = true] [set-breed-susceptible]
 end
 
-to modify-lockdown
+to modify-measures
   if imposed-lockdown? [
     ifelse (count symptomatics) > lockdown-threshold-num
     [start-lockdown]
