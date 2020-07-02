@@ -155,3 +155,8 @@
 ### 1/6
 
 - Changed wording of shelter-at-risk mechanism to shield-at-risk to be more coherent with UK terminology
+- Added reporters of number of infecteds by age
+
+### 2/6
+
+- Edited script for visualisation of varying parameter experiments to support two varying parameters by using a heatmap instead of a line chart

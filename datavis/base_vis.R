@@ -24,7 +24,7 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-06-26_tt-only"
+run_name = "2020-06-30_tt-only"
 dest_path = "vis controls"
 g_width = 11.69
 g_height = 8.27

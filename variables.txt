@@ -3,11 +3,11 @@
 
 name                    access  description
 
-age                     ALL     the age range of the person (0-29, 30-59, 60+)
+age                     ALL     the age range of the agent (0-29, 30-59, 60+)
 asym-infections         G       the percentage of asymptomatic symptomatics
 asym-test-coverage      G       percentage of symptomless population tested
 closed-system?          G       whether outside infections can occur
-contact-list            LIA     list of susceptibles the person interacted with
+contact-list            LIA     list of susceptibles the agent interacted with
 control-measures?       G       whether add control measures after 1st lockdown
 control-threshold       G       percentage of symptomatics to trigger mask use
 control-threshold-num   G       number of symptomatics to trigger mask use
@@ -27,13 +27,13 @@ inc-countdown           L       individual incubation countdown
 incubation-mean         G       mean of the log-normal dist for incubation
 incubation-stdev        G       stdev of the log-normal dist for incubation
 initial-inf             G       number of symptomatics at start of simulation
-iso-countdown           ALL     individual isolation countdown
+iso-countdown           ALL     individual self-isolation countdown
 iso-countdown-max       G       maximum isolation period for symptomatics
 isolate-symptomatics?   G       whether symptomatics should be asked to isolate
 isolate-threshold       G       percentage of symptomatics to trigger isolation
 isolate-threshold-num   G       number of symptomatics to trigger isolation
-isolation-strictness    G       the percentage of people isolating for max days
-lockdown-strictness     G       likelihood a person will obey lockdown
+isolation-strictness    G       the percentage of agents isolating for max days
+lockdown-strictness     G       likelihood a agent will obey lockdown
 lockdown-threshold      G       percentage of symptomatics to trigger lockdown
 lockdown-threshold-num  G       number of symptomatics to trigger lockdown
 mean-iso-reduction      G       mean of the poisson dist for isolation reduction
@@ -53,14 +53,14 @@ shield-threshold-num    G       number of symptomatics to trigger shielding
 start-isolation?        G       whether isolation of symptomatics should start
 sym-test-coverage       G       percentage of symptomatic cases tested
 test-and-trace?         G       whether the test and trace system is in place
-tested?                 LIA     whether the person is aware they're infected
+tested?                 LIA     whether the agent is aware they're infected
 testtrace-threshold     G       percentage of symptomatics to trigger testing
 testtrace-threshold-num G       number of symptomatics to trigger testing
 to-become-infected?     L       flags a L for beginning of infection
 to-become-latent?       S       flags a S for exposure
 to-become-susceptible?  R       flags a R for loss of immunity
 to-remove               IA      flags an I/A for removal (recovery or death)
-traced?                 ALL     whether the person is a traced contact
+traced?                 ALL     whether the agent is a traced contact
 travel-strictness       G       probability of outside infections occurring
 will-die?               I       whether the symptomatic will die or recover
 z-contact               ALL     individual radius of contact neighbourhood
