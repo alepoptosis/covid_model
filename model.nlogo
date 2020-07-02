@@ -21,7 +21,7 @@ globals [
   num-contacts
   pop-size
   lockdown-threshold-num
-  control-threshold-num
+  personal-threshold-num
   isolate-threshold-num
   testtrace-threshold-num
   shield-threshold-num
@@ -141,7 +141,7 @@ to setup-globals
   set currently-locked? false
   set start-isolation? false
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
-  set control-threshold-num (absolute-threshold control-threshold)
+  set personal-threshold-num (absolute-threshold personal-threshold)
   set isolate-threshold-num (absolute-threshold isolate-threshold)
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
   set shield-threshold-num (absolute-threshold shield-threshold)
@@ -285,7 +285,7 @@ to expose-susceptibles
     ;; if the option is on and the first lockdown has happened,
     ;; or, if lockdowns are not happening, the number of infecteds is past the threshold
     ;; lower probability of transmissions through measures such as the use of masks, 2 metre distancing, etc.
-    if control-measures? and (first-lockdown? or (count symptomatics) > control-threshold-num) [
+    if personal-protection? and (first-lockdown? or (count symptomatics) > personal-threshold-num) [
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)
     ]
 
@@ -1034,10 +1034,10 @@ control measures parameters
 SWITCH
 1136
 489
-1293
+1306
 522
-control-measures?
-control-measures?
+personal-protection?
+personal-protection?
 1
 1
 -1000
@@ -1323,10 +1323,10 @@ HORIZONTAL
 SLIDER
 6
 247
-221
+230
 280
-control-threshold
-control-threshold
+personal-threshold
+personal-threshold
 0
 100
 4.0
@@ -1420,7 +1420,7 @@ HORIZONTAL
 SLIDER
 230
 206
-267
+263
 393
 shield-threshold
 shield-threshold
