@@ -6,8 +6,8 @@ library(viridis)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
-run_name = "2020-06-30_vary-tt-coverage-combo"
-varying_par = c("asym_test_coverage", "sym_test_coverage") # use version with _ instead of -
+run_name = "2020-06-30_vary-tt-threshold"
+varying_par = "testtrace_threshold" # use version with _ instead of -
 dest_path = "vis vary"
 g_width = 11.69
 g_height = 8.27
