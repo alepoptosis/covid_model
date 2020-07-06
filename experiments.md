@@ -1195,7 +1195,7 @@ count-infecteds-60+
 ["max-pxcor" 299]
 ["max-pycor" 299]
 
-## vary-tt-coverage-combo
+## vary-tt-coverage-combo-2
 
 ["initial-inf" 0.1]
 ["duration" 3]

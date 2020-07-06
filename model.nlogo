@@ -949,7 +949,7 @@ recovery-stdev
 recovery-stdev
 0
 10
-6.7
+6.6
 0.1
 1
 NIL
@@ -5044,7 +5044,7 @@ NetLogo 6.1.1
       <value value="299"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="vary-tt-coverage-combo" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="vary-tt-coverage-combo-2" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
