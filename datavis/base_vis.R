@@ -24,8 +24,8 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-06-30_tt-only"
-dest_path = "vis controls"
+run_name = "2020-07-03_pp-tt-ld"
+dest_path = "vis optimal"
 g_width = 11.69
 g_height = 8.27
 export_plots = TRUE
@@ -63,7 +63,7 @@ if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
 }
 
 # subset containing only data on counts, run number and step
-data = raw[ ,grepl("^count|^step|^run_num", names(raw))]
+data = raw[ ,grepl("^count |^step|^run_num", names(raw))]
 
 # turns data into long format for plotting
 data_long = data %>% pivot_longer (
@@ -76,15 +76,15 @@ data_long = data %>% pivot_longer (
 # aggregates data from all runs into an average count and stdev, min and max
 data_aggr = data_long %>%
   group_by(step, breed) %>%
-  summarise(mean = mean(count), stdev = sd(count),
+  summarise(mean = mean(count), stdev = round(sd(count), 2),
             max = max(count), min = min(count))
 
 # remove lockdown info from other datasets
-data_long = data_long %>% filter(breed != "locked")
-data_aggr = data_aggr %>% filter(breed != "locked")
+# data_long = data_long %>% filter(breed != "locked")
+# data_aggr = data_aggr %>% filter(breed != "locked")
 
 # subset containing parameter information for each run
-par = unique(raw[ ,grepl("^(?!.*(count |step|contacts|dead|currently))", 
+par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
                           names(raw), perl=TRUE)])
 
 # subset containing lockdown info
@@ -113,7 +113,6 @@ cont_aggr = contact %>%
   summarise(mean = mean(num_contacts), stdev = sd(num_contacts),
             max = max(num_contacts), min = min(num_contacts))
 
-
 # subset containing info on dead agents
 deads = raw[ ,grepl("^dead|run_num|step|deads", names(raw))]
 
@@ -133,8 +132,37 @@ deads_long = deads_long %>%
 # aggregated version of deads info
 deads_aggr = deads_long %>%
   group_by(step, age) %>%
-  summarise(mean = mean(count), stdev = sd(count),
+  summarise(mean = mean(count), stdev = round(sd(count), 2),
             max = max(count), min = min(count))
+
+if ("count_infecteds_0_29" %in% colnames(raw)) {
+  # subset containing info on infected agents
+  infs = raw[ ,grepl("^count_infecteds_|run_num|step", names(raw))]
+  
+  infs = infs %>%
+    group_by(run_num, step) %>%
+    mutate(count_infecteds_total = sum(count_infecteds_0_29, count_infecteds_30_59, 
+                          `count_infecteds_60+`))
+  
+  # turns data into long format for plotting
+  infs_long = infs %>% pivot_longer (
+    cols = starts_with("count_infecteds_"),
+    names_to = "age",
+    names_prefix = "count_infecteds_",
+    values_to = "count"
+  )
+  
+  # adds column with total and new infections per step
+  infs_long = infs_long %>%
+    group_by(run_num,age) %>%
+    mutate(new_infs = c(0,diff(count)))
+  
+  # aggregated version of infecteds info
+  infs_aggr = infs_long %>%
+    group_by(step, age) %>%
+    summarise(mean = mean(count), stdev = round(sd(count), 2),
+              max = max(count), min = min(count))
+}
 
 # various plotting information
 num_runs = max(data_long$run_num) # num runs for ylabel
@@ -146,34 +174,13 @@ tot_deaths = max(data_aggr[data_aggr$breed == "deads",]$mean)
 
 # set order of breeds for legend
 order = c("susceptibles", "latents", "asymptomatics",
-          "symptomatics", "recovereds", "deads")
+          "symptomatics", "recovereds", "deads", "locked")
 
 data_long$breed = factor(data_long$breed, levels=order)
 data_aggr$breed = factor(data_aggr$breed, levels=order)
 
 
 #################################### PLOTS ####################################
-
-######### NON-AGGR BREED COUNTS OVER TIME
-
-# non_aggr_plot = function(line_data, lock_data, breeds) {
-#   ggplot(subset(line_data, breed %in% breeds),
-#          aes(x=step, y=count)) +
-#     geom_area(data = ld,
-#               aes(x = step, y = pop_size * lockdown, fill = as.factor(run_num)),
-#               inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
-#               show.legend = FALSE) +
-#     geom_line(aes(color=breed), alpha=0.7, size = 1) +
-#     scale_color_brewer(palette="Set3") +
-#     scale_fill_manual(values = rep("lightgrey", num_runs)) +
-#     coord_cartesian(ylim = c(0, pop_size)) +
-#     labs(x = "day", y = "count")
-# }
-# 
-# non_aggr_plot(data_long, ld, c("deads", "recovereds", "susceptibles",
-#                                "latents", "symptomatics", "asymptomatics"))
-# non_aggr_plot(data_long, ld, c("deads", "recovereds", "susceptibles"))
-# non_aggr_plot(data_long, ld, c("latents", "symptomatics", "asymptomatics"))
 
 ######### BREEDS AVERAGE COUNT OVER TIME PLOT, NON-AGGR LOCKDOWN
 
@@ -225,6 +232,30 @@ if (export_plots) {
 ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
        width = g_width, height = g_height)
 }
+
+######### NON-AGGR NEW INFECTIONS PLOT
+
+if ("count_infecteds_0_29" %in% colnames(raw)) {
+  
+  ggplot(subset(infs_long, age != "total"), aes(x=step, y=new_infs)) + 
+    geom_area(data = ld,
+              aes(x = step, y = (max(infs_long$new_infs) + 1) * `currently_locked?`,
+                  fill = as.factor(run_num)),
+              inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
+              show.legend = FALSE) +
+    geom_line(aes(color=age), alpha=0.8, size = 1) +
+    scale_color_brewer(palette="Set3") +
+    scale_fill_manual(values = rep("lightgrey", num_runs)) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+    coord_cartesian(xlim = c(0, num_ticks)) +
+    labs(x = "day", y = "new infections")
+
+  if (export_plots) {
+    ggsave(sprintf("%s/%sinfections.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
+}
+
 ######### CONTACTS OVER TIME PLOT
 
 ggplot(cont_aggr, aes(x=step, y=mean)) +

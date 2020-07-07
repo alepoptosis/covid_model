@@ -6,12 +6,13 @@ library(viridis)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
-run_name = "2020-06-30_vary-tt-threshold"
-varying_par = "testtrace_threshold" # use version with _ instead of -
+run_name = "2020-07-03_vary-tt-coverage-combo-2"
+varying_par = c("asym_test_coverage", "sym_test_coverage") # use version with _ instead of -
 dest_path = "vis vary"
 g_width = 11.69
 g_height = 8.27
 export_plots = TRUE
+breed_plots = FALSE
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
@@ -63,6 +64,13 @@ summary = raw %>%
              names_to = "metric",
              values_to = "count")
 
+# various plotting information
+num_runs = max(summary$run_num) # num runs for ylabel
+num_ticks = max(raw$step) # num ticks for xaxis
+pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
+
+######### DEATHS AND PEAK VS PARAM 
+
 if (length(varying_par) == 1) {
   ggplot(summary, 
          aes(x=get(varying_par), y=count, group = interaction(run_num, metric))) +
@@ -77,6 +85,8 @@ if (length(varying_par) == 1) {
            width = g_width, height = g_height)
   }
 } 
+
+######### HEATMAPS FOR 2 PARAM COMBO
 
 if (length(varying_par) == 2) {
   summary_aggr = summary %>%
@@ -94,6 +104,12 @@ if (length(varying_par) == 2) {
     theme(panel.grid.minor = element_blank()) +
     labs(x = varying_par[1], y = varying_par[2], 
          fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
+  
+  # summary_test = summary_aggr %>%
+  #   mutate(combo = paste(asym_test_coverage, sym_test_coverage))
+  # 
+  # ggplot(subset(summary_test, metric == "death_toll")) +
+  #   geom_col(aes(x = combo, y = mean)) # TO FINISH
   
   if (export_plots) {
     ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
@@ -117,4 +133,65 @@ if (length(varying_par) == 2) {
            width = g_width, height = g_height)
   }
   
+}
+
+######### BREEDS PLOT (IF OPTION TURNED ON)
+
+if (breed_plots) {
+  
+  data = raw[ ,grepl("^count|^step|^run_num|^currently", names(raw))]
+  
+  data = data %>% 
+    select(-c(starts_with("count_infecteds_"), "count locked")) %>%
+    separate("run_num", sep = "_", remove = TRUE, 
+             into = c("run_num", sprintf("%s", varying_par))) %>% 
+    pivot_longer (
+      cols = starts_with("count"),
+      names_to = "breed", 
+      names_prefix = "count ",
+      values_to = "count"
+    )
+  
+  order = c("susceptibles", "latents", "asymptomatics",
+            "symptomatics", "recovereds", "deads")
+  
+  data$breed = factor(data$breed, levels=order)
+  
+  split_data = split(data, with(data, get(varying_par)), drop = TRUE)
+  param_values = names(split_data)
+  list2env(split_data,envir=.GlobalEnv)
+  
+  for (df in param_values) {
+    
+    ld = get(df) %>% select(c("run_num", "step", "currently_locked?"))
+    
+    data_aggr = get(df) %>%
+      group_by(step, breed) %>%
+      summarise(mean = mean(count), stdev = sd(count),
+                max = max(count), min = min(count))
+    
+    ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
+      geom_area(data = ld,
+                aes(x = step, y = pop_size * `currently_locked?`, 
+                    fill = as.factor(run_num)),
+                inherit.aes = FALSE, position=position_dodge(0), 
+                alpha = 0.1, show.legend = FALSE) +
+      scale_fill_manual(values = rep("lightgrey", num_runs)) +
+      new_scale_fill() +
+      geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
+      geom_line(aes(color=breed), size = 1) +
+      coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
+      scale_color_brewer(palette="Set3") +
+      scale_fill_brewer(palette="Set3") +
+      scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
+                                                      scale = 1e-3), 
+                         breaks = seq(0, pop_size, by = 30000)) +
+      scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+      labs(x = "day", y = sprintf("mean count over %s runs", num_runs))
+    
+    if (export_plots) {
+      ggsave(sprintf("%s/%s%s_breeds.pdf", dest_path, pattern, df), 
+             width = g_width, height = g_height)
+    }
+  }
 }
