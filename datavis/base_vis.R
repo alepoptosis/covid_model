@@ -24,8 +24,8 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-03_pp-tt-ld"
-dest_path = "vis optimal"
+run_name = "2020-06-26_all"
+dest_path = "meeting"
 g_width = 11.69
 g_height = 8.27
 export_plots = TRUE
@@ -80,12 +80,17 @@ data_aggr = data_long %>%
             max = max(count), min = min(count))
 
 # remove lockdown info from other datasets
-# data_long = data_long %>% filter(breed != "locked")
-# data_aggr = data_aggr %>% filter(breed != "locked")
+data_long = data_long %>% filter(breed != "locked")
+data_aggr = data_aggr %>% filter(breed != "locked")
 
 # subset containing parameter information for each run
 par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
                           names(raw), perl=TRUE)])
+
+# save parameter file first time
+if (!file.exists(sprintf("%s/%sparameters.csv", path, pattern))) {
+  write.csv(raw, sprintf("%s/%sparameters.csv", path, pattern), row.names = FALSE)
+}
 
 # subset containing lockdown info
 
@@ -118,25 +123,25 @@ deads = raw[ ,grepl("^dead|run_num|step|deads", names(raw))]
 
 # turns data into long format for plotting
 deads_long = deads %>% pivot_longer (
-  cols = starts_with("dead"),
+  cols = contains("dead"),
   names_to = "age",
   names_prefix = "dead_",
-  values_to = "count"
-)
+  values_to = "cum_count"
+) %>%
+  mutate_at("age", ~gsub("count deads", "total", .))
 
 # adds column with new deaths per step
 deads_long = deads_long %>%
   group_by(run_num,age) %>%
-  mutate(new_deaths = c(0,diff(count)))
+  mutate(new_deaths = c(0,diff(cum_count)))
 
 # aggregated version of deads info
 deads_aggr = deads_long %>%
   group_by(step, age) %>%
-  summarise(mean = mean(count), stdev = round(sd(count), 2),
-            max = max(count), min = min(count))
-
-deads_long = deads_long %>% filter(breed != "locked")
-deads_aggr = deads_aggr %>% filter(breed != "locked")
+  summarise(mean = mean(cum_count), stdev = round(sd(cum_count), 2),
+            max = max(cum_count), min = min(cum_count),
+            mean_new = mean(new_deaths), stdev_new = round(sd(new_deaths), 2),
+            max_new = max(new_deaths), min_new = min(new_deaths))
 
 if ("count_infecteds_0_29" %in% colnames(raw)) {
   # subset containing info on infected agents
@@ -144,40 +149,56 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
   
   infs = infs %>%
     group_by(run_num, step) %>%
-    mutate(count_infecteds_total = sum(count_infecteds_0_29, count_infecteds_30_59, 
-                          `count_infecteds_60+`))
+    mutate(count_infecteds_total = sum(count_infecteds_0_29, 
+                                       count_infecteds_30_59, 
+                                       `count_infecteds_60+`))
   
   # turns data into long format for plotting
   infs_long = infs %>% pivot_longer (
     cols = starts_with("count_infecteds_"),
     names_to = "age",
     names_prefix = "count_infecteds_",
-    values_to = "count"
+    values_to = "cum_count"
   )
   
   # adds column with total and new infections per step
   infs_long = infs_long %>%
     group_by(run_num,age) %>%
-    mutate(new_infs = c(0,diff(count)))
+    mutate(new_infs = c(0,diff(cum_count)))
   
   # aggregated version of infecteds info
   infs_aggr = infs_long %>%
     group_by(step, age) %>%
-    summarise(mean = mean(count), stdev = round(sd(count), 2),
-              max = max(count), min = min(count))
+    summarise(mean = mean(cum_count), stdev = round(sd(cum_count), 2),
+              max = max(cum_count), min = min(cum_count),
+              mean_new = mean(new_infs), stdev_new = round(sd(new_infs), 2),
+              max_new = max(new_infs), min_new = min(new_infs))
 }
 
-# various plotting information
+##### various plotting information
+
+# list of measures used in run
+measures = paste(unlist(colnames(par[, 3:8])[par[1, 3:8] == "TRUE"]), collapse = ", ")
+measures = gsub("[^[:alnum:][:blank:]+\\,]", " ", measures)
+measures = gsub(" ,", ",", measures)
+measures = gsub("control measures", "personal protection", measures)
+
 num_runs = max(data_long$run_num) # num runs for ylabel
-num_ticks = max(data_aggr$step) # num ticks for xaxis
-max_cont = max(cont_aggr$mean) # max contacts for ylim (contacts plot)
+num_ticks = max(data_long$step) # num ticks for xaxis
+max_cont = max(cont_aggr$mean) # max avg contacts for ylim (contacts plot)
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
-max_sym = max(data_aggr[data_aggr$breed == "symptomatics",]$mean)
+peak_sym = max(data_aggr[data_aggr$breed == "symptomatics",]$mean)
 tot_deaths = max(data_aggr[data_aggr$breed == "deads",]$mean)
+year1_deaths = data_aggr %>% filter(step == 365, breed == "deads") %>% pull(mean)
+if ("count_infecteds_0_29" %in% colnames(raw)) {
+  tot_infs = max(infs_aggr$mean)
+} else {
+  tot_infs = "n/a"
+}
 
 # set order of breeds for legend
 order = c("susceptibles", "latents", "asymptomatics",
-          "symptomatics", "recovereds", "deads")
+          "symptomatics", "recovereds", "deads") #, "locked")
 
 data_long$breed = factor(data_long$breed, levels=order)
 data_aggr$breed = factor(data_aggr$breed, levels=order)
@@ -205,9 +226,12 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
                        breaks = seq(0, max_cont, by = 30000)) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
     labs(x = "day", y = sprintf("mean count over %s runs", num_runs),
-         caption = sprintf("Average total deaths: %s,
-                           Average highest number of infections: %s", 
-                           max_sym, tot_deaths))
+         title = sprintf("Control measures: %s", measures),
+         caption = sprintf("Average total deaths: %s
+                            Average deaths in first year: %s
+                           Average size of symptomatic peak: %s
+                           Average number of infections: %s", 
+                           tot_deaths, year1_deaths, peak_sym, tot_infs))
                            
 if (export_plots) {
   ggsave(sprintf("%s/%sbreeds.pdf", dest_path, pattern), 
@@ -216,20 +240,27 @@ if (export_plots) {
 
 ######### NON-AGGR NEW DEATHS PLOT
 
-ggplot(deads_long, aes(x=step, y=new_deaths)) + 
+ggplot(subset(deads_aggr, age != "total"), aes(x=step, y=mean_new)) + 
   geom_area(data = ld,
-            aes(x = step, y = (max(deads_long$new_deaths) + 1) * `currently_locked?`,
+            aes(x = step, y = (max(deads_aggr$mean_new) + 1) * `currently_locked?`,
                 fill = as.factor(run_num)),
             inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
             show.legend = FALSE) +
-    geom_line(aes(color=age), alpha=0.8, size = 1) +
-    scale_color_brewer(palette="Set3") +
-    scale_fill_manual(values = rep("lightgrey", num_runs)) +
-    scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
-    coord_cartesian(ylim = c(- min(deads_long$new_deaths), 
-                               max(deads_long$new_deaths)),
-                    xlim = c(0, num_ticks)) +
-    labs(x = "day", y = "new deaths")
+  scale_fill_manual(values = rep("lightgrey", num_runs)) +
+  new_scale_fill() +
+  geom_ribbon(aes(ymin=min_new, ymax=max_new, fill = age), alpha=0.5) +
+  geom_line(aes(color=age), size = 1) +
+  scale_color_brewer(palette="Set3") +
+  scale_fill_brewer(palette="Set3") +
+  scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+  coord_cartesian(ylim = c(- min(deads_aggr$mean_new), 
+                             max(deads_aggr$mean_new)),
+                  xlim = c(0, num_ticks)) +
+  labs(x = "day", y = sprintf("mean new deaths over %s runs", num_runs),
+       title = sprintf("Control measures: %s", measures),
+       caption = sprintf("Average total deaths: %s
+                            Average deaths in first year: %s", 
+                         tot_deaths, year1_deaths))
 
 if (export_plots) {
 ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
@@ -240,18 +271,27 @@ ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern),
 
 if ("count_infecteds_0_29" %in% colnames(raw)) {
   
-  ggplot(subset(infs_long, age != "total"), aes(x=step, y=new_infs)) + 
+  ggplot(subset(infs_aggr, age != "total"), aes(x=step, y=mean_new)) + 
     geom_area(data = ld,
-              aes(x = step, y = (max(infs_long$new_infs) + 1) * `currently_locked?`,
+              aes(x = step, y = (max(infs_aggr$mean_new) + 1) * `currently_locked?`,
                   fill = as.factor(run_num)),
               inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
               show.legend = FALSE) +
-    geom_line(aes(color=age), alpha=0.8, size = 1) +
-    scale_color_brewer(palette="Set3") +
     scale_fill_manual(values = rep("lightgrey", num_runs)) +
+    new_scale_fill() +
+    geom_ribbon(aes(ymin=min_new, ymax=max_new, fill = age), alpha=0.5) +
+    geom_line(aes(color=age), size = 1) +
+    scale_color_brewer(palette="Set3") +
+    scale_fill_brewer(palette="Set3") +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
-    coord_cartesian(xlim = c(0, num_ticks)) +
-    labs(x = "day", y = "new infections")
+    coord_cartesian(ylim = c(- min(infs_aggr$mean_new),
+                             max(infs_aggr$mean_new)),
+                    xlim = c(0, num_ticks)) +
+    labs(x = "day", y = sprintf("mean new infections over %s runs", num_runs),
+         title = sprintf("Control measures: %s", measures),
+         caption = sprintf("Average size of symptomatic peak: %s
+                           Average number of infections: %s", 
+                           peak_sym, tot_infs))
 
   if (export_plots) {
     ggsave(sprintf("%s/%sinfections.pdf", dest_path, pattern), 
@@ -275,7 +315,8 @@ ggplot(cont_aggr, aes(x=step, y=mean)) +
                        breaks = seq(0, max_cont, by = 100000)) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
     scale_fill_manual(values = rep("lightgrey", num_runs)) +
-    labs(x = "day", y = sprintf("mean contacts over %s runs", num_runs))
+    labs(x = "day", y = sprintf("mean contacts over %s runs", num_runs),
+         title = sprintf("Control measures: %s", measures))
 
 if (export_plots) {
 ggsave(sprintf("%s/%scontacts.pdf", dest_path, pattern), 
