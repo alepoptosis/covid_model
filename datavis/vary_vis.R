@@ -6,8 +6,8 @@ library(viridis)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-03_vary-tt-coverage-combo-2"
-varying_par = c("asym_test_coverage", "sym_test_coverage") # use version with _ instead of -
+run_name = "2020-06-30_vary-asym-coverage"
+varying_par = "asym_test_coverage" # use version with _ instead of -
 dest_path = "vis vary"
 g_width = 11.69
 g_height = 8.27
@@ -64,6 +64,19 @@ summary = raw %>%
              names_to = "metric",
              values_to = "count")
 
+first_year = raw %>%
+  group_by(run_num) %>%
+  filter(step < 366) %>%
+  summarise(year1_deaths = max(`count deads`)) %>%
+  separate("run_num", sep = "_", remove = TRUE, 
+           into = c("run_num", sprintf("%s", varying_par))) %>%
+  mutate_at(c("run_num", sprintf("%s", varying_par)), as.numeric) %>%
+  pivot_longer("year1_deaths",
+               names_to = "metric",
+               values_to = "count")
+
+summary = rbind(summary, first_year)
+
 # various plotting information
 num_runs = max(summary$run_num) # num runs for ylabel
 num_ticks = max(raw$step) # num ticks for xaxis
@@ -72,7 +85,7 @@ pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
 ######### DEATHS AND PEAK VS PARAM 
 
 if (length(varying_par) == 1) {
-  ggplot(summary, 
+  ggplot(summary,
          aes(x=get(varying_par), y=count, group = interaction(run_num, metric))) +
     geom_point(aes(color = metric)) + 
     geom_line(aes(color = metric)) +

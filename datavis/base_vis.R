@@ -135,6 +135,9 @@ deads_aggr = deads_long %>%
   summarise(mean = mean(count), stdev = round(sd(count), 2),
             max = max(count), min = min(count))
 
+deads_long = deads_long %>% filter(breed != "locked")
+deads_aggr = deads_aggr %>% filter(breed != "locked")
+
 if ("count_infecteds_0_29" %in% colnames(raw)) {
   # subset containing info on infected agents
   infs = raw[ ,grepl("^count_infecteds_|run_num|step", names(raw))]
@@ -174,7 +177,7 @@ tot_deaths = max(data_aggr[data_aggr$breed == "deads",]$mean)
 
 # set order of breeds for legend
 order = c("susceptibles", "latents", "asymptomatics",
-          "symptomatics", "recovereds", "deads", "locked")
+          "symptomatics", "recovereds", "deads")
 
 data_long$breed = factor(data_long$breed, levels=order)
 data_aggr$breed = factor(data_aggr$breed, levels=order)

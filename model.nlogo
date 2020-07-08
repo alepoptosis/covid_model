@@ -6482,7 +6482,7 @@ NetLogo 6.1.1
       <value value="299"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="pp-tt" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="pp-tt-opt" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>
@@ -6612,7 +6612,7 @@ NetLogo 6.1.1
       <value value="299"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="is-sar" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="is-sar-opt" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count susceptibles</metric>

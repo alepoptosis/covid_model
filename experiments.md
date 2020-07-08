@@ -1693,7 +1693,7 @@ count-infecteds-60+
 ["max-pxcor" 299]
 ["max-pycor" 299]
 
-## pp-tt
+## pp-tt-opt
 
 ["initial-inf" 0.1]
 ["duration" 3]
@@ -1738,7 +1738,7 @@ count-infecteds-60+
 ["max-pxcor" 299]
 ["max-pycor" 299]
 
-## is-sar
+## is-sar-opt
 
 ["initial-inf" 0.1]
 ["duration" 3]
