@@ -1,5 +1,5 @@
 ##### NETLOGO COVID-19 MODEL VARIABLES
-##### Globals, Susceptibles, Latents, Asymptomatics, symptomatIcs, Recovereds
+##### Globals, Susceptibles, Exposeds, Asymptomatics, symptomatIcs, Recovereds
 
 name                    access  description
 
@@ -7,10 +7,7 @@ age                     ALL     the age range of the agent (0-29, 30-59, 60+)
 asym-infections         G       the percentage of asymptomatic symptomatics
 asym-test-coverage      G       percentage of symptomless population tested
 closed-system?          G       whether outside infections can occur
-contact-list            LIA     list of susceptibles the agent interacted with
-personal-protection?    G       whether add personal measures after 1st lockdown
-personal-threshold      G       percentage of symptomatics to trigger mask use
-personal-threshold-num  G       number of symptomatics to trigger mask use
+contact-list            EIA     list of susceptibles the agent interacted with
 count-infecteds-0-29    G       running total of I and A with age 0-29  
 count-infecteds-30-59   G       running total of I and A with age 30-59  
 count-infecteds-60+     G       running total of I and A with age 60+  
@@ -23,7 +20,7 @@ first-lockdown?         G       whether first lockdown occurred
 imm-countdown           R       individual immunity period
 immunity-mean           G       mean of the poisson dist for immunity
 imposed-lockdown?       G       whether to simulate gov-imposed lockdown
-inc-countdown           L       individual incubation countdown
+inc-countdown           E       individual incubation countdown
 incubation-mean         G       mean of the log-normal dist for incubation
 incubation-stdev        G       stdev of the log-normal dist for incubation
 initial-inf             G       number of symptomatics at start of simulation
@@ -36,28 +33,32 @@ isolation-strictness    G       the percentage of agents isolating for max days
 lockdown-strictness     G       likelihood a agent will obey lockdown
 lockdown-threshold      G       percentage of symptomatics to trigger lockdown
 lockdown-threshold-num  G       number of symptomatics to trigger lockdown
+lose-immunity?          G       whether immunity of R agents decays
 mean-iso-reduction      G       mean of the poisson dist for isolation reduction
 num-contacts            G       the number of contacts occurring at that tick
 p-death                 G       probability of dying instead of recovering
 p-infect                S       individual transmission probability
 p-infect-init           G       base transmission probability
+personal-protection?    G       whether add personal measures after 1st lockdown
+personal-threshold      G       percentage of symptomatics to trigger mask use
+personal-threshold-num  G       number of symptomatics to trigger mask use
 pop-size                G       the number of agents in the simulation
 protection-strength     G       strength of measures to reduce transmission
 rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
 shield-adherance        G       what percentage of 60+ isolate
-shield-at-risk?         G       whether susceptible 60+ are asked to isolate
+shield-vulnerable?      G       whether susceptible 60+ are asked to isolate
 shield-threshold        G       percentage of symptomatics to trigger shielding
 shield-threshold-num    G       number of symptomatics to trigger shielding 
 start-isolation?        G       whether isolation of symptomatics should start
 sym-test-coverage       G       percentage of symptomatic cases tested
 test-and-trace?         G       whether the test and trace system is in place
-tested?                 LIA     whether the agent is aware they're infected
+tested?                 EIA     whether the agent is aware they're infected
 testtrace-threshold     G       percentage of symptomatics to trigger testing
 testtrace-threshold-num G       number of symptomatics to trigger testing
-to-become-infected?     L       flags a L for beginning of infection
-to-become-latent?       S       flags a S for exposure
+to-become-infected?     E       flags a E for beginning of infection
+to-become-exposed?      S       flags a S for exposure
 to-become-susceptible?  R       flags a R for loss of immunity
 to-remove               IA      flags an I/A for removal (recovery or death)
 traced?                 ALL     whether the agent is a traced contact

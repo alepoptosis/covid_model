@@ -152,12 +152,33 @@
 
 - Created an R script to streamline visualisation of varying parameter experiments
 
-### 1/6
+### 1/7
 
 - Changed wording of shelter-at-risk mechanism to shield-at-risk to be more coherent with UK terminology
 - Added reporters of number of infecteds by age
 
-### 2/6
+### 2/7
 
 - Edited script for visualisation of varying parameter experiments to support two varying parameters by using a heatmap instead of a line chart
 - Changed the name of the mechanic describing the use of masks/social distancing/hand washing from control measures to personal protection
+
+## Week 8
+
+### 6/7
+
+- Added code to create the classic breeds plot for vary-type experiments as well
+
+### 7/7
+
+- Added caption line for number of deaths in the first year and total number of infections (where available)
+
+### 8/7
+
+- Fixed wrong caption
+
+### 10/7
+
+- Added a switch to turn off loss of immunity for runs not involving that mechanic
+- Fixed a bug where contacts would keep isolating indefinitely since the isolation check only kicked in above the threshold
+- Restored Exposed breed instead of Latent, made them non-infectious
+- Renamed shield-at-risk as shield-vulnerable

@@ -1,13 +1,13 @@
 globals [
   SS-contacts
-  SL-contacts
+  SE-contacts
   SI-contacts
   SR-contacts
   SA-contacts
-  LL-contacts
-  LI-contacts
-  LR-contacts
-  LA-contacts
+  EE-contacts
+  EI-contacts
+  ER-contacts
+  EA-contacts
   II-contacts
   IR-contacts
   IA-contacts
@@ -32,7 +32,7 @@ globals [
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
-breed [latents latent]              ;; infectious but pre-symptomatic (L)
+breed [exposeds exposed]            ;; exposed but not infectious (E)
 breed [symptomatics symptomatic]    ;; infectious and symptomatic (I)
 breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
 breed [recovereds recovered]        ;; recovered and immune (R)
@@ -47,12 +47,12 @@ turtles-own [
 ]
 
 susceptibles-own [
-  to-become-latent?         ;; flags a S for exposure
+  to-become-exposed?         ;; flags a S for exposure
   p-infect                  ;; individual transmission probability
 ]
 
-latents-own [
-  to-become-infected?       ;; flags a L for beginning of infection
+exposeds-own [
+  to-become-infected?       ;; flags a E for beginning of infection
   inc-countdown             ;; individual incubation countdown
   tested?                   ;; whether the person is aware they're infected
   contact-list              ;; list of susceptibles the person interacted with
@@ -101,7 +101,7 @@ to setup-turtles
     sprout-susceptibles 1 [
       set breed susceptibles
       set color green
-      set to-become-latent? false
+      set to-become-exposed? false
       set p-infect p-infect-init / 100
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
@@ -109,7 +109,7 @@ to setup-turtles
       if test-and-trace? [
         set traced? false
       ]
-      if shield-at-risk? or test-and-trace? [
+      if shield-vulnerable? or test-and-trace? [
         set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
       ]
     ]
@@ -117,19 +117,19 @@ to setup-turtles
   ;; randomly infects initial-inf susceptibles
   set pop-size (count susceptibles)
   let to-infect round (initial-inf * pop-size / 100)
-  ask turtles-on (n-of to-infect patches) [set-breed-latent]
+  ask turtles-on (n-of to-infect patches) [set-breed-exposed]
 end
 
 to setup-globals
   set SS-contacts 0
-  set SL-contacts 0
+  set SE-contacts 0
   set SI-contacts 0
   set SR-contacts 0
   set SA-contacts 0
-  set LL-contacts 0
-  set LI-contacts 0
-  set LR-contacts 0
-  set LA-contacts 0
+  set EE-contacts 0
+  set EI-contacts 0
+  set ER-contacts 0
+  set EA-contacts 0
   set II-contacts 0
   set IR-contacts 0
   set IA-contacts 0
@@ -155,12 +155,12 @@ end
 
 to go
   ifelse ticks < (duration * 365)
-  ;  and (count symptomatics + count latents) > 0  ;; uncomment to stop simulation when virus stops circulating
+  ;  and (count symptomatics + count exposeds + count asymptomatics) > 0  ;; uncomment to stop simulation when virus stops circulating
   [
     count-contacts            ;; updates the number of contacts made
     trace-contacts            ;; if test-and-trace is on, updates contact list
-    expose-susceptibles       ;; turns S into L if they had contact with an I, A or L based on p-infect, and checks if they have travelled
-    infect-latents            ;; turns L into I after inc-countdown ticks
+    expose-susceptibles       ;; turns S into E if they had contact with an I, A or E based on p-infect, and checks if they have travelled
+    infect-exposeds           ;; turns E into I after inc-countdown ticks
     remove-infecteds          ;; turns I into R after rec-countdown ticks or D after death-countdown ticks
     lose-immunity             ;; turns R back into S after imm-countdown ticks
     update-breeds             ;; updates breeds as necessary
@@ -176,14 +176,14 @@ end
 
 to count-contacts
   let SS-tick 0
-  let SL-tick 0
+  let SE-tick 0
   let SI-tick 0
   let SR-tick 0
   let SA-tick 0
-  let LL-tick 0
-  let LI-tick 0
-  let LR-tick 0
-  let LA-tick 0
+  let EE-tick 0
+  let EI-tick 0
+  let ER-tick 0
+  let EA-tick 0
   let II-tick 0
   let IR-tick 0
   let IA-tick 0
@@ -193,20 +193,20 @@ to count-contacts
 
   ask susceptibles [
     set SS-tick (SS-tick + ((count other susceptibles in-radius z-contact with [z-contact >= distance myself])))
-    set SL-tick (SL-tick + ((count latents in-radius z-contact with [z-contact >= distance myself])))
+    set SE-tick (SE-tick + ((count exposeds in-radius z-contact with [z-contact >= distance myself])))
     set SI-tick (SI-tick + ((count symptomatics in-radius z-contact with [z-contact >= distance myself])))
     set SR-tick (SR-tick + ((count recovereds in-radius z-contact with [z-contact >= distance myself])))
     set SA-tick (SA-tick + ((count asymptomatics in-radius z-contact with [z-contact >= distance myself])))
   ]
   set SS-tick (SS-tick / 2)
 
-  ask latents [
-    set LL-tick (LL-tick + ((count other latents in-radius z-contact with [z-contact >= distance myself])))
-    set LI-tick (LI-tick + ((count symptomatics in-radius z-contact with [z-contact >= distance myself])))
-    set LR-tick (LR-tick + ((count recovereds in-radius z-contact with [z-contact >= distance myself])))
-    set LA-tick (LA-tick + ((count asymptomatics in-radius z-contact with [z-contact >= distance myself])))
+  ask exposeds [
+    set EE-tick (EE-tick + ((count other exposeds in-radius z-contact with [z-contact >= distance myself])))
+    set EI-tick (EI-tick + ((count symptomatics in-radius z-contact with [z-contact >= distance myself])))
+    set ER-tick (ER-tick + ((count recovereds in-radius z-contact with [z-contact >= distance myself])))
+    set EA-tick (EA-tick + ((count asymptomatics in-radius z-contact with [z-contact >= distance myself])))
   ]
-  set LL-tick (LL-tick / 2)
+  set EE-tick (EE-tick / 2)
 
   ask symptomatics [
     set II-tick (II-tick + (count other symptomatics in-radius z-contact with [z-contact >= distance myself]))
@@ -227,22 +227,22 @@ to count-contacts
   set AA-tick (AA-tick / 2)
 
   set num-contacts (
-    SS-tick + SL-tick + SI-tick + SR-tick + SA-tick +
-    LL-tick + LI-tick + LR-tick + LA-tick +
+    SS-tick + SE-tick + SI-tick + SR-tick + SA-tick +
+    EE-tick + EI-tick + ER-tick + EA-tick +
     II-tick + IR-tick + IA-tick +
     RR-tick + RA-tick +
     AA-tick
   )
 
   set SS-contacts (SS-contacts + SS-tick)
-  set SL-contacts (SL-contacts + SL-tick)
+  set SE-contacts (SE-contacts + SE-tick)
   set SI-contacts (SI-contacts + SI-tick)
   set SR-contacts (SR-contacts + SR-tick)
   set SA-contacts (SA-contacts + SA-tick)
-  set LL-contacts (LL-contacts + LL-tick)
-  set LI-contacts (LI-contacts + LI-tick)
-  set LR-contacts (LR-contacts + LR-tick)
-  set LA-contacts (LA-contacts + LA-tick)
+  set EE-contacts (EE-contacts + EE-tick)
+  set EI-contacts (EI-contacts + EI-tick)
+  set ER-contacts (ER-contacts + ER-tick)
+  set EA-contacts (EA-contacts + EA-tick)
   set II-contacts (II-contacts + II-tick)
   set IR-contacts (IR-contacts + IR-tick)
   set IA-contacts (IA-contacts + IA-tick)
@@ -254,7 +254,7 @@ end
 to trace-contacts
   if test-and-trace? [
     if count(symptomatics) >= testtrace-threshold-num [
-      let infecteds (turtle-set latents symptomatics asymptomatics) ;; selects all types of infecteds
+      let infecteds (turtle-set exposeds symptomatics asymptomatics) ;; selects all types of infecteds
       ask infecteds [
         ;; makes list of contacts for that infected and adds them to the list one at a time
         let contacts [self] of susceptibles in-radius z-contact with [z-contact >= distance myself]
@@ -267,10 +267,9 @@ end
 to expose-susceptibles
   ask susceptibles [
 
-    ;; the number of infected contacts is the number of S + L in z-contact radius who are not isolating
+    ;; the number of infected contacts is the number of S + E in z-contact radius who are not isolating
     let infected-contacts (
       (count symptomatics in-radius z-contact with [z-contact >= distance myself])
-      + (count latents in-radius z-contact with [z-contact >= distance myself])
     )
 
     ;; A are counted separately to account for their lower probability of transmission (currently 10%)
@@ -292,17 +291,17 @@ to expose-susceptibles
     ;; the probability of at least one contact causing infection is 1 - the probability that none do
     let infection-prob 1 - ((1 - p-infect) ^ total-infecteds)
 
-    ;; if the S fails the check, it is flagged to become L
+    ;; if the S fails the check, it is flagged to become E
     let p (random 100 + 1)
-    if p <= (infection-prob * 100) [set to-become-latent? true]
+    if p <= (infection-prob * 100) [set to-become-exposed? true]
   ]
 
-  ;; if the system is open, there is a chance for a S to become L even if their contacts are S
+  ;; if the system is open, there is a chance for a S to become E even if their contacts are S
   if not closed-system? [check-travel]
 end
 
-to infect-latents    ;; infects L that have reached the end of their incubation countdown
-  ask latents [
+to infect-exposeds    ;; infects E that have reached the end of their incubation countdown
+  ask exposeds [
     ifelse inc-countdown = 0
     [set to-become-infected? true]
     [set inc-countdown (inc-countdown - 1)]
@@ -332,18 +331,20 @@ to remove-infecteds      ;; removes infecteds that have reached the end of their
 end
 
 to lose-immunity    ;; makes susceptible the R that have reached the end of their immunity period
-  ask recovereds [
-    ifelse imm-countdown = 0
-    [set to-become-susceptible? true]
-    [set imm-countdown (imm-countdown - 1)]
+  if lose-immunity? [
+    ask recovereds [
+      ifelse imm-countdown = 0
+      [set to-become-susceptible? true]
+      [set imm-countdown (imm-countdown - 1)]
+    ]
   ]
 end
 
 to update-breeds
 
-  ask susceptibles with [to-become-latent? = true] [set-breed-latent]
+  ask susceptibles with [to-become-exposed? = true] [set-breed-exposed]
 
-  ask latents with [to-become-infected? = true] [
+  ask exposeds with [to-become-infected? = true] [
     let p (random 100 + 1)
     ifelse p <= asym-infections    ;; decides whether the infection will be symptomatic or asymptomatic
     [set-breed-asymptomatic]
@@ -381,14 +382,16 @@ to modify-measures
     ask recovereds with [shape = "person-outline"] [not-isolate]
   ]
 
-  ;; tests Ls, Is and As, traces their contacts and isolates them under right conditions
-  if test-and-trace? and count(symptomatics) >= testtrace-threshold-num [
+  ;; tests Es, Is and As, traces their contacts and isolates them under right conditions
+  if test-and-trace? [
+    if count(symptomatics) >= testtrace-threshold-num [
       test
       trace
-      isolate-all
+    ]
+    isolate-all
   ]
 
-  if shield-at-risk? [
+  if shield-vulnerable? [
     ifelse count(symptomatics) >= shield-threshold-num
     [
       ask susceptibles with [age = "60+"] [
@@ -422,7 +425,7 @@ to check-travel
   if (count symptomatics) < lockdown-threshold-num [          ;; if people can travel and lockdown is not active
     let p (random 100 + 1)                                    ;; one person gets randomly infected per tick depending on travel strictness
     if p >= (travel-strictness) [                             ;; 1% chance if 100% strictness, 100% chance if 0% strictness
-      ask susceptibles-on (n-of 1 patches) [set-breed-latent]
+      ask susceptibles-on (n-of 1 patches) [set-breed-exposed]
     ]
   ]
 end
@@ -432,16 +435,16 @@ end
 to set-breed-susceptible
   set breed susceptibles
   set color green
-  set to-become-latent? false
+  set to-become-exposed? false
   set p-infect p-infect-init / 100
-  if shield-at-risk? or test-and-trace? [
+  if shield-vulnerable? or test-and-trace? [
     set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
   ]
   check-outline
 end
 
-to set-breed-latent
-  set breed latents
+to set-breed-exposed
+  set breed exposeds
   set color yellow
   set to-become-infected? false
   set inc-countdown (log-normal incubation-mean incubation-stdev)
@@ -545,7 +548,7 @@ to test    ;; tests infecteds based on respective test coverage
     let p (random 100 + 1)
     if p <= sym-test-coverage [set tested? true]
   ]
-  let other-infecteds (turtle-set latents asymptomatics)
+  let other-infecteds (turtle-set exposeds asymptomatics)
   ask other-infecteds with [tested? = false] [
     let p (random 100 + 1)
     if p <= asym-test-coverage [set tested? true]
@@ -553,7 +556,7 @@ to test    ;; tests infecteds based on respective test coverage
 end
 
 to trace    ;; flags contacts of tested infecteds as traced, they will be asked to isolate
-  let infecteds (turtle-set latents symptomatics asymptomatics)
+  let infecteds (turtle-set exposeds symptomatics asymptomatics)
   ask infecteds with [tested? = true] [
     foreach contact-list [
       contact -> ask contact [set traced? true]
@@ -563,7 +566,7 @@ end
 
 to isolate-all
   ;; isolate original tested
-  let infecteds (turtle-set latents symptomatics asymptomatics)
+  let infecteds (turtle-set exposeds symptomatics asymptomatics)
 
   ;; this check is to prevent overriding symptomatic isolation
   ifelse not isolate-symptomatics? [
@@ -580,7 +583,7 @@ end
 to check-isolation    ;; generic procedure for checking isolation countdown
   ifelse iso-countdown <= 0
   [
-    ifelse imposed-lockdown? and currently-locked?    ;; keeps people isolated if they finish isolation and lockdown is on
+    ifelse (imposed-lockdown? and currently-locked?)    ;; keeps people isolated if they finish isolation and lockdown is on
     [
       isolate
     ]
@@ -788,7 +791,7 @@ true
 "" ""
 PENS
 "susceptible" 1.0 0 -10899396 true "" "plot count susceptibles"
-"latents" 1.0 0 -1184463 true "" "plot count latents"
+"exposeds" 1.0 0 -1184463 true "" "plot count exposeds"
 "infected" 1.0 0 -2674135 true "" "plot count symptomatics"
 "recovereds" 1.0 0 -3026479 true "" "plot count recovereds"
 "dead" 1.0 0 -16777216 true "" "plot count deads"
@@ -964,7 +967,7 @@ duration
 duration
 0
 10
-1.0
+5.0
 1
 1
 years
@@ -1038,7 +1041,7 @@ SWITCH
 522
 personal-protection?
 personal-protection?
-0
+1
 1
 -1000
 
@@ -1088,8 +1091,8 @@ MONITOR
 658
 671
 703
-latents
-count latents
+exposeds
+count exposeds
 0
 1
 11
@@ -1342,7 +1345,7 @@ SWITCH
 605
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 
@@ -1394,10 +1397,10 @@ HORIZONTAL
 SWITCH
 1136
 612
-1275
+1291
 645
-shield-at-risk?
-shield-at-risk?
+shield-vulnerable?
+shield-vulnerable?
 1
 1
 -1000
@@ -1418,10 +1421,10 @@ shield-adherance
 HORIZONTAL
 
 SLIDER
-230
-206
-263
-393
+246
+208
+279
+395
 shield-threshold
 shield-threshold
 0
@@ -1464,6 +1467,17 @@ count-infecteds-60+
 17
 1
 11
+
+SWITCH
+1311
+495
+1452
+528
+lose-immunity?
+lose-immunity?
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
