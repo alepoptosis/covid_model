@@ -182,3 +182,4 @@
 - Fixed a bug where contacts would keep isolating indefinitely since the isolation check only kicked in above the threshold
 - Restored Exposed breed instead of Latent, made them non-infectious
 - Renamed shield-at-risk as shield-vulnerable
+- Changed breed progression so that E become A right before the end of their incubation period, then they can either remain A until recovery, or become I after a few ticks and progress from there

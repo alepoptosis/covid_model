@@ -15,6 +15,7 @@ currently-locked?       G       whether a lockdown is in progress
 death-countdown         I       individual death countdown
 death-mean              G       mean of the normal dist for death
 death-stdev             G       stdev of the normal dist for death
+develop-sym?            A       whether the agent will develop symptoms
 duration                G       length of simulation (years)
 first-lockdown?         G       whether first lockdown occurred
 imm-countdown           R       individual immunity period
@@ -48,18 +49,20 @@ rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
 shield-adherance        G       what percentage of 60+ isolate
-shield-vulnerable?      G       whether susceptible 60+ are asked to isolate
 shield-threshold        G       percentage of symptomatics to trigger shielding
 shield-threshold-num    G       number of symptomatics to trigger shielding 
+shield-vulnerable?      G       whether susceptible 60+ are asked to isolate
 start-isolation?        G       whether isolation of symptomatics should start
+sym-countdown           A       individual symptom countdown
 sym-test-coverage       G       percentage of symptomatic cases tested
 test-and-trace?         G       whether the test and trace system is in place
 tested?                 EIA     whether the agent is aware they're infected
 testtrace-threshold     G       percentage of symptomatics to trigger testing
 testtrace-threshold-num G       number of symptomatics to trigger testing
-to-become-infected?     E       flags a E for beginning of infection
 to-become-exposed?      S       flags a S for exposure
+to-become-infected?     E       flags a E for beginning of infection
 to-become-susceptible?  R       flags a R for loss of immunity
+to-become-sym?          A       flags an A for symptomatic infection
 to-remove               IA      flags an I/A for removal (recovery or death)
 traced?                 ALL     whether the agent is a traced contact
 travel-strictness       G       probability of outside infections occurring

@@ -29,6 +29,7 @@ count-infecteds-60+
 ["test-and-trace?" false]
 ["shield-at-risk?" false]
 ["closed-system?" false]
+["lose-immunity?" false]
 
 ["lockdown-threshold" 1]
 ["protection-threshold" 1]

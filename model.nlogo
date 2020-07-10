@@ -69,6 +69,9 @@ symptomatics-own [
 
 asymptomatics-own [
   to-remove?                ;; flags an A for recovery
+  develop-sym?              ;; whether the agent will develop symptoms
+  to-become-sym?            ;; flags an A for symptomatic infection
+  sym-countdown             ;; individual symptom countdown
   rec-countdown             ;; individual recovery countdown
   tested?                   ;; whether the person is aware they're infected
   contact-list              ;; list of susceptibles the person interacted with
@@ -267,7 +270,7 @@ end
 to expose-susceptibles
   ask susceptibles [
 
-    ;; the number of infected contacts is the number of S + E in z-contact radius who are not isolating
+    ;; the number of infected contacts is the number of S in z-contact radius who are not isolating
     let infected-contacts (
       (count symptomatics in-radius z-contact with [z-contact >= distance myself])
     )
@@ -302,14 +305,20 @@ end
 
 to infect-exposeds    ;; infects E that have reached the end of their incubation countdown
   ask exposeds [
-    ifelse inc-countdown = 0
+    ifelse inc-countdown <= (random 3 + 1)
     [set to-become-infected? true]
     [set inc-countdown (inc-countdown - 1)]
+  ]
+
+  ask asymptomatics with [develop-sym? = true] [
+    ifelse sym-countdown <= 0
+    [set to-become-sym? true]
+    [set sym-countdown (sym-countdown - 1)]
   ]
 end
 
 to remove-infecteds      ;; removes infecteds that have reached the end of their countdown
-  ask symptomatics [     ;; for symptomatics (I), this is either the death or recovery countdown
+  ask symptomatics [     ;; for symptomatics, this is either the death or recovery countdown
     ifelse will-die?
     [
       ifelse death-countdown = 0
@@ -323,7 +332,7 @@ to remove-infecteds      ;; removes infecteds that have reached the end of their
     ]
   ]
 
-  ask asymptomatics [    ;; for asymptomatics (A), it can only be the recovery countdown
+  ask asymptomatics with [develop-sym? = false] [    ;; for asymptomatics, it can only be the recovery countdown
     ifelse rec-countdown = 0
     [set to-remove? true]
     [set rec-countdown (rec-countdown - 1)]
@@ -344,12 +353,9 @@ to update-breeds
 
   ask susceptibles with [to-become-exposed? = true] [set-breed-exposed]
 
-  ask exposeds with [to-become-infected? = true] [
-    let p (random 100 + 1)
-    ifelse p <= asym-infections    ;; decides whether the infection will be symptomatic or asymptomatic
-    [set-breed-asymptomatic]
-    [set-breed-symptomatic]
-  ]
+  ask exposeds with [to-become-infected? = true] [set-breed-asymptomatic]
+
+  ask asymptomatics with [to-become-sym? = true] [set-breed-symptomatic]
 
   ask symptomatics with [to-remove? = true] [
     ifelse will-die?               ;; decides whether the symptomatic infected will die or recover
@@ -469,11 +475,21 @@ to set-breed-symptomatic    ;; also used in setup-turtles
 end
 
 to set-breed-asymptomatic
-  add-inf-count
   set breed asymptomatics
   set color violet
   set to-remove? false
   set rec-countdown (normal-dist recovery-mean recovery-stdev)
+  set to-become-sym? false
+  let p (random 100 + 1)
+  ifelse p >= asym-infections
+  [
+    set develop-sym? true
+    set sym-countdown (random 3 + 1)
+  ]
+  [
+    set develop-sym? false
+    add-inf-count
+  ]
   check-outline
 end
 
@@ -1235,7 +1251,7 @@ asym-infections
 asym-infections
 0
 100
-60.0
+50.0
 1.0
 1
 %
