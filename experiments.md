@@ -3,7 +3,7 @@
 # reporters (constant)
 
 count susceptibles
-count latents
+count exposeds
 count symptomatics
 count asymptomatics
 count recovereds
@@ -27,7 +27,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" false]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 ["lose-immunity?" false]
 
@@ -1160,7 +1160,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" true]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1205,7 +1205,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" true]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1250,7 +1250,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" false]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 0.1]
@@ -1295,7 +1295,7 @@ count-infecteds-60+
 ["personal-protection?" true]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" false]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1340,7 +1340,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" true]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1385,7 +1385,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" true]
 ["test-and-trace?" false]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1430,7 +1430,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" false]
-["shield-at-risk?" true]
+["shield-vulnerable?" true]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1475,7 +1475,7 @@ count-infecteds-60+
 ["personal-protection?" true]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" true]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 0.5]
@@ -1520,7 +1520,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" true]
 ["test-and-trace?" false]
-["shield-at-risk?" true]
+["shield-vulnerable?" true]
 ["closed-system?" false]
 
 ["lockdown-threshold" 0.5]
@@ -1566,7 +1566,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" false]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" true]
 
 ["lockdown-threshold" 1.2]
@@ -1613,7 +1613,7 @@ count-infecteds-60+
 ["personal-protection?" true]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" true]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1658,7 +1658,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" true]
 ["test-and-trace?" false]
-["shield-at-risk?" true]
+["shield-vulnerable?" true]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1703,7 +1703,7 @@ count-infecteds-60+
 ["personal-protection?" true]
 ["isolate-symptomatics?" false]
 ["test-and-trace?" true]
-["shield-at-risk?" false]
+["shield-vulnerable?" false]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1748,7 +1748,7 @@ count-infecteds-60+
 ["personal-protection?" false]
 ["isolate-symptomatics?" true]
 ["test-and-trace?" false]
-["shield-at-risk?" true]
+["shield-vulnerable?" true]
 ["closed-system?" false]
 
 ["lockdown-threshold" 1]
@@ -1758,6 +1758,469 @@ count-infecteds-60+
 ["shield-threshold" 0.25]
 
 ["lockdown-strictness" 0]
+["protection-strength" 0]
+["isolation-strictness" 75]
+["travel-strictness" 100]
+["shield-adherance" 75]
+["sym-test-coverage" 0]
+["asym-test-coverage" 0]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+# 10/7
+
+## vary-p-infect
+
+["initial-inf" 0.1]
+["duration" 0.083]
+
+["imposed-lockdown?" false]
+["personal-protection?" false]
+["isolate-symptomatics?" false]
+["test-and-trace?" false]
+["shield-vulnerable?" false]
+["closed-system?" true]
+["lose-immunity?" false]
+
+["lockdown-threshold" 1]
+["protection-threshold" 1]
+["isolate-threshold" 1]
+["testtrace-threshold" 1]
+["shield-threshold" 1]
+
+["lockdown-strictness" 0]
+["protection-strength" 0]
+["isolation-strictness" 0]
+["travel-strictness" 100]
+["shield-adherance" 0]
+["sym-test-coverage" 0]
+["asym-test-coverage" 0]
+
+["p-infect-init" 3 5 7 10 13 15 17 20 23 25 27 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## ld-only-opt-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" true]
+["personal-protection?" false]
+["isolate-symptomatics?" false]
+["test-and-trace?" false]
+["shield-vulnerable?" false]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 0.1]
+["protection-threshold" 1]
+["isolate-threshold" 1]
+["testtrace-threshold" 1]
+["shield-threshold" 1]
+
+["lockdown-strictness" 75]
+["protection-strength" 0]
+["isolation-strictness" 0]
+["travel-strictness" 100]
+["shield-adherance" 0]
+["sym-test-coverage" 0]
+["asym-test-coverage" 0]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## pp-only-opt-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" false]
+["personal-protection?" true]
+["isolate-symptomatics?" false]
+["test-and-trace?" false]
+["shield-vulnerable?" false]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 0.25]
+["isolate-threshold" 1]
+["testtrace-threshold" 1]
+["shield-threshold" 1]
+
+["lockdown-strictness" 0]
+["protection-strength" 75]
+["isolation-strictness" 0]
+["travel-strictness" 100]
+["shield-adherance" 0]
+["sym-test-coverage" 0]
+["asym-test-coverage" 0]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## tt-only-opt-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" false]
+["personal-protection?" false]
+["isolate-symptomatics?" false]
+["test-and-trace?" true]
+["shield-vulnerable?" false]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 1]
+["isolate-threshold" 1]
+["testtrace-threshold" 0.25]
+["shield-threshold" 1]
+
+["lockdown-strictness" 0]
+["protection-strength" 0]
+["isolation-strictness" 0]
+["travel-strictness" 100]
+["shield-adherance" 0]
+["sym-test-coverage" 75]
+["asym-test-coverage" 25]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## is-only-opt-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" false]
+["personal-protection?" false]
+["isolate-symptomatics?" true]
+["test-and-trace?" false]
+["shield-vulnerable?" false]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 1]
+["isolate-threshold" 0.25]
+["testtrace-threshold" 1]
+["shield-threshold" 1]
+
+["lockdown-strictness" 0]
+["protection-strength" 0]
+["isolation-strictness" 75]
+["travel-strictness" 100]
+["shield-adherance" 0]
+["sym-test-coverage" 0]
+["asym-test-coverage" 0]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## sar-only-opt-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" false]
+["personal-protection?" false]
+["isolate-symptomatics?" false]
+["test-and-trace?" false]
+["shield-vulnerable?" true]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 1]
+["isolate-threshold" 1]
+["testtrace-threshold" 1]
+["shield-threshold" 0.25]
+
+["lockdown-strictness" 0]
+["protection-strength" 0]
+["isolation-strictness" 0]
+["travel-strictness" 100]
+["shield-adherance" 75]
+["sym-test-coverage" 0]
+["asym-test-coverage" 0]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## pp-tt-opt-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" false]
+["personal-protection?" true]
+["isolate-symptomatics?" false]
+["test-and-trace?" true]
+["shield-vulnerable?" false]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 0.25]
+["isolate-threshold" 1]
+["testtrace-threshold" 0.25]
+["shield-threshold" 1]
+
+["lockdown-strictness" 0]
+["protection-strength" 75]
+["isolation-strictness" 0]
+["travel-strictness" 100]
+["shield-adherance" 0]
+["sym-test-coverage" 75]
+["asym-test-coverage" 25]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## is-sar-opt-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" false]
+["personal-protection?" false]
+["isolate-symptomatics?" true]
+["test-and-trace?" false]
+["shield-vulnerable?" true]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 1]
+["isolate-threshold" 0.25]
+["testtrace-threshold" 1]
+["shield-threshold" 0.25]
+
+["lockdown-strictness" 0]
+["protection-strength" 0]
+["isolation-strictness" 75]
+["travel-strictness" 100]
+["shield-adherance" 75]
+["sym-test-coverage" 0]
+["asym-test-coverage" 0]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+
+## pp-tt-ld-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" true]
+["personal-protection?" true]
+["isolate-symptomatics?" false]
+["test-and-trace?" true]
+["shield-vulnerable?" false]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 0.25]
+["isolate-threshold" 1]
+["testtrace-threshold" 0.25]
+["shield-threshold" 1]
+
+["lockdown-strictness" 75]
+["protection-strength" 75]
+["isolation-strictness" 0]
+["travel-strictness" 100]
+["shield-adherance" 0]
+["sym-test-coverage" 75]
+["asym-test-coverage" 25]
+
+["p-infect-init" 30]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]
+
+## is-sar-ld-new
+
+["initial-inf" 0.1]
+["duration" 3]
+
+["imposed-lockdown?" true]
+["personal-protection?" false]
+["isolate-symptomatics?" true]
+["test-and-trace?" false]
+["shield-vulnerable?" true]
+["closed-system?" false]
+["lose-immunity?" true]
+
+["lockdown-threshold" 1]
+["protection-threshold" 1]
+["isolate-threshold" 0.25]
+["testtrace-threshold" 1]
+["shield-threshold" 0.25]
+
+["lockdown-strictness" 75]
 ["protection-strength" 0]
 ["isolation-strictness" 75]
 ["travel-strictness" 100]
