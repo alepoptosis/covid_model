@@ -24,7 +24,7 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-06-26_all"
+run_name = "2020-07-07_pp-tt-opt"
 dest_path = "meeting"
 g_width = 11.69
 g_height = 8.27
@@ -88,8 +88,8 @@ par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))",
                           names(raw), perl=TRUE)])
 
 # save parameter file first time
-if (!file.exists(sprintf("%s/%sparameters.csv", path, pattern))) {
-  write.csv(raw, sprintf("%s/%sparameters.csv", path, pattern), row.names = FALSE)
+if (!file.exists(sprintf("%s/%sparameters.par", path, pattern))) {
+  write.csv(raw, sprintf("%s/%sparameters.par", path, pattern), row.names = FALSE)
 }
 
 # subset containing lockdown info
@@ -187,11 +187,11 @@ num_runs = max(data_long$run_num) # num runs for ylabel
 num_ticks = max(data_long$step) # num ticks for xaxis
 max_cont = max(cont_aggr$mean) # max avg contacts for ylim (contacts plot)
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
-peak_sym = max(data_aggr[data_aggr$breed == "symptomatics",]$mean)
-tot_deaths = max(data_aggr[data_aggr$breed == "deads",]$mean)
-year1_deaths = data_aggr %>% filter(step == 365, breed == "deads") %>% pull(mean)
+peak_sym = round(max(data_aggr[data_aggr$breed == "symptomatics",]$mean), 2)
+tot_deaths = round(max(data_aggr[data_aggr$breed == "deads",]$mean), 2)
+year1_deaths = round(data_aggr %>% filter(step == 365, breed == "deads") %>% pull(mean), 2)
 if ("count_infecteds_0_29" %in% colnames(raw)) {
-  tot_infs = max(infs_aggr$mean)
+  tot_infs = round(max(infs_aggr$mean), 2)
 } else {
   tot_infs = "n/a"
 }
