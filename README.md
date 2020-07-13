@@ -183,3 +183,7 @@
 - Restored Exposed breed instead of Latent, made them non-infectious
 - Renamed shield-at-risk as shield-vulnerable
 - Changed breed progression so that E become A right before the end of their incubation period, then they can either remain A until recovery, or become I after a few ticks and progress from there
+
+## Week 9
+
+- Added a visualisation for the log of cases vs time to analyse the effect of varying p-inf-init

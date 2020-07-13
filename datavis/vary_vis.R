@@ -3,16 +3,19 @@ library(RColorBrewer)
 library(stringr)
 library(ggnewscale)
 library(viridis)
+library(gridExtra)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
-run_name = "2020-06-30_vary-asym-coverage"
-varying_par = "asym_test_coverage" # use version with _ instead of -
-dest_path = "vis vary"
+run_name = "2020-07-10_vary-p-infect"
+varying_par = "p_infect_init" # use version with _ instead of -
+dest_path = "visualisations/vis new"
 g_width = 11.69
 g_height = 8.27
-export_plots = TRUE
+metrics_plot = FALSE
 breed_plots = FALSE
+log_plots = TRUE
+export_plots = TRUE
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
@@ -84,66 +87,70 @@ pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
 
 ######### DEATHS AND PEAK VS PARAM 
 
-if (length(varying_par) == 1) {
-  ggplot(summary,
-         aes(x=get(varying_par), y=count, group = interaction(run_num, metric))) +
-    geom_point(aes(color = metric)) + 
-    geom_line(aes(color = metric)) +
-    coord_cartesian(ylim = c(0, 35000)) +
-    labs(x = varying_par)
+if (metrics_plot) {
   
+  if (length(varying_par) == 1) {
+    ggplot(summary,
+           aes(x=get(varying_par), y=count, group = interaction(run_num, metric))) +
+      geom_point(aes(color = metric)) + 
+      geom_line(aes(color = metric)) +
+      coord_cartesian(ylim = c(0, 35000)) +
+      labs(x = varying_par)
+    
+    
+    if (export_plots) {
+      ggsave(sprintf("%s/%sdeath-peak.pdf", dest_path, pattern), 
+             width = g_width, height = g_height)
+    }
+  } 
   
-  if (export_plots) {
-    ggsave(sprintf("%s/%sdeath-peak.pdf", dest_path, pattern), 
-           width = g_width, height = g_height)
-  }
-} 
-
-######### HEATMAPS FOR 2 PARAM COMBO
-
-if (length(varying_par) == 2) {
-  summary_aggr = summary %>%
-    group_by(asym_test_coverage, sym_test_coverage, metric) %>%
-    summarise(mean = mean(count), stdev = sd(count))
+  ######### HEATMAPS FOR 2 PARAM COMBO
   
-  ggplot(subset(summary_aggr, metric == "death_toll"), 
-         aes(x = get(varying_par[1]), y = get(varying_par[2]),
-                      fill = mean)) +
-    geom_tile(aes(fill = mean)) +
-    geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
-    scale_fill_viridis() +
-    scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-    scale_x_continuous(breaks = seq(0, 100, by = 25)) +
-    theme(panel.grid.minor = element_blank()) +
-    labs(x = varying_par[1], y = varying_par[2], 
-         fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
-  
-  # summary_test = summary_aggr %>%
-  #   mutate(combo = paste(asym_test_coverage, sym_test_coverage))
-  # 
-  # ggplot(subset(summary_test, metric == "death_toll")) +
-  #   geom_col(aes(x = combo, y = mean)) # TO FINISH
-  
-  if (export_plots) {
-    ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
-           width = g_width, height = g_height)
-  }
-  
-  ggplot(subset(summary_aggr, metric == "peak_size"), 
-         aes(x = get(varying_par[1]), y = get(varying_par[2]),
-             fill = mean)) +
-    geom_tile(aes(fill = mean)) +
-    geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
-    scale_fill_viridis() +
-    scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-    scale_x_continuous(breaks = seq(0, 100, by = 25)) +
-    theme(panel.grid.minor = element_blank()) +
-    labs(x = varying_par[1], y = varying_par[2], 
-         fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
-  
-  if (export_plots) {
-    ggsave(sprintf("%s/%speak_size.pdf", dest_path, pattern), 
-           width = g_width, height = g_height)
+  if (length(varying_par) == 2) {
+    summary_aggr = summary %>%
+      group_by(asym_test_coverage, sym_test_coverage, metric) %>%
+      summarise(mean = mean(count), stdev = sd(count))
+    
+    ggplot(subset(summary_aggr, metric == "death_toll"), 
+           aes(x = get(varying_par[1]), y = get(varying_par[2]),
+                        fill = mean)) +
+      geom_tile(aes(fill = mean)) +
+      geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
+      scale_fill_viridis() +
+      scale_y_continuous(breaks = seq(0, 100, by = 25)) +
+      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
+      theme(panel.grid.minor = element_blank()) +
+      labs(x = varying_par[1], y = varying_par[2], 
+           fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
+    
+    # summary_test = summary_aggr %>%
+    #   mutate(combo = paste(asym_test_coverage, sym_test_coverage))
+    # 
+    # ggplot(subset(summary_test, metric == "death_toll")) +
+    #   geom_col(aes(x = combo, y = mean)) # TO FINISH
+    
+    if (export_plots) {
+      ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
+             width = g_width, height = g_height)
+    }
+    
+    ggplot(subset(summary_aggr, metric == "peak_size"), 
+           aes(x = get(varying_par[1]), y = get(varying_par[2]),
+               fill = mean)) +
+      geom_tile(aes(fill = mean)) +
+      geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
+      scale_fill_viridis() +
+      scale_y_continuous(breaks = seq(0, 100, by = 25)) +
+      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
+      theme(panel.grid.minor = element_blank()) +
+      labs(x = varying_par[1], y = varying_par[2], 
+           fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
+    
+    if (export_plots) {
+      ggsave(sprintf("%s/%speak_size.pdf", dest_path, pattern), 
+             width = g_width, height = g_height)
+    }
+    
   }
   
 }
@@ -206,5 +213,49 @@ if (breed_plots) {
       ggsave(sprintf("%s/%s%s_breeds.pdf", dest_path, pattern, df), 
              width = g_width, height = g_height)
     }
+  }
+}
+
+######### LOG PLOTS
+
+if (log_plots) {
+  
+  data = raw[ ,grepl("^count symptomatics|^step|^run_num", names(raw))]
+  
+  data = data %>%
+    separate("run_num", sep = "_", remove = TRUE, 
+             into = c("run_num", sprintf("%s", varying_par)))
+  
+  split_data = split(data, with(data, get(varying_par)), drop = TRUE)
+  param_values = str_sort(names(split_data), numeric = TRUE)
+  list2env(split_data,envir=.GlobalEnv)
+  
+  plot_log_cases = function(data) {
+    
+    data_aggr = get(data) %>%
+      group_by(step) %>%
+      summarise(mean = mean(`count symptomatics`),
+                max = max(`count symptomatics`), 
+                min = min(`count symptomatics`))
+    
+    g = ggplot(data_aggr, aes(x=step, y=mean)) + 
+      geom_line(color = "coral") +
+      scale_y_continuous(trans="log10", 
+                         labels = scales::number_format(accuracy = 0.01),
+                         limits = c(NA, 1000)) +
+      geom_ribbon(aes(ymin=min, ymax=max), alpha=0.2, fill = "coral") +
+      coord_cartesian(xlim = c(0, 14)) +
+      scale_x_continuous(breaks = seq(0, 14, by = 1)) +
+      labs(x = "day", y = "log10 of mean cases",
+           title = sprintf("%s value: %s", varying_par, data))
+  }
+  plot_grid <- lapply(param_values, plot_log_cases)
+  
+  if (export_plots) {
+    
+    pdf(sprintf("%s/%slog-grid.pdf", dest_path, pattern), 
+        width = g_width, height = g_height) 
+    grid.arrange(grobs = plot_grid, ncol = 3)
+    dev.off()
   }
 }

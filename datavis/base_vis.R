@@ -4,6 +4,11 @@ library(stringr)
 library(ggnewscale)
 theme_set(theme_minimal())
 
+# second_max <-  function(x) {
+#   u <- unique(x)
+#   sort(u, decreasing = TRUE)[2L]
+# }
+
 # various snippets
 
 # final death count
@@ -24,8 +29,8 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-07_pp-tt-opt"
-dest_path = "meeting"
+run_name = "2020-07-10_tt-only-opt-new"
+dest_path = "visualisations/vis new"
 g_width = 11.69
 g_height = 8.27
 export_plots = TRUE
@@ -197,7 +202,7 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
 }
 
 # set order of breeds for legend
-order = c("susceptibles", "latents", "asymptomatics",
+order = c("susceptibles", "exposeds", "asymptomatics",
           "symptomatics", "recovereds", "deads") #, "locked")
 
 data_long$breed = factor(data_long$breed, levels=order)
