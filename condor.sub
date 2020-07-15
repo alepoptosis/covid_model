@@ -1,5 +1,6 @@
 universe = java
 java_vm_args = -server -Xmx1024M
+requirements = (OpSys == "LINUX")
 executable = netlogo-6.1.1.jar
 arguments = org.nlogo.headless.Main --model model.nlogo --experiment NAME --table -
 transfer_input_files = model.nlogo
@@ -7,6 +8,6 @@ jar_files = netlogo-6.1.1.jar,args4j-2.0.12.jar,asm-all-5.0.4.jar,autolink-0.6.0
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 log = DATE_NAME.log
-error = DATE_NAME.err
+error = DATE_NAME_$(Process).err
 output = DATE_NAME_$(Process).csv
 Queue 10

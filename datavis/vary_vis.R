@@ -237,15 +237,17 @@ if (log_plots) {
       summarise(mean = mean(`count symptomatics`),
                 max = max(`count symptomatics`), 
                 min = min(`count symptomatics`))
+    print(data)
+    print(data_aggr, n = 21)
     
     g = ggplot(data_aggr, aes(x=step, y=mean)) + 
       geom_line(color = "coral") +
       scale_y_continuous(trans="log10", 
                          labels = scales::number_format(accuracy = 0.01),
-                         limits = c(NA, 1000)) +
+                         limits = c(NA, 100000)) +
       geom_ribbon(aes(ymin=min, ymax=max), alpha=0.2, fill = "coral") +
-      coord_cartesian(xlim = c(0, 14)) +
-      scale_x_continuous(breaks = seq(0, 14, by = 1)) +
+      coord_cartesian(xlim = c(0, 30)) +
+      scale_x_continuous(breaks = seq(0, 30, by = 1)) +
       labs(x = "day", y = "log10 of mean cases",
            title = sprintf("%s value: %s", varying_par, data))
   }
@@ -259,3 +261,4 @@ if (log_plots) {
     dev.off()
   }
 }
+
