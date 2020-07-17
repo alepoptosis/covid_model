@@ -11,15 +11,6 @@ theme_set(theme_minimal())
 
 # various snippets
 
-# final death count
-# deads_aggr %>%
-#   group_by(step) %>%
-#   filter(step == 365) %>%
-#   summarise(sum(mean))
-
-# max count of a breed at any time
-# max(data_aggr[data_aggr$breed == "symptomatics",]$mean)
-
 # add horizontal line for threshold
 # geom_hline(aes(yintercept = lockdown_thr), color = "red") + 
 # geom_text(aes(num_ticks / 2 - 10, lockdown_thr, label = "lockdown threshold"),
@@ -29,8 +20,8 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-10_tt-only-opt-new"
-dest_path = "visualisations/vis new"
+run_name = "2020-07-15_tt-only-p10"
+dest_path = "visualisations/vis p10"
 g_width = 11.69
 g_height = 8.27
 export_plots = TRUE
@@ -194,7 +185,13 @@ max_cont = max(cont_aggr$mean) # max avg contacts for ylim (contacts plot)
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
 peak_sym = round(max(data_aggr[data_aggr$breed == "symptomatics",]$mean), 2)
 tot_deaths = round(max(data_aggr[data_aggr$breed == "deads",]$mean), 2)
-year1_deaths = round(data_aggr %>% filter(step == 365, breed == "deads") %>% pull(mean), 2)
+if (num_ticks >= 365) {
+  year1_deaths = round(data_aggr %>% 
+                         filter(step == 365, breed == "deads") %>% 
+                         pull(mean), 2)
+} else {
+  year1_deaths = "n/a"
+}
 if ("count_infecteds_0_29" %in% colnames(raw)) {
   tot_infs = round(max(infs_aggr$mean), 2)
 } else {
@@ -207,7 +204,6 @@ order = c("susceptibles", "exposeds", "asymptomatics",
 
 data_long$breed = factor(data_long$breed, levels=order)
 data_aggr$breed = factor(data_aggr$breed, levels=order)
-
 
 #################################### PLOTS ####################################
 
@@ -229,14 +225,12 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
     scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
                                                     scale = 1e-3), 
                        breaks = seq(0, max_cont, by = 30000)) +
-    scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
     labs(x = "day", y = sprintf("mean count over %s runs", num_runs),
          title = sprintf("Control measures: %s", measures),
-         caption = sprintf("Average total deaths: %s
-                            Average deaths in first year: %s
-                           Average size of symptomatic peak: %s
-                           Average number of infections: %s", 
-                           tot_deaths, year1_deaths, peak_sym, tot_infs))
+         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s", 
+                           tot_deaths, year1_deaths, peak_sym, tot_infs)) +
+    theme(plot.caption = element_text(hjust = 0))
                            
 if (export_plots) {
   ggsave(sprintf("%s/%sbreeds.pdf", dest_path, pattern), 
@@ -257,15 +251,15 @@ ggplot(subset(deads_aggr, age != "total"), aes(x=step, y=mean_new)) +
   geom_line(aes(color=age), size = 1) +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
   coord_cartesian(ylim = c(- min(deads_aggr$mean_new), 
                              max(deads_aggr$mean_new)),
                   xlim = c(0, num_ticks)) +
   labs(x = "day", y = sprintf("mean new deaths over %s runs", num_runs),
        title = sprintf("Control measures: %s", measures),
-       caption = sprintf("Average total deaths: %s
-                            Average deaths in first year: %s", 
-                         tot_deaths, year1_deaths))
+       caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s", 
+                         tot_deaths, year1_deaths)) +
+       theme(plot.caption = element_text(hjust = 0))
 
 if (export_plots) {
 ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
@@ -288,15 +282,15 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
     geom_line(aes(color=age), size = 1) +
     scale_color_brewer(palette="Set3") +
     scale_fill_brewer(palette="Set3") +
-    scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
     coord_cartesian(ylim = c(- min(infs_aggr$mean_new),
                              max(infs_aggr$mean_new)),
                     xlim = c(0, num_ticks)) +
     labs(x = "day", y = sprintf("mean new infections over %s runs", num_runs),
          title = sprintf("Control measures: %s", measures),
-         caption = sprintf("Average size of symptomatic peak: %s
-                           Average number of infections: %s", 
-                           peak_sym, tot_infs))
+         caption = sprintf("Average size of symptomatic peak: %s \nAverage number of infections: %s", 
+                           peak_sym, tot_infs)) +
+    theme(plot.caption = element_text(hjust = 0))
 
   if (export_plots) {
     ggsave(sprintf("%s/%sinfections.pdf", dest_path, pattern), 
@@ -318,7 +312,7 @@ ggplot(cont_aggr, aes(x=step, y=mean)) +
     scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
                                                     scale = 1e-3), 
                        breaks = seq(0, max_cont, by = 100000)) +
-    scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
     scale_fill_manual(values = rep("lightgrey", num_runs)) +
     labs(x = "day", y = sprintf("mean contacts over %s runs", num_runs),
          title = sprintf("Control measures: %s", measures))

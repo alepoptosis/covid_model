@@ -295,8 +295,8 @@ to expose-susceptibles
     let infection-prob 1 - ((1 - p-infect) ^ total-infecteds)
 
     ;; if the S fails the check, it is flagged to become E
-    let p (random 100 + 1)
-    if p <= (infection-prob * 100) [set to-become-exposed? true]
+    let p random-float 100
+    if p < (infection-prob * 100) [set to-become-exposed? true]
   ]
 
   ;; if the system is open, there is a chance for a S to become E even if their contacts are S
@@ -401,8 +401,8 @@ to modify-measures
     ifelse count(symptomatics) >= shield-threshold-num
     [
       ask susceptibles with [age = "60+"] [
-      let p (random 100 + 1)
-      if p <= shield-adherance [isolate]
+      let p random-float 100
+      if p < shield-adherance [isolate]
       ]
     ]
     [
@@ -419,18 +419,18 @@ end
 ;;;;;;;;;;;;;;;;; SETUP SUPPORT ;;;;;;;;;;;;;;;;;;;;;
 
 to set-age
-  let p (random 100) + 1
+  let p random-float 100
   if p <= 40 [set age "30-59"]                ;; 40% (30-59)
   if p > 40 and p <= 77 [set age "0-29"]      ;; 37% (0-29)
-  if p > 77 [set age "60+"]                   ;; 23% (60+)
+  if p > 77 [set age "60+"]                  ;; 23% (60+)
 end
 
 ;;;;;;;;;;;;;;;;;;; GO SUPPORT ;;;;;;;;;;;;;;;;;;;;;;
 
 to check-travel
-  if (count symptomatics) < lockdown-threshold-num [          ;; if people can travel and lockdown is not active
-    let p (random 100 + 1)                                    ;; one person gets randomly infected per tick depending on travel strictness
-    if p >= (travel-strictness) [                             ;; 1% chance if 100% strictness, 100% chance if 0% strictness
+  if (count symptomatics) < lockdown-threshold-num [         ;; if people can travel and lockdown is not active
+    let p random-float 100                                   ;; one person gets randomly infected per tick depending on travel strictness
+    if p > travel-strictness [
       ask susceptibles-on (n-of 1 patches) [set-breed-exposed]
     ]
   ]
@@ -480,15 +480,15 @@ to set-breed-asymptomatic
   set to-remove? false
   set rec-countdown (normal-dist recovery-mean recovery-stdev)
   set to-become-sym? false
-  let p (random 100 + 1)
-  ifelse p >= asym-infections
-  [
-    set develop-sym? true
-    set sym-countdown (random 3 + 1)
-  ]
+  let p random-float 100
+  ifelse p < asym-infections
   [
     set develop-sym? false
     add-inf-count
+  ]
+  [
+    set develop-sym? true
+    set sym-countdown (random 3 + 1)
   ]
   check-outline
 end
@@ -510,8 +510,8 @@ to start-lockdown                                         ;; triggers possibilit
   let alives turtles with [not member? self deads]        ;; groups non-dead turtles
   if not currently-locked? [                              ;; if the lockdown was not on in the previous tick
     ask alives [
-      let p (random 100 + 1)                              ;; checks whether the agent will isolate
-      if p <= (lockdown-strictness) [isolate]             ;; if yes, z-contact is set to 0
+      let p random-float 100                              ;; checks whether the agent will isolate
+      if p < lockdown-strictness [isolate]                ;; if yes, z-contact is set to 0
       set currently-locked? true                          ;; lockdown is flagged as currently happening
       set first-lockdown? true                            ;; and the first lockdown is flagged as occurred
     ]                                                     ;; otherwise, the turtle maintains z-contact-init
@@ -537,7 +537,7 @@ to check-outline    ;; ensures turtles maintain correct shape when changing bree
 end
 
 to check-death                          ;; checks whether an infected will die or recover and assigns correct countdown
-  let p (random 100 + 1)
+  let p random-float 100
   let p-death-here (actual-p-death age)
   ifelse (p <= p-death-here)
   [set will-die? true]                  ;; if agent fails the check, it's flagged as will-die
@@ -561,13 +561,13 @@ end
 
 to test    ;; tests infecteds based on respective test coverage
   ask symptomatics with [tested? = false] [
-    let p (random 100 + 1)
-    if p <= sym-test-coverage [set tested? true]
+    let p random-float 100
+    if p < sym-test-coverage [set tested? true]
   ]
   let other-infecteds (turtle-set exposeds asymptomatics)
   ask other-infecteds with [tested? = false] [
-    let p (random 100 + 1)
-    if p <= asym-test-coverage [set tested? true]
+    let p random-float 100
+    if p < asym-test-coverage [set tested? true]
   ]
 end
 
@@ -983,7 +983,7 @@ duration
 duration
 0
 10
-0.083
+1.0
 1
 1
 years
@@ -1361,7 +1361,7 @@ SWITCH
 605
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1374,7 +1374,7 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-8.0
+0.0
 1.00
 1
 % infecteds
@@ -1389,8 +1389,8 @@ asym-test-coverage
 asym-test-coverage
 0
 100
-6.0
-1
+0.5
+1.0
 1
 % of population
 HORIZONTAL
@@ -1404,7 +1404,7 @@ sym-test-coverage
 sym-test-coverage
 0
 100
-100.0
+0.0
 1
 1
 % of cases

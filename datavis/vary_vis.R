@@ -7,14 +7,14 @@ library(gridExtra)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-10_vary-p-infect"
-varying_par = "p_infect_init" # use version with _ instead of -
-dest_path = "visualisations/vis new"
+run_name = "2020-07-15_vary-tt-coverage-combo-p10"
+varying_par = c("asym_test_coverage", "sym_test_coverage") # use version with _ instead of -
+dest_path = "visualisations/vis p10"
 g_width = 11.69
 g_height = 8.27
-metrics_plot = FALSE
+metrics_plot = TRUE
 breed_plots = FALSE
-log_plots = TRUE
+log_plots = FALSE
 export_plots = TRUE
 
 ############################## DATA WRANGLING #################################
@@ -104,7 +104,7 @@ if (metrics_plot) {
     }
   } 
   
-  ######### HEATMAPS FOR 2 PARAM COMBO
+######### HEATMAPS FOR 2 PARAM COMBO
   
   if (length(varying_par) == 2) {
     summary_aggr = summary %>%
@@ -118,16 +118,10 @@ if (metrics_plot) {
       geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
       scale_fill_viridis() +
       scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
+      scale_x_continuous(breaks = seq(0, 100, by = 0.1)) +
       theme(panel.grid.minor = element_blank()) +
       labs(x = varying_par[1], y = varying_par[2], 
            fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
-    
-    # summary_test = summary_aggr %>%
-    #   mutate(combo = paste(asym_test_coverage, sym_test_coverage))
-    # 
-    # ggplot(subset(summary_test, metric == "death_toll")) +
-    #   geom_col(aes(x = combo, y = mean)) # TO FINISH
     
     if (export_plots) {
       ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
@@ -141,7 +135,7 @@ if (metrics_plot) {
       geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
       scale_fill_viridis() +
       scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
+      scale_x_continuous(breaks = seq(0, 100, by = 0.1)) +
       theme(panel.grid.minor = element_blank()) +
       labs(x = varying_par[1], y = varying_par[2], 
            fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
@@ -237,8 +231,6 @@ if (log_plots) {
       summarise(mean = mean(`count symptomatics`),
                 max = max(`count symptomatics`), 
                 min = min(`count symptomatics`))
-    print(data)
-    print(data_aggr, n = 21)
     
     g = ggplot(data_aggr, aes(x=step, y=mean)) + 
       geom_line(color = "coral") +

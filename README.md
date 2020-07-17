@@ -187,3 +187,4 @@
 ## Week 9
 
 - Added a visualisation for the log of cases vs time to analyse the effect of varying p-inf-init
+- Fixed the random number generators to include floats, this will ensure that float parameters (especially those between 0 and 1) actually work instead of just effectively being 0
