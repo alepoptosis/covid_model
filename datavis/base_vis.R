@@ -20,11 +20,12 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-15_tt-only-p10"
-dest_path = "visualisations/vis p10"
+run_name = "2020-07-17_pp-tt-ld-a05"
+dest_path = "visualisations/a05"
 g_width = 11.69
 g_height = 8.27
 export_plots = TRUE
+new_ld_vis = TRUE
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
@@ -104,6 +105,12 @@ if ("currently_locked?" %in% colnames(raw)) {
     mutate(`currently_locked?` = count > lockdown_thr) %>%
     select(-c("breed", "count"))
 }
+
+ld_aggr = ld %>%
+  select(-`count locked`) %>%
+  group_by(step) %>%
+  summarise(locked_runs = sum(`currently_locked?` == TRUE),
+            locked_runs_per = (locked_runs * 100) / num_runs)
 
 # subset containing info on contacts
 contact = raw[ ,grepl("run_num|step|num_contacts", names(raw))]
@@ -209,7 +216,8 @@ data_aggr$breed = factor(data_aggr$breed, levels=order)
 
 ######### BREEDS AVERAGE COUNT OVER TIME PLOT, NON-AGGR LOCKDOWN
 
-ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
+if (!new_ld_vis) {
+  ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
   geom_area(data = ld,
             aes(x = step, y = pop_size * `currently_locked?`, 
                 fill = as.factor(run_num)),
@@ -232,9 +240,34 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
                            tot_deaths, year1_deaths, peak_sym, tot_infs)) +
     theme(plot.caption = element_text(hjust = 0))
                            
-if (export_plots) {
+  if (export_plots) {
   ggsave(sprintf("%s/%sbreeds.pdf", dest_path, pattern), 
        width = g_width, height = g_height)
+  }
+} else {
+  ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
+    geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
+    geom_area(data = ld_aggr, aes(x = step, y = locked_runs_per*900), 
+              inherit.aes = FALSE, fill = "lightgrey") +
+    geom_line(aes(color=breed), size = 1) +
+    coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
+    scale_color_brewer(palette="Set3") +
+    scale_fill_brewer(palette="Set3") +
+    scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
+                                                    scale = 1e-3),
+                       breaks = seq(0, max_cont, by = 30000),
+                       sec.axis = sec_axis(~./900, name = "% runs in lockdown")) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
+    labs(x = "day", y = sprintf("mean count over %s runs", num_runs),
+         title = sprintf("Control measures: %s", measures),
+         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s", 
+                           tot_deaths, year1_deaths, peak_sym, tot_infs)) +
+    theme(plot.caption = element_text(hjust = 0))
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%sbreeds-newld.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
 }
 
 ######### NON-AGGR NEW DEATHS PLOT

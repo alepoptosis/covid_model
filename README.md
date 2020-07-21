@@ -188,3 +188,7 @@
 
 - Added a visualisation for the log of cases vs time to analyse the effect of varying p-inf-init
 - Fixed the random number generators to include floats, this will ensure that float parameters (especially those between 0 and 1) actually work instead of just effectively being 0
+
+## Week 10
+
+- Fixed a bug that did not exclude isolated susceptibles from travelling, now only susceptibles with z-contant higher than 0 can be infected by the travel mechanic

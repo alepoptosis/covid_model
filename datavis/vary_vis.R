@@ -7,13 +7,13 @@ library(gridExtra)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-15_vary-tt-coverage-combo-p10"
-varying_par = c("asym_test_coverage", "sym_test_coverage") # use version with _ instead of -
-dest_path = "visualisations/vis p10"
+run_name = "2020-07-17_imm-none"
+varying_par = "immunity_mean" # use version with _ instead of -
+dest_path = "visualisations/immunity"
 g_width = 11.69
 g_height = 8.27
-metrics_plot = TRUE
-breed_plots = FALSE
+metrics_plot = FALSE
+breed_plots = TRUE
 log_plots = FALSE
 export_plots = TRUE
 
@@ -166,7 +166,7 @@ if (breed_plots) {
       values_to = "count"
     )
   
-  order = c("susceptibles", "latents", "asymptomatics",
+  order = c("susceptibles", "exposeds", "asymptomatics",
             "symptomatics", "recovereds", "deads")
   
   data$breed = factor(data$breed, levels=order)
