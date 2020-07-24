@@ -1,0 +1,2286 @@
+000 (64537.000.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.001.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.002.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.003.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.004.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.005.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.006.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.007.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.008.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+000 (64537.009.000) 07/21 12:11:24 Job submitted from host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_4>
+...
+022 (64537.006.000) 07/21 12:11:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:11:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:11:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:11:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:11:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:11:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+001 (64537.004.000) 07/21 12:11:27 Job executing on host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_5>
+...
+001 (64537.000.000) 07/21 12:11:27 Job executing on host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_5>
+...
+001 (64537.005.000) 07/21 12:11:27 Job executing on host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_5>
+...
+001 (64537.001.000) 07/21 12:11:27 Job executing on host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_5>
+...
+001 (64537.002.000) 07/21 12:11:27 Job executing on host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_5>
+...
+001 (64537.003.000) 07/21 12:11:27 Job executing on host: <139.153.252.230:9618?addrs=139.153.252.230-9618+[--1]-9618&noUDP&sock=729_9ca1_5>
+...
+024 (64537.006.000) 07/21 12:11:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:11:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:11:35 Image size of job updated: 175192
+	172  -  MemoryUsage of job (MB)
+	175192  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:11:35 Image size of job updated: 178528
+	175  -  MemoryUsage of job (MB)
+	178528  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:11:36 Image size of job updated: 177580
+	174  -  MemoryUsage of job (MB)
+	177580  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:11:36 Image size of job updated: 173472
+	170  -  MemoryUsage of job (MB)
+	173472  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 12:11:36 Image size of job updated: 176144
+	173  -  MemoryUsage of job (MB)
+	176144  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 12:11:36 Image size of job updated: 177900
+	174  -  MemoryUsage of job (MB)
+	177900  -  ResidentSetSize of job (KB)
+...
+022 (64537.006.000) 07/21 12:12:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:12:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:12:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:12:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:12:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:12:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:12:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:12:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:13:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:13:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:13:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:13:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:13:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:13:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:13:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:13:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:14:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.006.000) 07/21 12:14:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:14:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:14:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:14:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:14:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:14:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:14:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:15:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:15:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:15:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:15:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:15:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:15:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:15:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:15:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:16:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:16:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:16:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:16:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:16:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:16:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:16:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:16:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:16:35 Image size of job updated: 304644
+	298  -  MemoryUsage of job (MB)
+	304644  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:16:35 Image size of job updated: 339280
+	332  -  MemoryUsage of job (MB)
+	339280  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 12:16:37 Image size of job updated: 321396
+	314  -  MemoryUsage of job (MB)
+	321396  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:16:37 Image size of job updated: 319972
+	313  -  MemoryUsage of job (MB)
+	319972  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:16:37 Image size of job updated: 318396
+	311  -  MemoryUsage of job (MB)
+	318396  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 12:16:38 Image size of job updated: 318180
+	311  -  MemoryUsage of job (MB)
+	318180  -  ResidentSetSize of job (KB)
+...
+022 (64537.007.000) 07/21 12:17:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:17:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:17:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:17:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:17:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:17:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:17:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:17:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:18:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:18:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:18:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:18:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:18:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:18:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:18:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:18:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:19:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:19:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:19:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:19:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:19:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:19:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:19:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:19:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:20:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:20:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:20:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:20:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:20:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:20:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:20:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:20:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:21:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:21:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:21:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:21:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:21:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:21:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:21:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:21:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:21:35 Image size of job updated: 348956
+	341  -  MemoryUsage of job (MB)
+	348956  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:21:35 Image size of job updated: 378692
+	370  -  MemoryUsage of job (MB)
+	378692  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 12:21:37 Image size of job updated: 361140
+	353  -  MemoryUsage of job (MB)
+	361140  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:21:38 Image size of job updated: 357412
+	350  -  MemoryUsage of job (MB)
+	357412  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:21:38 Image size of job updated: 355488
+	348  -  MemoryUsage of job (MB)
+	355488  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 12:21:38 Image size of job updated: 359492
+	352  -  MemoryUsage of job (MB)
+	359492  -  ResidentSetSize of job (KB)
+...
+022 (64537.006.000) 07/21 12:22:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:22:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:22:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:22:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:22:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:22:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:22:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:22:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:23:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:23:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:23:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:23:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:23:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:23:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:23:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:23:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:24:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:24:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:24:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:24:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:24:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:24:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:24:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:24:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:25:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:25:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:25:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:25:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:25:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:25:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:25:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:25:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:26:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:26:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:26:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:26:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:26:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:26:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:26:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:26:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:26:36 Image size of job updated: 385768
+	377  -  MemoryUsage of job (MB)
+	385768  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:26:36 Image size of job updated: 425836
+	416  -  MemoryUsage of job (MB)
+	425836  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 12:26:37 Image size of job updated: 403616
+	395  -  MemoryUsage of job (MB)
+	403616  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:26:38 Image size of job updated: 399596
+	391  -  MemoryUsage of job (MB)
+	399596  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:26:38 Image size of job updated: 402820
+	394  -  MemoryUsage of job (MB)
+	402820  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 12:26:38 Image size of job updated: 393460
+	385  -  MemoryUsage of job (MB)
+	393460  -  ResidentSetSize of job (KB)
+...
+022 (64537.007.000) 07/21 12:27:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:27:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:27:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:27:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:27:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:27:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:27:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:27:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:28:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:28:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:28:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:28:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:28:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:28:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:28:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:28:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:29:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:29:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:29:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:29:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:29:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:29:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:29:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:29:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:30:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:30:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:30:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:30:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:30:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:30:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:30:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:30:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:31:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:31:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:31:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:31:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:31:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:31:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:31:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:31:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:31:36 Image size of job updated: 385916
+	377  -  MemoryUsage of job (MB)
+	385916  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:31:36 Image size of job updated: 427116
+	418  -  MemoryUsage of job (MB)
+	427116  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:31:39 Image size of job updated: 399720
+	391  -  MemoryUsage of job (MB)
+	399720  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:31:39 Image size of job updated: 406476
+	397  -  MemoryUsage of job (MB)
+	406476  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 12:31:39 Image size of job updated: 393592
+	385  -  MemoryUsage of job (MB)
+	393592  -  ResidentSetSize of job (KB)
+...
+022 (64537.006.000) 07/21 12:32:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:32:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:32:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:32:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:32:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:32:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:32:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:32:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:33:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:33:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:33:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:33:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:33:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:33:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:33:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:33:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:34:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:34:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:34:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:34:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:34:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:34:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:34:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:34:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:35:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:35:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:35:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:35:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:35:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:35:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:35:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:35:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:36:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:36:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:36:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:36:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:36:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:36:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:36:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:36:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:36:36 Image size of job updated: 385948
+	377  -  MemoryUsage of job (MB)
+	385948  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:36:36 Image size of job updated: 427248
+	418  -  MemoryUsage of job (MB)
+	427248  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:36:40 Image size of job updated: 406540
+	398  -  MemoryUsage of job (MB)
+	406540  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:36:40 Image size of job updated: 404244
+	395  -  MemoryUsage of job (MB)
+	404244  -  ResidentSetSize of job (KB)
+...
+022 (64537.006.000) 07/21 12:37:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:37:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:37:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:37:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:37:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:37:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:37:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:37:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:38:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:38:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:38:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:38:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:38:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:38:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:38:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:38:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:39:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:39:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:39:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.006.000) 07/21 12:39:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:39:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:39:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:39:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:39:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:40:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:40:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:40:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:40:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:40:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:40:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:40:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:40:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:41:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:41:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:41:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.006.000) 07/21 12:41:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:41:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:41:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:41:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:41:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:41:37 Image size of job updated: 386116
+	378  -  MemoryUsage of job (MB)
+	386116  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 12:41:39 Image size of job updated: 403772
+	395  -  MemoryUsage of job (MB)
+	403772  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:41:40 Image size of job updated: 406672
+	398  -  MemoryUsage of job (MB)
+	406672  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 12:41:40 Image size of job updated: 397320
+	389  -  MemoryUsage of job (MB)
+	397320  -  ResidentSetSize of job (KB)
+...
+022 (64537.006.000) 07/21 12:42:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:42:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:42:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:42:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:42:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:42:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:42:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:42:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:43:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:43:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:43:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:43:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:43:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:43:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:43:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:43:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:44:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:44:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:44:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:44:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:44:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:44:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:44:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:44:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:45:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:45:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:45:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:45:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:45:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:45:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:45:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:45:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:46:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:46:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:46:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:46:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:46:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:46:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:46:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 12:46:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:46:38 Image size of job updated: 386132
+	378  -  MemoryUsage of job (MB)
+	386132  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:46:38 Image size of job updated: 427380
+	418  -  MemoryUsage of job (MB)
+	427380  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 12:46:40 Image size of job updated: 407100
+	398  -  MemoryUsage of job (MB)
+	407100  -  ResidentSetSize of job (KB)
+...
+022 (64537.006.000) 07/21 12:47:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:47:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:47:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:47:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:47:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:47:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:47:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:47:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:48:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:48:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:48:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:48:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:48:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:48:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:48:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:48:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:49:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:49:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:49:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:49:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:49:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:49:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:49:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:49:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:50:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.006.000) 07/21 12:50:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:50:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:50:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:50:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:50:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:50:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:50:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:51:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:51:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:51:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:51:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 12:51:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:51:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:51:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:51:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.000.000) 07/21 12:51:38 Image size of job updated: 427404
+	418  -  MemoryUsage of job (MB)
+	427404  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 12:51:41 Image size of job updated: 406680
+	398  -  MemoryUsage of job (MB)
+	406680  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:51:41 Image size of job updated: 404376
+	395  -  MemoryUsage of job (MB)
+	404376  -  ResidentSetSize of job (KB)
+...
+022 (64537.007.000) 07/21 12:52:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:52:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:52:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.006.000) 07/21 12:52:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:52:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:52:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:52:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:52:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:53:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:53:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:53:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:53:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:53:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:53:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:53:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:53:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:54:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:54:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:54:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:54:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:54:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:54:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:54:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:54:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:55:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:55:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:55:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.006.000) 07/21 12:55:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:55:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:55:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:55:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:55:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:56:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:56:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:56:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:56:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:56:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:56:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:56:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.006.000) 07/21 12:56:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 12:56:38 Image size of job updated: 386172
+	378  -  MemoryUsage of job (MB)
+	386172  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 12:56:38 Image size of job updated: 427460
+	418  -  MemoryUsage of job (MB)
+	427460  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 12:56:42 Image size of job updated: 404384
+	395  -  MemoryUsage of job (MB)
+	404384  -  ResidentSetSize of job (KB)
+...
+022 (64537.006.000) 07/21 12:57:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:57:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:57:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:57:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:57:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:57:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:57:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:57:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:58:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:58:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 12:58:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:58:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:58:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.008.000) 07/21 12:58:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 12:58:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.009.000) 07/21 12:58:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 12:59:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 12:59:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 12:59:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 12:59:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 12:59:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 12:59:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 12:59:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 12:59:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 13:00:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.008.000) 07/21 13:00:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 13:00:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.009.000) 07/21 13:00:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 13:00:26 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.007.000) 07/21 13:00:26 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 13:00:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.007.000) 07/21 13:00:34 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.006.000) 07/21 13:01:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.006.000) 07/21 13:01:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot1@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.009.000) 07/21 13:01:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot4@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+022 (64537.007.000) 07/21 13:01:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot2@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.007.000) 07/21 13:01:25 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot2@whatsit.cs.stir.ac.uk, rescheduling job
+...
+022 (64537.008.000) 07/21 13:01:25 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot3@whatsit.cs.stir.ac.uk <139.153.254.52:9618?addrs=139.153.254.52-9618+[--1]-9618&noUDP&sock=867_44b3_3>
+...
+024 (64537.009.000) 07/21 13:01:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot4@whatsit.cs.stir.ac.uk, rescheduling job
+...
+024 (64537.008.000) 07/21 13:01:33 Job reconnection failed
+    Job not found at execution machine
+    Can not reconnect to slot3@whatsit.cs.stir.ac.uk, rescheduling job
+...
+006 (64537.004.000) 07/21 13:01:39 Image size of job updated: 386548
+	378  -  MemoryUsage of job (MB)
+	386548  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 13:01:39 Image size of job updated: 427496
+	418  -  MemoryUsage of job (MB)
+	427496  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 13:01:41 Image size of job updated: 397420
+	389  -  MemoryUsage of job (MB)
+	397420  -  ResidentSetSize of job (KB)
+...
+001 (64537.007.000) 07/21 13:02:28 Job executing on host: <139.153.254.119:9618?addrs=139.153.254.119-9618+[--1]-9618&noUDP&sock=1744_d142_3>
+...
+001 (64537.009.000) 07/21 13:02:28 Job executing on host: <139.153.254.119:9618?addrs=139.153.254.119-9618+[--1]-9618&noUDP&sock=1744_d142_3>
+...
+001 (64537.006.000) 07/21 13:02:28 Job executing on host: <139.153.254.119:9618?addrs=139.153.254.119-9618+[--1]-9618&noUDP&sock=1744_d142_3>
+...
+001 (64537.008.000) 07/21 13:02:29 Job executing on host: <139.153.254.119:9618?addrs=139.153.254.119-9618+[--1]-9618&noUDP&sock=1744_d142_3>
+...
+006 (64537.008.000) 07/21 13:02:37 Image size of job updated: 221976
+	217  -  MemoryUsage of job (MB)
+	221976  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 13:02:37 Image size of job updated: 257868
+	252  -  MemoryUsage of job (MB)
+	257868  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:02:37 Image size of job updated: 234620
+	230  -  MemoryUsage of job (MB)
+	234620  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 13:02:37 Image size of job updated: 245260
+	240  -  MemoryUsage of job (MB)
+	245260  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 13:06:42 Image size of job updated: 397440
+	389  -  MemoryUsage of job (MB)
+	397440  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 13:06:42 Image size of job updated: 407224
+	398  -  MemoryUsage of job (MB)
+	407224  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 13:06:43 Image size of job updated: 404404
+	395  -  MemoryUsage of job (MB)
+	404404  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 13:07:37 Image size of job updated: 328180
+	321  -  MemoryUsage of job (MB)
+	328180  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:07:38 Image size of job updated: 326328
+	319  -  MemoryUsage of job (MB)
+	326328  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 13:07:38 Image size of job updated: 351108
+	343  -  MemoryUsage of job (MB)
+	351108  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 13:07:38 Image size of job updated: 350408
+	343  -  MemoryUsage of job (MB)
+	350408  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 13:11:39 Image size of job updated: 427500
+	418  -  MemoryUsage of job (MB)
+	427500  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 13:11:43 Image size of job updated: 397740
+	389  -  MemoryUsage of job (MB)
+	397740  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 13:11:44 Image size of job updated: 406768
+	398  -  MemoryUsage of job (MB)
+	406768  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 13:11:44 Image size of job updated: 404456
+	395  -  MemoryUsage of job (MB)
+	404456  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 13:12:37 Image size of job updated: 345196
+	338  -  MemoryUsage of job (MB)
+	345196  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:12:38 Image size of job updated: 343720
+	336  -  MemoryUsage of job (MB)
+	343720  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 13:12:38 Image size of job updated: 368044
+	360  -  MemoryUsage of job (MB)
+	368044  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 13:12:39 Image size of job updated: 367968
+	360  -  MemoryUsage of job (MB)
+	367968  -  ResidentSetSize of job (KB)
+...
+006 (64537.004.000) 07/21 13:16:40 Image size of job updated: 389476
+	381  -  MemoryUsage of job (MB)
+	389476  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 13:16:43 Image size of job updated: 400952
+	392  -  MemoryUsage of job (MB)
+	400952  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 13:16:43 Image size of job updated: 407288
+	398  -  MemoryUsage of job (MB)
+	407288  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 13:16:44 Image size of job updated: 404812
+	396  -  MemoryUsage of job (MB)
+	404812  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:17:38 Image size of job updated: 346148
+	339  -  MemoryUsage of job (MB)
+	346148  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 13:17:38 Image size of job updated: 345548
+	338  -  MemoryUsage of job (MB)
+	345548  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 13:17:39 Image size of job updated: 370336
+	362  -  MemoryUsage of job (MB)
+	370336  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 13:17:39 Image size of job updated: 368572
+	360  -  MemoryUsage of job (MB)
+	368572  -  ResidentSetSize of job (KB)
+...
+006 (64537.000.000) 07/21 13:21:41 Image size of job updated: 427676
+	418  -  MemoryUsage of job (MB)
+	427676  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 13:22:39 Image size of job updated: 345652
+	338  -  MemoryUsage of job (MB)
+	345652  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:22:39 Image size of job updated: 346340
+	339  -  MemoryUsage of job (MB)
+	346340  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 13:22:40 Image size of job updated: 371464
+	363  -  MemoryUsage of job (MB)
+	371464  -  ResidentSetSize of job (KB)
+...
+006 (64537.004.000) 07/21 13:26:41 Image size of job updated: 390096
+	381  -  MemoryUsage of job (MB)
+	390096  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 13:27:39 Image size of job updated: 348448
+	341  -  MemoryUsage of job (MB)
+	348448  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 13:27:40 Image size of job updated: 370476
+	362  -  MemoryUsage of job (MB)
+	370476  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:27:40 Image size of job updated: 346356
+	339  -  MemoryUsage of job (MB)
+	346356  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 13:32:39 Image size of job updated: 351324
+	344  -  MemoryUsage of job (MB)
+	351324  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 13:32:40 Image size of job updated: 373436
+	365  -  MemoryUsage of job (MB)
+	373436  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:32:40 Image size of job updated: 349036
+	341  -  MemoryUsage of job (MB)
+	349036  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 13:32:40 Image size of job updated: 374312
+	366  -  MemoryUsage of job (MB)
+	374312  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 13:41:45 Image size of job updated: 401660
+	393  -  MemoryUsage of job (MB)
+	401660  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 13:41:46 Image size of job updated: 407420
+	398  -  MemoryUsage of job (MB)
+	407420  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:42:41 Image size of job updated: 349040
+	341  -  MemoryUsage of job (MB)
+	349040  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 13:42:42 Image size of job updated: 374444
+	366  -  MemoryUsage of job (MB)
+	374444  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 13:47:41 Image size of job updated: 351336
+	344  -  MemoryUsage of job (MB)
+	351336  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 13:52:42 Image size of job updated: 349172
+	341  -  MemoryUsage of job (MB)
+	349172  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 14:02:43 Image size of job updated: 351400
+	344  -  MemoryUsage of job (MB)
+	351400  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 14:02:43 Image size of job updated: 349228
+	342  -  MemoryUsage of job (MB)
+	349228  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 14:07:44 Image size of job updated: 349632
+	342  -  MemoryUsage of job (MB)
+	349632  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 14:07:44 Image size of job updated: 375228
+	367  -  MemoryUsage of job (MB)
+	375228  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 14:07:45 Image size of job updated: 373832
+	366  -  MemoryUsage of job (MB)
+	373832  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 14:11:49 Image size of job updated: 409400
+	400  -  MemoryUsage of job (MB)
+	409400  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 14:22:45 Image size of job updated: 352452
+	345  -  MemoryUsage of job (MB)
+	352452  -  ResidentSetSize of job (KB)
+...
+006 (64537.009.000) 07/21 14:22:46 Image size of job updated: 353012
+	345  -  MemoryUsage of job (MB)
+	353012  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 14:22:46 Image size of job updated: 375360
+	367  -  MemoryUsage of job (MB)
+	375360  -  ResidentSetSize of job (KB)
+...
+006 (64537.007.000) 07/21 14:22:46 Image size of job updated: 373964
+	366  -  MemoryUsage of job (MB)
+	373964  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 14:27:45 Image size of job updated: 352520
+	345  -  MemoryUsage of job (MB)
+	352520  -  ResidentSetSize of job (KB)
+...
+006 (64537.008.000) 07/21 14:32:46 Image size of job updated: 353524
+	346  -  MemoryUsage of job (MB)
+	353524  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 14:36:52 Image size of job updated: 408616
+	400  -  MemoryUsage of job (MB)
+	408616  -  ResidentSetSize of job (KB)
+...
+005 (64537.009.000) 07/21 14:38:03 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 01:35:44, Sys 0 00:00:03  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:35:44, Sys 0 00:00:03  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1060588  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1060588  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  10634657
+	   Memory (MB)          :      345        0       978
+...
+006 (64537.008.000) 07/21 14:38:04 Image size of job updated: 3603780
+	346  -  MemoryUsage of job (MB)
+	353524  -  ResidentSetSize of job (KB)
+...
+006 (64537.006.000) 07/21 14:38:05 Image size of job updated: 3537216
+	367  -  MemoryUsage of job (MB)
+	375360  -  ResidentSetSize of job (KB)
+...
+005 (64537.008.000) 07/21 14:38:05 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 01:35:48, Sys 0 00:00:04  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:35:48, Sys 0 00:00:04  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1060299  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1060299  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  10634657
+	   Memory (MB)          :      346        0       978
+...
+005 (64537.006.000) 07/21 14:38:06 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 01:35:49, Sys 0 00:00:03  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:35:49, Sys 0 00:00:03  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1060969  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1060969  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  10634657
+	   Memory (MB)          :      367        0       978
+...
+005 (64537.007.000) 07/21 14:42:37 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 01:40:21, Sys 0 00:00:03  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:40:21, Sys 0 00:00:03  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1057624  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1057624  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  10634657
+	   Memory (MB)          :      366        0       978
+...
+006 (64537.000.000) 07/21 14:46:51 Image size of job updated: 427860
+	418  -  MemoryUsage of job (MB)
+	427860  -  ResidentSetSize of job (KB)
+...
+006 (64537.002.000) 07/21 14:46:52 Image size of job updated: 403360
+	394  -  MemoryUsage of job (MB)
+	403360  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 14:51:53 Image size of job updated: 404964
+	396  -  MemoryUsage of job (MB)
+	404964  -  ResidentSetSize of job (KB)
+...
+006 (64537.003.000) 07/21 14:51:55 Image size of job updated: 409464
+	400  -  MemoryUsage of job (MB)
+	409464  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 15:01:55 Image size of job updated: 408684
+	400  -  MemoryUsage of job (MB)
+	408684  -  ResidentSetSize of job (KB)
+...
+006 (64537.005.000) 07/21 15:11:56 Image size of job updated: 408816
+	400  -  MemoryUsage of job (MB)
+	408816  -  ResidentSetSize of job (KB)
+...
+006 (64537.001.000) 07/21 15:31:57 Image size of job updated: 405052
+	396  -  MemoryUsage of job (MB)
+	405052  -  ResidentSetSize of job (KB)
+...
+005 (64537.000.000) 07/21 16:02:39 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 03:51:14, Sys 0 00:00:21  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 03:51:14, Sys 0 00:00:21  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1061403  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1061403  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  14795792
+	   Memory (MB)          :      418        0      2672
+...
+005 (64537.002.000) 07/21 16:05:19 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 03:53:52, Sys 0 00:00:20  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 03:53:52, Sys 0 00:00:20  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1059977  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1059977  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  14795792
+	   Memory (MB)          :      394        0      2672
+...
+005 (64537.001.000) 07/21 16:07:03 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 03:55:39, Sys 0 00:00:21  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 03:55:39, Sys 0 00:00:21  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1059438  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1059438  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  14795792
+	   Memory (MB)          :      396        0      2672
+...
+005 (64537.003.000) 07/21 16:10:36 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 03:59:11, Sys 0 00:00:21  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 03:59:11, Sys 0 00:00:21  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1059525  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1059525  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  14795792
+	   Memory (MB)          :      400        0      2672
+...
+005 (64537.004.000) 07/21 16:11:11 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 03:59:45, Sys 0 00:00:20  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 03:59:45, Sys 0 00:00:20  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1058647  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1058647  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  14795792
+	   Memory (MB)          :      381        0      2672
+...
+005 (64537.005.000) 07/21 16:13:07 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 04:01:39, Sys 0 00:00:21  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 04:01:39, Sys 0 00:00:21  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	1058095  -  Run Bytes Sent By Job
+	45451000  -  Run Bytes Received By Job
+	1058095  -  Total Bytes Sent By Job
+	45451000  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated
+	   Cpus                 :                 1         1
+	   Disk (KB)            :    45000    45000  14795792
+	   Memory (MB)          :      400        0      2672
+...

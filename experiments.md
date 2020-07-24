@@ -3652,7 +3652,7 @@ vary-imm-none
 
 # FUTURE RUNS (DOUBLE CHECK PAR)
 
-2020-07-21_is-opt 2020-07-21_ld-opt 2020-07-21_pp-opt 2020-07-21_sv-opt 2020-07-21_tt-opt 2020-07-21_is-sv-opt 2020-07-21_is-sv-ld-opt 2020-07-21_pp-tt-opt 2020-07-21_pp-tt-ld-opt 2020-07-21_pp-tt-sv-opt
+2020-07-24_is-opt 2020-07-24_ld-opt 2020-07-24_pp-opt 2020-07-24_sv-opt 2020-07-24_tt-opt 2020-07-24_is-sv-opt 2020-07-24_is-sv-ld-opt 2020-07-24_pp-tt-opt 2020-07-24_pp-tt-ld-opt 2020-07-24_pp-tt-sv-opt 2020-07-24_vary-tt-coverage-combo-01
 
 is-opt
 ld-opt
@@ -3664,6 +3664,7 @@ is-sv-ld-opt
 pp-tt-opt
 pp-tt-ld-opt
 pp-tt-sv-opt
+vary-tt-coverage-combo-01
 
 ## is-opt
 
@@ -3680,7 +3681,7 @@ pp-tt-sv-opt
 
 ["lockdown-threshold" 1]
 ["protection-threshold" 1]
-["isolate-threshold" 0.25]
+["isolate-threshold" 0]
 ["testtrace-threshold" 1]
 ["shield-threshold" 1]
 
@@ -3714,7 +3715,7 @@ pp-tt-sv-opt
 ## ld-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" true]
 ["personal-protection?" false]
@@ -3760,7 +3761,7 @@ pp-tt-sv-opt
 ## pp-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" false]
 ["personal-protection?" true]
@@ -3771,13 +3772,13 @@ pp-tt-sv-opt
 ["lose-immunity?" false]
 
 ["lockdown-threshold" 1]
-["protection-threshold" 0.25]
+["protection-threshold" 0.1]
 ["isolate-threshold" 1]
 ["testtrace-threshold" 1]
 ["shield-threshold" 1]
 
 ["lockdown-strictness" 0]
-["protection-strength" 75]
+["protection-strength" 50]
 ["isolation-strictness" 0]
 ["travel-strictness" 99]
 ["shield-adherance" 0]
@@ -3806,7 +3807,7 @@ pp-tt-sv-opt
 ## sv-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" false]
 ["personal-protection?" false]
@@ -3826,7 +3827,7 @@ pp-tt-sv-opt
 ["protection-strength" 0]
 ["isolation-strictness" 0]
 ["travel-strictness" 99]
-["shield-adherance" 75]
+["shield-adherance" 50]
 ["sym-test-coverage" 0]
 ["asym-test-coverage" 0]
 
@@ -3852,7 +3853,7 @@ pp-tt-sv-opt
 ## tt-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" false]
 ["personal-protection?" false]
@@ -3873,8 +3874,8 @@ pp-tt-sv-opt
 ["isolation-strictness" 0]
 ["travel-strictness" 99]
 ["shield-adherance" 0]
-["sym-test-coverage" 75]
-["asym-test-coverage" 0.5]
+["sym-test-coverage" 25]
+["asym-test-coverage" 25]
 
 ["p-infect-init" 10]
 ["p-death" 2.5]
@@ -3898,7 +3899,7 @@ pp-tt-sv-opt
 ## is-sv-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" false]
 ["personal-protection?" false]
@@ -3910,7 +3911,7 @@ pp-tt-sv-opt
 
 ["lockdown-threshold" 1]
 ["protection-threshold" 1]
-["isolate-threshold" 0.25]
+["isolate-threshold" 0]
 ["testtrace-threshold" 1]
 ["shield-threshold" 0.25]
 
@@ -3918,7 +3919,7 @@ pp-tt-sv-opt
 ["protection-strength" 0]
 ["isolation-strictness" 75]
 ["travel-strictness" 99]
-["shield-adherance" 75]
+["shield-adherance" 50]
 ["sym-test-coverage" 0]
 ["asym-test-coverage" 0]
 
@@ -3944,7 +3945,7 @@ pp-tt-sv-opt
 ## is-sv-ld-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" true]
 ["personal-protection?" false]
@@ -3956,7 +3957,7 @@ pp-tt-sv-opt
 
 ["lockdown-threshold" 1]
 ["protection-threshold" 1]
-["isolate-threshold" 0.25]
+["isolate-threshold" 0]
 ["testtrace-threshold" 1]
 ["shield-threshold" 0.25]
 
@@ -3964,7 +3965,7 @@ pp-tt-sv-opt
 ["protection-strength" 0]
 ["isolation-strictness" 75]
 ["travel-strictness" 99]
-["shield-adherance" 75]
+["shield-adherance" 50]
 ["sym-test-coverage" 0]
 ["asym-test-coverage" 0]
 
@@ -3990,7 +3991,7 @@ pp-tt-sv-opt
 ## pp-tt-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" false]
 ["personal-protection?" true]
@@ -4001,18 +4002,18 @@ pp-tt-sv-opt
 ["lose-immunity?" false]
 
 ["lockdown-threshold" 1]
-["protection-threshold" 0.25]
+["protection-threshold" 0.1]
 ["isolate-threshold" 1]
 ["testtrace-threshold" 0.25]
 ["shield-threshold" 1]
 
 ["lockdown-strictness" 0]
-["protection-strength" 75]
+["protection-strength" 50]
 ["isolation-strictness" 0]
 ["travel-strictness" 99]
 ["shield-adherance" 0]
-["sym-test-coverage" 75]
-["asym-test-coverage" 0.5]
+["sym-test-coverage" 25]
+["asym-test-coverage" 25]
 
 ["p-infect-init" 10]
 ["p-death" 2.5]
@@ -4036,7 +4037,7 @@ pp-tt-sv-opt
 ## pp-tt-ld-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" true]
 ["personal-protection?" true]
@@ -4047,18 +4048,18 @@ pp-tt-sv-opt
 ["lose-immunity?" false]
 
 ["lockdown-threshold" 1]
-["protection-threshold" 0.25]
+["protection-threshold" 0.1]
 ["isolate-threshold" 1]
 ["testtrace-threshold" 0.25]
 ["shield-threshold" 1]
 
 ["lockdown-strictness" 75]
-["protection-strength" 75]
+["protection-strength" 50]
 ["isolation-strictness" 0]
 ["travel-strictness" 99]
 ["shield-adherance" 0]
-["sym-test-coverage" 75]
-["asym-test-coverage" 0.5]
+["sym-test-coverage" 25]
+["asym-test-coverage" 25]
 
 ["p-infect-init" 10]
 ["p-death" 2.5]
@@ -4082,7 +4083,7 @@ pp-tt-sv-opt
 ## pp-tt-sv-opt
 
 ["initial-inf" 0.1]
-["duration" 1]
+["duration" 0.5]
 
 ["imposed-lockdown?" false]
 ["personal-protection?" true]
@@ -4093,18 +4094,18 @@ pp-tt-sv-opt
 ["lose-immunity?" false]
 
 ["lockdown-threshold" 1]
-["protection-threshold" 0.25]
+["protection-threshold" 0.1]
 ["isolate-threshold" 1]
 ["testtrace-threshold" 0.25]
 ["shield-threshold" 0.25]
 
 ["lockdown-strictness" 0]
-["protection-strength" 75]
+["protection-strength" 50]
 ["isolation-strictness" 0]
 ["travel-strictness" 99]
-["shield-adherance" 75]
-["sym-test-coverage" 75]
-["asym-test-coverage" 0.5]
+["shield-adherance" 50]
+["sym-test-coverage" 25]
+["asym-test-coverage" 25]
 
 ["p-infect-init" 10]
 ["p-death" 2.5]
@@ -4125,3 +4126,48 @@ pp-tt-sv-opt
 ["max-pxcor" 299]
 ["max-pycor" 299]
 
+## vary-tt-coverage-combo-01
+
+["initial-inf" 0.1]
+["duration" 1]
+
+["imposed-lockdown?" false]
+["personal-protection?" false]
+["isolate-symptomatics?" false]
+["test-and-trace?" true]
+["shield-vulnerable?" false]
+["closed-system?" false]
+["lose-immunity?" false]
+
+["lockdown-threshold" 1]
+["protection-threshold" 1]
+["isolate-threshold" 1]
+["testtrace-threshold" 0.25]
+["shield-threshold" 1]
+
+["lockdown-strictness" 0]
+["protection-strength" 0]
+["isolation-strictness" 0]
+["travel-strictness" 99]
+["shield-adherance" 0]
+["sym-test-coverage" 0 25 50 75 100]
+["asym-test-coverage" 0 0.1 0.2 0.3 0.4 0.5]
+
+["p-infect-init" 10]
+["p-death" 2.5]
+["z-contact-min" 2]
+["asym-infections" 60]
+["incubation-mean" 1.6]
+["incubation-stdev" 0.4]
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["immunity-mean" 365]
+["iso-countdown-max" 14]
+["mean-iso-reduction" 1]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 299]
+["max-pycor" 299]

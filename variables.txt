@@ -41,8 +41,8 @@ p-death                 G       probability of dying instead of recovering
 p-infect                S       individual transmission probability
 p-infect-init           G       base transmission probability
 personal-protection?    G       whether add personal measures after 1st lockdown
-personal-threshold      G       percentage of symptomatics to trigger mask use
-personal-threshold-num  G       number of symptomatics to trigger mask use
+personal-threshold      G       percentage of symptomatics to trigger protections
+personal-threshold-num  G       number of symptomatics to trigger protections
 pop-size                G       the number of agents in the simulation
 protection-strength     G       strength of measures to reduce transmission
 rec-countdown           IA      individual recovery countdown

@@ -7,13 +7,13 @@ library(gridExtra)
 theme_set(theme_minimal())
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-17_imm-none"
-varying_par = "immunity_mean" # use version with _ instead of -
-dest_path = "visualisations/immunity"
+run_name = "2020-07-21_vary-tt-coverage-combo-0100"
+varying_par = c("asym_test_coverage", "sym_test_coverage") # use version with _ instead of -
+dest_path = "visualisations/final"
 g_width = 11.69
 g_height = 8.27
-metrics_plot = FALSE
-breed_plots = TRUE
+metrics_plot = TRUE
+breed_plots = FALSE
 log_plots = FALSE
 export_plots = TRUE
 
@@ -78,7 +78,7 @@ first_year = raw %>%
                names_to = "metric",
                values_to = "count")
 
-summary = rbind(summary, first_year)
+summary = rbind(summary, first_year) 
 
 # various plotting information
 num_runs = max(summary$run_num) # num runs for ylabel
@@ -90,25 +90,36 @@ pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
 if (metrics_plot) {
   
   if (length(varying_par) == 1) {
-    ggplot(summary,
-           aes(x=get(varying_par), y=count, group = interaction(run_num, metric))) +
+    
+    summary_aggr = summary %>%
+      group_by(!!as.name(varying_par), metric) %>%
+      summarise(mean = mean(count), max = max(count), min = min(count))
+    
+    tick_names = unique(pull(summary_aggr[1]))
+    
+    ggplot(summary_aggr,
+           aes(x=get(varying_par), y=mean, group = metric)) +
       geom_point(aes(color = metric)) + 
-      geom_line(aes(color = metric)) +
-      coord_cartesian(ylim = c(0, 35000)) +
-      labs(x = varying_par)
+      geom_line(aes(color = metric), size = 1) +
+      geom_ribbon(aes(ymin = min, ymax = max, fill = metric), alpha = 0.2) +
+      coord_cartesian(ylim = c(0, max(summary_aggr$max))) +
+      scale_x_continuous(breaks = tick_names) +
+      labs(x = varying_par, fill = sprintf("mean count \nover %s runs", num_runs),
+           color = sprintf("mean count \nover %s runs", num_runs))
     
     
     if (export_plots) {
       ggsave(sprintf("%s/%sdeath-peak.pdf", dest_path, pattern), 
              width = g_width, height = g_height)
     }
-  } 
+  }
+}
   
 ######### HEATMAPS FOR 2 PARAM COMBO
   
   if (length(varying_par) == 2) {
     summary_aggr = summary %>%
-      group_by(asym_test_coverage, sym_test_coverage, metric) %>%
+      group_by(!!as.name(varying_par[1]), !!as.name(varying_par[2]), metric) %>%
       summarise(mean = mean(count), stdev = sd(count))
     
     ggplot(subset(summary_aggr, metric == "death_toll"), 
@@ -118,10 +129,11 @@ if (metrics_plot) {
       geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
       scale_fill_viridis() +
       scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-      scale_x_continuous(breaks = seq(0, 100, by = 0.1)) +
+      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
       theme(panel.grid.minor = element_blank()) +
       labs(x = varying_par[1], y = varying_par[2], 
-           fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
+           fill = sprintf("mean deaths \n over %s runs \n", max(summary$run_num)),
+           title = "Death toll")
     
     if (export_plots) {
       ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
@@ -135,10 +147,11 @@ if (metrics_plot) {
       geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
       scale_fill_viridis() +
       scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-      scale_x_continuous(breaks = seq(0, 100, by = 0.1)) +
+      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
       theme(panel.grid.minor = element_blank()) +
       labs(x = varying_par[1], y = varying_par[2], 
-           fill = sprintf("mean count \n over %s runs \n", max(summary$run_num)))
+           fill = sprintf("mean peak size \n over %s runs \n", max(summary$run_num)),
+           title = "Peak size")
     
     if (export_plots) {
       ggsave(sprintf("%s/%speak_size.pdf", dest_path, pattern), 
@@ -146,8 +159,6 @@ if (metrics_plot) {
     }
     
   }
-  
-}
 
 ######### BREEDS PLOT (IF OPTION TURNED ON)
 

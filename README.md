@@ -192,3 +192,5 @@
 ## Week 10
 
 - Fixed a bug that did not exclude isolated susceptibles from travelling, now only susceptibles with z-contant higher than 0 can be infected by the travel mechanic
+- Added and fixed comments
+- Ensured all measures could operate independently of one another

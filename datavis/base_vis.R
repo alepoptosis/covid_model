@@ -20,11 +20,11 @@ theme_set(theme_minimal())
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-17_pp-tt-ld-a05"
-dest_path = "visualisations/a05"
+run_name = "2020-07-21_action-none"
+dest_path = "visualisations/final"
 g_width = 11.69
 g_height = 8.27
-export_plots = TRUE
+export_plots = FALSE
 new_ld_vis = TRUE
 
 ############################## DATA WRANGLING #################################
@@ -106,6 +106,8 @@ if ("currently_locked?" %in% colnames(raw)) {
     select(-c("breed", "count"))
 }
 
+num_runs = max(data_long$run_num) # num runs for ylabel
+
 ld_aggr = ld %>%
   select(-`count locked`) %>%
   group_by(step) %>%
@@ -185,8 +187,8 @@ measures = paste(unlist(colnames(par[, 3:8])[par[1, 3:8] == "TRUE"]), collapse =
 measures = gsub("[^[:alnum:][:blank:]+\\,]", " ", measures)
 measures = gsub(" ,", ",", measures)
 measures = gsub("control measures", "personal protection", measures)
+if (measures == "") {measures = "None"}
 
-num_runs = max(data_long$run_num) # num runs for ylabel
 num_ticks = max(data_long$step) # num ticks for xaxis
 max_cont = max(cont_aggr$mean) # max avg contacts for ylim (contacts plot)
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
@@ -234,8 +236,9 @@ if (!new_ld_vis) {
                                                     scale = 1e-3), 
                        breaks = seq(0, max_cont, by = 30000)) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-    labs(x = "day", y = sprintf("mean count over %s runs", num_runs),
+    labs(x = "day", y = sprintf("Mean count over %s runs", num_runs),
          title = sprintf("Control measures: %s", measures),
+         fill = "Breed", color = "Breed",
          caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s", 
                            tot_deaths, year1_deaths, peak_sym, tot_infs)) +
     theme(plot.caption = element_text(hjust = 0))
@@ -258,8 +261,9 @@ if (!new_ld_vis) {
                        breaks = seq(0, max_cont, by = 30000),
                        sec.axis = sec_axis(~./900, name = "% runs in lockdown")) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-    labs(x = "day", y = sprintf("mean count over %s runs", num_runs),
-         title = sprintf("Control measures: %s", measures),
+    labs(x = "day", y = sprintf("Mean count over %s runs", num_runs),
+         title = sprintf("Control measures: %s", measures), 
+         fill = "Breed", color = "Breed",
          caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s", 
                            tot_deaths, year1_deaths, peak_sym, tot_infs)) +
     theme(plot.caption = element_text(hjust = 0))
