@@ -22,7 +22,7 @@ globals [
   pop-size                          ;; number of agents in the simulation
   lockdown-threshold-num            ;; number of symptomatics to trigger lockdown
   protection-threshold-num          ;; number of symptomatics to trigger protections
-  isolate-threshold-num             ;; number of symptomatics to trigger isolation
+  isolation-threshold-num             ;; number of symptomatics to trigger isolation
   testtrace-threshold-num           ;; number of symptomatics to trigger test and trace
   shield-threshold-num              ;; number of symptomatics to trigger shielding
 
@@ -108,11 +108,9 @@ to setup-turtles
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
       set-age
+      set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
       if test-and-trace? [
         set traced? false
-      ]
-      if shield-vulnerable? or test-and-trace? [
-        set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
       ]
       ;; set S-specific attributes
       set to-become-exposed? false
@@ -147,7 +145,7 @@ to setup-globals
   set start-isolation? false
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
   set protection-threshold-num (absolute-threshold protection-threshold)
-  set isolate-threshold-num (absolute-threshold isolate-threshold)
+  set isolation-threshold-num (absolute-threshold isolation-threshold)
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
   set shield-threshold-num (absolute-threshold shield-threshold)
   set count-infecteds-0-29 0
@@ -385,7 +383,7 @@ to modify-measures
 
   ;;;; ISOLATE SYMPTOMATICS
   ;; if isolation of symptomatic was not previously on but is past the threshold
-  if not start-isolation? and count symptomatics > isolate-threshold-num
+  if not start-isolation? and count symptomatics > isolation-threshold-num
   [set start-isolation? true]  ;; turns on the control measure indefinitely
   ;; thus ensuring symptomatics don't stop isolating when the cases dip back below threshold
   if isolate-symptomatics? and start-isolation? [isolate-symptomatics]
@@ -419,6 +417,7 @@ to modify-measures
   ;; ensures that if an agent recovers while still in isolation either due to test and trace or
   ;; isolation of symptomatics and there is no end of lockdown to release them
   ;; they don't remain in isolation indefinitely
+  ;; this cuts isolation short for them and is a known problem of the model
   if not imposed-lockdown? and (isolate-symptomatics? or test-and-trace?) [
     ask recovereds with [shape = "person-outline"] [not-isolate]
   ]
@@ -542,6 +541,7 @@ end
 
 to isolate-symptomatics
   ask symptomatics [check-isolation]
+;  ask recovereds [check-isolation] ;; this ensures recovereds before the end of isolation finish isolating
 end
 
 to check-isolation    ;; generic procedure for checking isolation countdown for an agent
@@ -614,14 +614,15 @@ end
 
 to isolate-all
   ;; isolate original tested
-  let infecteds (turtle-set exposeds symptomatics asymptomatics)
+  let tested (turtle-set exposeds asymptomatics) with [tested? = true]
 
   ;; this check is to prevent overriding symptomatic isolation
-  ifelse not isolate-symptomatics? [                        ;; if symptomatics are not being isolated
-    ask infecteds with [tested? = true] [check-isolation]   ;; all infecteds are checked for isolation
+  ifelse isolate-symptomatics? [                        ;; if symptomatics specifically are being isolated
+    ask tested [check-isolation]                        ;; all infecteds but symptomatics are checked for isolation
   ]
   [
-    ask infecteds with [not member? self symptomatics and tested? = true] [check-isolation]  ;; otherwise only non-I are
+    ask tested [check-isolation]  ;; otherwise all of them are
+    ask symptomatics with [tested? = true] [check-isolation]
   ]
 
   ;; isolate contacts
@@ -1293,7 +1294,7 @@ SWITCH
 562
 isolate-symptomatics?
 isolate-symptomatics?
-0
+1
 1
 -1000
 
@@ -1341,10 +1342,10 @@ HORIZONTAL
 SLIDER
 7
 284
-219
+228
 317
-isolate-threshold
-isolate-threshold
+isolation-threshold
+isolation-threshold
 0
 100
 0.0
@@ -1375,7 +1376,7 @@ SWITCH
 605
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1403,7 +1404,7 @@ asym-test-coverage
 asym-test-coverage
 0
 100
-0.5
+4.0
 1.0
 1
 % of population
@@ -1418,7 +1419,7 @@ sym-test-coverage
 sym-test-coverage
 0
 100
-0.0
+3.0
 1
 1
 % of cases

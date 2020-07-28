@@ -3,24 +3,26 @@ library(RColorBrewer)
 library(stringr)
 library(ggnewscale)
 theme_set(theme_minimal())
-
-# second_max <-  function(x) {
-#   u <- unique(x)
-#   sort(u, decreasing = TRUE)[2L]
-# }
-
-# various snippets
-
-# add horizontal line for threshold
-# geom_hline(aes(yintercept = lockdown_thr), color = "red") + 
-# geom_text(aes(num_ticks / 2 - 10, lockdown_thr, label = "lockdown threshold"),
-#               vjust = -1, size = 3, color = "red")
+pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 
 # TO-DO: 
 # - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-21_action-none"
+
+to_run = c("is-opt")#,
+           # "ld-opt",
+           # "pp-opt",
+           # "sv-opt",
+           # "tt-opt",
+           # "is-sv-opt",
+           # "is-sv-ld-opt",
+           # "pp-tt-opt",
+           # "pp-tt-ld-opt",
+           # "pp-tt-sv-opt")
+
+for (run in to_run) {
+run_name = sprintf("2020-07-24_%s", run)
 dest_path = "visualisations/final"
 g_width = 11.69
 g_height = 8.27
@@ -183,7 +185,7 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
 ##### various plotting information
 
 # list of measures used in run
-measures = paste(unlist(colnames(par[, 3:8])[par[1, 3:8] == "TRUE"]), collapse = ", ")
+measures = paste(unlist(str_to_sentence(colnames(par[, 3:8])[par[1, 3:8] == "TRUE"])), collapse = ", ")
 measures = gsub("[^[:alnum:][:blank:]+\\,]", " ", measures)
 measures = gsub(" ,", ",", measures)
 measures = gsub("control measures", "personal protection", measures)
@@ -230,17 +232,19 @@ if (!new_ld_vis) {
     geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
     geom_line(aes(color=breed), size = 1) +
     coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
-    scale_color_brewer(palette="Set3") +
-    scale_fill_brewer(palette="Set3") +
+    scale_color_manual(values = pal, 
+                       labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
+    scale_fill_manual(values = pal, 
+                      labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
     scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
                                                     scale = 1e-3), 
                        breaks = seq(0, max_cont, by = 30000)) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-    labs(x = "day", y = sprintf("Mean count over %s runs", num_runs),
+    labs(x = "Day", y = "Mean count",
          title = sprintf("Control measures: %s", measures),
          fill = "Breed", color = "Breed",
-         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s", 
-                           tot_deaths, year1_deaths, peak_sym, tot_infs)) +
+         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s \nCalculated over %s simulations", 
+                           tot_deaths, year1_deaths, peak_sym, tot_infs, num_runs)) +
     theme(plot.caption = element_text(hjust = 0))
                            
   if (export_plots) {
@@ -254,18 +258,19 @@ if (!new_ld_vis) {
               inherit.aes = FALSE, fill = "lightgrey") +
     geom_line(aes(color=breed), size = 1) +
     coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
-    scale_color_brewer(palette="Set3") +
-    scale_fill_brewer(palette="Set3") +
+    scale_color_brewer(palette="Set2", 
+                       labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
+    scale_fill_brewer(palette="Set2", 
+                      labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
     scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
-                                                    scale = 1e-3),
-                       breaks = seq(0, max_cont, by = 30000),
-                       sec.axis = sec_axis(~./900, name = "% runs in lockdown")) +
+                                                    scale = 1e-3), 
+                       breaks = seq(0, max_cont, by = 30000)) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-    labs(x = "day", y = sprintf("Mean count over %s runs", num_runs),
-         title = sprintf("Control measures: %s", measures), 
+    labs(x = "Day", y = "Mean count",
+         title = sprintf("Control measures: %s", measures),
          fill = "Breed", color = "Breed",
-         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s", 
-                           tot_deaths, year1_deaths, peak_sym, tot_infs)) +
+         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s \nCalculated over %s simulations", 
+                           tot_deaths, year1_deaths, peak_sym, tot_infs, num_runs)) +
     theme(plot.caption = element_text(hjust = 0))
   
   if (export_plots) {
@@ -292,10 +297,10 @@ ggplot(subset(deads_aggr, age != "total"), aes(x=step, y=mean_new)) +
   coord_cartesian(ylim = c(- min(deads_aggr$mean_new), 
                              max(deads_aggr$mean_new)),
                   xlim = c(0, num_ticks)) +
-  labs(x = "day", y = sprintf("mean new deaths over %s runs", num_runs),
+  labs(x = "Day", y = "Mean new deaths", fill = "Age range", color = "Age range",
        title = sprintf("Control measures: %s", measures),
-       caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s", 
-                         tot_deaths, year1_deaths)) +
+       caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s\nCalculated over %s simulations", 
+                         tot_deaths, year1_deaths, num_runs)) +
        theme(plot.caption = element_text(hjust = 0))
 
 if (export_plots) {
@@ -323,10 +328,10 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
     coord_cartesian(ylim = c(- min(infs_aggr$mean_new),
                              max(infs_aggr$mean_new)),
                     xlim = c(0, num_ticks)) +
-    labs(x = "day", y = sprintf("mean new infections over %s runs", num_runs),
+    labs(x = "Day", y = "Mean new infections", fill = "Age range", color = "Age range",
          title = sprintf("Control measures: %s", measures),
-         caption = sprintf("Average size of symptomatic peak: %s \nAverage number of infections: %s", 
-                           peak_sym, tot_infs)) +
+         caption = sprintf("Average size of symptomatic peak: %s \nAverage number of infections: %s\nCalculated over %s simulations", 
+                           peak_sym, tot_infs, num_runs)) +
     theme(plot.caption = element_text(hjust = 0))
 
   if (export_plots) {
@@ -351,10 +356,13 @@ ggplot(cont_aggr, aes(x=step, y=mean)) +
                        breaks = seq(0, max_cont, by = 100000)) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
     scale_fill_manual(values = rep("lightgrey", num_runs)) +
-    labs(x = "day", y = sprintf("mean contacts over %s runs", num_runs),
-         title = sprintf("Control measures: %s", measures))
+    labs(x = "Day", y = "Mean contacts",
+         title = sprintf("Control measures: %s", measures),
+         caption = sprintf("Calculated over %s simulations", num_runs)) +
+    theme(plot.caption = element_text(hjust = 0))
 
 if (export_plots) {
 ggsave(sprintf("%s/%scontacts.pdf", dest_path, pattern), 
        width = g_width, height = g_height)
+}
 }

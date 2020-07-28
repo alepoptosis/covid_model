@@ -4,7 +4,7 @@ library(stringr)
 library(ggnewscale)
 library(viridis)
 library(gridExtra)
-theme_set(theme_minimal())
+theme_set(theme_minimal(base_size = 25))
 
 # script options, change for different file, output options and plot size
 run_name = "2020-07-21_vary-tt-coverage-combo-0100"
@@ -15,7 +15,7 @@ g_height = 8.27
 metrics_plot = TRUE
 breed_plots = FALSE
 log_plots = FALSE
-export_plots = TRUE
+export_plots = FALSE
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
@@ -56,6 +56,8 @@ if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
 par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
                          names(raw), perl=TRUE)])
 
+num_ticks = max(raw$step) # num ticks for xaxis
+
 summary = raw %>%
   group_by(run_num) %>%
   summarise(death_toll = max(`count deads`), 
@@ -67,23 +69,26 @@ summary = raw %>%
              names_to = "metric",
              values_to = "count")
 
-first_year = raw %>%
-  group_by(run_num) %>%
-  filter(step < 366) %>%
-  summarise(year1_deaths = max(`count deads`)) %>%
-  separate("run_num", sep = "_", remove = TRUE, 
-           into = c("run_num", sprintf("%s", varying_par))) %>%
-  mutate_at(c("run_num", sprintf("%s", varying_par)), as.numeric) %>%
-  pivot_longer("year1_deaths",
-               names_to = "metric",
-               values_to = "count")
-
-summary = rbind(summary, first_year) 
+if (num_ticks > 365) {
+  first_year = raw %>%
+    group_by(run_num) %>%
+    filter(step < 366) %>%
+    summarise(year1_deaths = max(`count deads`)) %>%
+    separate("run_num", sep = "_", remove = TRUE, 
+             into = c("run_num", sprintf("%s", varying_par))) %>%
+    mutate_at(c("run_num", sprintf("%s", varying_par)), as.numeric) %>%
+    pivot_longer("year1_deaths",
+                 names_to = "metric",
+                 values_to = "count")
+  
+  summary = rbind(summary, first_year) 
+}
 
 # various plotting information
 num_runs = max(summary$run_num) # num runs for ylabel
-num_ticks = max(raw$step) # num ticks for xaxis
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
+formatted_par = str_to_sentence(str_replace_all(varying_par, "_", " "))
+formatted_metrics = str_to_sentence(str_replace_all(unique((summary$metric)), "_", " "))
 
 ######### DEATHS AND PEAK VS PARAM 
 
@@ -104,8 +109,12 @@ if (metrics_plot) {
       geom_ribbon(aes(ymin = min, ymax = max, fill = metric), alpha = 0.2) +
       coord_cartesian(ylim = c(0, max(summary_aggr$max))) +
       scale_x_continuous(breaks = tick_names) +
-      labs(x = varying_par, fill = sprintf("mean count \nover %s runs", num_runs),
-           color = sprintf("mean count \nover %s runs", num_runs))
+      scale_fill_discrete(labels = formatted_metrics) +
+      scale_color_discrete(labels = formatted_metrics) +
+      labs(x = sprintf("%s (%%)", formatted_par), y = "Mean count",
+           fill = "Metric", color = "Metric",
+           caption = sprintf("Calculated over %s simulation", num_runs)) +
+      theme(plot.caption = element_text(hjust = 0))
     
     
     if (export_plots) {
@@ -122,18 +131,24 @@ if (metrics_plot) {
       group_by(!!as.name(varying_par[1]), !!as.name(varying_par[2]), metric) %>%
       summarise(mean = mean(count), stdev = sd(count))
     
+    x_tick_names = unique(pull(summary_aggr[1]))
+    y_tick_names = unique(pull(summary_aggr[2]))
+    
     ggplot(subset(summary_aggr, metric == "death_toll"), 
            aes(x = get(varying_par[1]), y = get(varying_par[2]),
                         fill = mean)) +
       geom_tile(aes(fill = mean)) +
       geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
       scale_fill_viridis() +
-      scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
+      scale_y_continuous(breaks = y_tick_names) +
+      scale_x_continuous(breaks = x_tick_names) +
       theme(panel.grid.minor = element_blank()) +
-      labs(x = varying_par[1], y = varying_par[2], 
-           fill = sprintf("mean deaths \n over %s runs \n", max(summary$run_num)),
-           title = "Death toll")
+      labs(x = sprintf("%s (%%)", formatted_par[1]), 
+           y = sprintf("%s (%%)", formatted_par[2]), 
+           fill = "Mean deaths",
+           title = "Death toll",           
+           caption = sprintf("Calculated over %s simulation", num_runs)) +
+      theme(plot.caption = element_text(hjust = 0))
     
     if (export_plots) {
       ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
@@ -146,12 +161,15 @@ if (metrics_plot) {
       geom_tile(aes(fill = mean)) +
       geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
       scale_fill_viridis() +
-      scale_y_continuous(breaks = seq(0, 100, by = 25)) +
-      scale_x_continuous(breaks = seq(0, 100, by = 25)) +
+      scale_y_continuous(breaks = y_tick_names) +
+      scale_x_continuous(breaks = x_tick_names) +
       theme(panel.grid.minor = element_blank()) +
-      labs(x = varying_par[1], y = varying_par[2], 
-           fill = sprintf("mean peak size \n over %s runs \n", max(summary$run_num)),
-           title = "Peak size")
+      labs(x = sprintf("%s (%%)", formatted_par[1]), 
+           y = sprintf("%s (%%)", formatted_par[2]), 
+           fill = "Mean peak size",
+           title = "Peak size",           
+           caption = sprintf("Calculated over %s simulation", num_runs)) +
+      theme(plot.caption = element_text(hjust = 0))
     
     if (export_plots) {
       ggsave(sprintf("%s/%speak_size.pdf", dest_path, pattern), 

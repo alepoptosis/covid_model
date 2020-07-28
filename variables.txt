@@ -28,8 +28,8 @@ initial-inf             G       number of symptomatics at start of simulation
 iso-countdown           ALL     individual self-isolation countdown
 iso-countdown-max       G       maximum isolation period for symptomatics
 isolate-symptomatics?   G       whether symptomatics should be asked to isolate
-isolate-threshold       G       percentage of symptomatics to trigger isolation
-isolate-threshold-num   G       number of symptomatics to trigger isolation
+isolation-threshold       G       percentage of symptomatics to trigger isolation
+isolation-threshold-num   G       number of symptomatics to trigger isolation
 isolation-strictness    G       the percentage of agents isolating for max days
 lockdown-strictness     G       likelihood a agent will obey lockdown
 lockdown-threshold      G       percentage of symptomatics to trigger lockdown

@@ -3650,7 +3650,7 @@ vary-imm-none
 ["max-pxcor" 299]
 ["max-pycor" 299]
 
-# FUTURE RUNS (DOUBLE CHECK PAR)
+# 24/7
 
 2020-07-24_is-opt 2020-07-24_ld-opt 2020-07-24_pp-opt 2020-07-24_sv-opt 2020-07-24_tt-opt 2020-07-24_is-sv-opt 2020-07-24_is-sv-ld-opt 2020-07-24_pp-tt-opt 2020-07-24_pp-tt-ld-opt 2020-07-24_pp-tt-sv-opt 2020-07-24_vary-tt-coverage-combo-01
 
