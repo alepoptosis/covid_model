@@ -1,21 +1,24 @@
 library(tidyverse)
 library(RColorBrewer)
-library(stringr)
 library(ggnewscale)
 library(viridis)
 library(gridExtra)
-theme_set(theme_minimal(base_size = 25))
+theme_set(theme_minimal(base_size = 40))
+pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
+metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-21_vary-tt-coverage-combo-0100"
-varying_par = c("asym_test_coverage", "sym_test_coverage") # use version with _ instead of -
-dest_path = "visualisations/final"
-g_width = 11.69
-g_height = 8.27
+run_name = "2020-07-21_vary-sv-adherance-0100"
+varying_par = "shield_adherance" # use version with _ instead of -
+optimal_value = 50
+dest_path = "visualisations/report"
+g_width = 22
+g_height = 16
 metrics_plot = TRUE
+fix_metric_plot = FALSE
 breed_plots = FALSE
 log_plots = FALSE
-export_plots = FALSE
+export_plots = TRUE
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
@@ -109,12 +112,18 @@ if (metrics_plot) {
       geom_ribbon(aes(ymin = min, ymax = max, fill = metric), alpha = 0.2) +
       coord_cartesian(ylim = c(0, max(summary_aggr$max))) +
       scale_x_continuous(breaks = tick_names) +
-      scale_fill_discrete(labels = formatted_metrics) +
-      scale_color_discrete(labels = formatted_metrics) +
+      scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
+      scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
       labs(x = sprintf("%s (%%)", formatted_par), y = "Mean count",
-           fill = "Metric", color = "Metric",
+           fill = "", color = "",
            caption = sprintf("Calculated over %s simulation", num_runs)) +
-      theme(plot.caption = element_text(hjust = 0))
+      theme(plot.caption = element_text(hjust = 0),
+      legend.title = element_text(size = 50),
+      legend.text = element_text(size = 40),
+      legend.key.size = unit(3,"line"),
+      legend.position="top") +
+      geom_vline(xintercept = optimal_value, linetype="dashed", 
+                 color = "#666666", size = 1.5)
     
     
     if (export_plots) {
@@ -138,17 +147,21 @@ if (metrics_plot) {
            aes(x = get(varying_par[1]), y = get(varying_par[2]),
                         fill = mean)) +
       geom_tile(aes(fill = mean)) +
-      geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
-      scale_fill_viridis() +
+      geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0))),
+                size = 10) +
+      scale_fill_viridis(limits = c(1400, 1550)) +
       scale_y_continuous(breaks = y_tick_names) +
       scale_x_continuous(breaks = x_tick_names) +
       theme(panel.grid.minor = element_blank()) +
-      labs(x = sprintf("%s (%%)", formatted_par[1]), 
-           y = sprintf("%s (%%)", formatted_par[2]), 
-           fill = "Mean deaths",
-           title = "Death toll",           
+      labs(x = "Population tested per day (%)",# sprintf("%s (%%)", formatted_par[1]), 
+           y = "Symptomatic cases tested per day (%)",# sprintf("%s (%%)", formatted_par[2]), 
+           fill = "Mean death toll\n",
+           # title = "Death toll",           
            caption = sprintf("Calculated over %s simulation", num_runs)) +
-      theme(plot.caption = element_text(hjust = 0))
+      theme(plot.caption = element_text(hjust = 0), 
+            legend.title = element_text(size = 30),
+            legend.text = element_text(size = 40),
+            legend.key.size = unit(3,"line"))
     
     if (export_plots) {
       ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
@@ -159,17 +172,22 @@ if (metrics_plot) {
            aes(x = get(varying_par[1]), y = get(varying_par[2]),
                fill = mean)) +
       geom_tile(aes(fill = mean)) +
-      geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0)))) +
-      scale_fill_viridis() +
+      geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0))),
+                size = 10) +
+      # scale_fill_viridis() +
       scale_y_continuous(breaks = y_tick_names) +
       scale_x_continuous(breaks = x_tick_names) +
+      scale_fill_viridis(limits = c(3000, 10000)) +
       theme(panel.grid.minor = element_blank()) +
-      labs(x = sprintf("%s (%%)", formatted_par[1]), 
-           y = sprintf("%s (%%)", formatted_par[2]), 
-           fill = "Mean peak size",
-           title = "Peak size",           
+      labs(x = "Population tested per day (%)",# sprintf("%s (%%)", formatted_par[1]), 
+           y = "Symptomatic cases tested per day (%)",# sprintf("%s (%%)", formatted_par[2]), 
+           fill = "Mean peak size\n",
+           # title = "Peak size",           
            caption = sprintf("Calculated over %s simulation", num_runs)) +
-      theme(plot.caption = element_text(hjust = 0))
+      theme(plot.caption = element_text(hjust = 0),
+            legend.title = element_text(size = 30),
+            legend.text = element_text(size = 40),
+            legend.key.size = unit(3,"line"))
     
     if (export_plots) {
       ggsave(sprintf("%s/%speak_size.pdf", dest_path, pattern), 
@@ -224,13 +242,16 @@ if (breed_plots) {
       geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
       geom_line(aes(color=breed), size = 1) +
       coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
-      scale_color_brewer(palette="Set3") +
-      scale_fill_brewer(palette="Set3") +
+      scale_color_manual(values = pal, 
+                         labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
+      scale_fill_manual(values = pal, 
+                        labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
       scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
                                                       scale = 1e-3), 
                          breaks = seq(0, pop_size, by = 30000)) +
       scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
-      labs(x = "day", y = sprintf("mean count over %s runs", num_runs))
+      labs(x = "Day", y = "Mean count",
+           fill = "Breed", color = "Breed")
     
     if (export_plots) {
       ggsave(sprintf("%s/%s%s_breeds.pdf", dest_path, pattern, df), 
@@ -239,6 +260,40 @@ if (breed_plots) {
   }
 }
 
+######### 2 METRICS BUT ONE FIXED
+
+if (fix_metric_plot) {
+  focus_par = "sym_test_coverage" # which one of the parameter to vary
+  fixed_value = 0 # value to fix other parameter at
+  focus_formatted = str_to_sentence(str_replace_all(focus_par, "_", " "))
+  
+  summary_aggr = summary %>%
+    filter(asym_test_coverage == 0) %>%
+    group_by(!!as.name(focus_par), metric) %>%
+    summarise(mean = mean(count), max = max(count), min = min(count))
+  
+  tick_names = unique(pull(summary_aggr[1]))
+  
+  ggplot(summary_aggr,
+         aes(x=get(focus_par), y=mean, group = metric)) +
+    geom_point(aes(color = metric)) +
+    geom_line(aes(color = metric), size = 1) +
+    geom_ribbon(aes(ymin = min, ymax = max, fill = metric), alpha = 0.2) +
+    coord_cartesian(ylim = c(0, max(summary_aggr$max))) +
+    scale_x_continuous(breaks = tick_names) +
+    scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
+    scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
+    labs(x = sprintf("%s (%%)", focus_formatted), y = "Mean count",
+         fill = "Metric", color = "Metric",
+         caption = sprintf("Calculated over %s simulation", num_runs)) +
+    theme(plot.caption = element_text(hjust = 0))
+  
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%sfocus-%s.pdf", dest_path, pattern, focus_par),
+           width = g_width, height = g_height)
+  }
+}
 ######### LOG PLOTS
 
 if (log_plots) {
@@ -268,8 +323,8 @@ if (log_plots) {
                          limits = c(NA, 100000)) +
       geom_ribbon(aes(ymin=min, ymax=max), alpha=0.2, fill = "coral") +
       coord_cartesian(xlim = c(0, 30)) +
-      scale_x_continuous(breaks = seq(0, 30, by = 1)) +
-      labs(x = "day", y = "log10 of mean cases",
+      scale_x_continuous(breaks = seq(0, 30, by = 7)) +
+      labs(x = "Day", y = "Log10 of mean cases",
            title = sprintf("%s value: %s", varying_par, data))
   }
   plot_grid <- lapply(param_values, plot_log_cases)

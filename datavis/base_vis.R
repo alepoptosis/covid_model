@@ -1,8 +1,7 @@
 library(tidyverse)
 library(RColorBrewer)
-library(stringr)
 library(ggnewscale)
-theme_set(theme_minimal())
+theme_set(theme_minimal(base_size = 25))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 
 # TO-DO: 
@@ -10,23 +9,32 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 
 # script options, change for different file, output options and plot size
 
-to_run = c("is-opt")#,
-           # "ld-opt",
-           # "pp-opt",
-           # "sv-opt",
-           # "tt-opt",
-           # "is-sv-opt",
-           # "is-sv-ld-opt",
-           # "pp-tt-opt",
-           # "pp-tt-ld-opt",
-           # "pp-tt-sv-opt")
+to_run = c(
+  "fast-weak"
+  ,"fast-strong"
+  ,"slow-weak"
+  ,"slow-strong"
+  # ,"action-all-opt"
+  # ,"action-none"
+  # ,"is-opt"
+  # ,"ld-opt"
+  # ,"pp-opt"
+  # ,"sv-opt"
+  # ,"tt-opt"
+  # ,"is-sv-opt"
+  # ,"is-sv-ld-opt"
+  # ,"pp-tt-opt"
+  # ,"pp-tt-ld-opt"
+  # ,"pp-tt-sv-opt"
+  )
 
 for (run in to_run) {
-run_name = sprintf("2020-07-24_%s", run)
-dest_path = "visualisations/final"
-g_width = 11.69
-g_height = 8.27
-export_plots = FALSE
+
+run_name = sprintf("2020-08-06_%s", run)
+dest_path = "visualisations/report"
+g_width = 22
+g_height = 16
+export_plots = TRUE
 new_ld_vis = TRUE
 
 ############################## DATA WRANGLING #################################
@@ -194,15 +202,31 @@ if (measures == "") {measures = "None"}
 num_ticks = max(data_long$step) # num ticks for xaxis
 max_cont = max(cont_aggr$mean) # max avg contacts for ylim (contacts plot)
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
-peak_sym = round(max(data_aggr[data_aggr$breed == "symptomatics",]$mean), 2)
-tot_deaths = round(max(data_aggr[data_aggr$breed == "deads",]$mean), 2)
-if (num_ticks >= 365) {
+
+##### CAPTION METRICS
+
+peak_sym = pull(data_long %>%
+  filter(breed == "symptomatics") %>%
+  group_by(run_num) %>%
+  summarise(sym_peak = max(count)) %>%
+  group_by() %>%
+  summarise(peak_sym = mean(sym_peak)))
+
+tot_deaths = pull(data_long %>%
+  filter(breed == "deads") %>%
+  group_by(run_num) %>%
+  summarise(tot_deaths = max(count)) %>%
+  group_by() %>%
+  summarise(tot_deaths = mean(tot_deaths)))
+
+if (num_ticks >= 365) { 
   year1_deaths = round(data_aggr %>% 
                          filter(step == 365, breed == "deads") %>% 
                          pull(mean), 2)
 } else {
   year1_deaths = "n/a"
 }
+
 if ("count_infecteds_0_29" %in% colnames(raw)) {
   tot_infs = round(max(infs_aggr$mean), 2)
 } else {
