@@ -8,15 +8,15 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-21_vary-sv-adherance-0100"
-varying_par = "shield_adherance" # use version with _ instead of -
+run_name = "2020-07-21_vary-imm-none"
+varying_par = "immunity_mean" # use version with _ instead of -
 optimal_value = 50
 dest_path = "visualisations/report"
 g_width = 22
 g_height = 16
-metrics_plot = TRUE
+metrics_plot = FALSE
 fix_metric_plot = FALSE
-breed_plots = FALSE
+breed_plots = TRUE
 log_plots = FALSE
 export_plots = TRUE
 
@@ -200,6 +200,12 @@ if (metrics_plot) {
 
 if (breed_plots) {
   
+  measures = paste(unlist(str_to_sentence(colnames(par[, 3:8])[par[1, 3:8] == "TRUE"])), collapse = ", ")
+  measures = gsub("[^[:alnum:][:blank:]+\\,]", " ", measures)
+  measures = gsub(" ,", ",", measures)
+  measures = gsub("control measures", "personal protection", measures)
+  if (measures == "") {measures = "None"}
+  
   data = raw[ ,grepl("^count|^step|^run_num|^currently", names(raw))]
   
   data = data %>% 
@@ -251,7 +257,12 @@ if (breed_plots) {
                          breaks = seq(0, pop_size, by = 30000)) +
       scale_x_continuous(breaks = seq(0, num_ticks, by = 365)) +
       labs(x = "Day", y = "Mean count",
-           fill = "Breed", color = "Breed")
+           title = sprintf("Control measures: %s", measures),
+           fill = "Breed", color = "Breed") +
+      theme(plot.caption = element_text(hjust = 0),
+            legend.title = element_text(size = 50),
+            legend.text = element_text(size = 40),
+            legend.key.size = unit(3,"line"))
     
     if (export_plots) {
       ggsave(sprintf("%s/%s%s_breeds.pdf", dest_path, pattern, df), 

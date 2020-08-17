@@ -1,8 +1,9 @@
 library(tidyverse)
 library(RColorBrewer)
 library(ggnewscale)
-theme_set(theme_minimal(base_size = 25))
+theme_set(theme_minimal(base_size = 40))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
+# pal = c("#80B1D3", "#B3B3B3", "#BEBADA", "#FFD92F", "#B3DE69", "#666666") 
 
 # TO-DO: 
 # - find a way to add a legend clarifying lockdown colour
@@ -10,10 +11,16 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # script options, change for different file, output options and plot size
 
 to_run = c(
-  "fast-weak"
-  ,"fast-strong"
-  ,"slow-weak"
-  ,"slow-strong"
+  "p-inf-0"
+  ,"p-inf-100"
+  # ,"action-none-6mo"
+  # ,"action-none-1y"
+  # ,"action-all-6mo"
+  # ,"action-all-1y"
+  # "fast-weak"
+  # ,"fast-strong"
+  # ,"slow-weak"
+  # ,"slow-strong"
   # ,"action-all-opt"
   # ,"action-none"
   # ,"is-opt"
@@ -30,7 +37,7 @@ to_run = c(
 
 for (run in to_run) {
 
-run_name = sprintf("2020-08-06_%s", run)
+run_name = sprintf("2020-08-12_%s", run)
 dest_path = "visualisations/report"
 g_width = 22
 g_height = 16
@@ -265,11 +272,14 @@ if (!new_ld_vis) {
                        breaks = seq(0, max_cont, by = 30000)) +
     scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
     labs(x = "Day", y = "Mean count",
-         title = sprintf("Control measures: %s", measures),
+         # title = sprintf("Control measures: %s", measures),
          fill = "Breed", color = "Breed",
          caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s \nCalculated over %s simulations", 
                            tot_deaths, year1_deaths, peak_sym, tot_infs, num_runs)) +
-    theme(plot.caption = element_text(hjust = 0))
+    theme(plot.caption = element_text(hjust = 0),
+          legend.title = element_text(size = 50),
+          legend.text = element_text(size = 40),
+          legend.key.size = unit(3,"line"))
                            
   if (export_plots) {
   ggsave(sprintf("%s/%sbreeds.pdf", dest_path, pattern), 
@@ -282,9 +292,9 @@ if (!new_ld_vis) {
               inherit.aes = FALSE, fill = "lightgrey") +
     geom_line(aes(color=breed), size = 1) +
     coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
-    scale_color_brewer(palette="Set2", 
+    scale_color_manual(values = pal, 
                        labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
-    scale_fill_brewer(palette="Set2", 
+    scale_fill_manual(values = pal, 
                       labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
     scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
                                                     scale = 1e-3), 
@@ -295,7 +305,10 @@ if (!new_ld_vis) {
          fill = "Breed", color = "Breed",
          caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s \nCalculated over %s simulations", 
                            tot_deaths, year1_deaths, peak_sym, tot_infs, num_runs)) +
-    theme(plot.caption = element_text(hjust = 0))
+    theme(plot.caption = element_text(hjust = 0),
+          legend.title = element_text(size = 50),
+          legend.text = element_text(size = 40),
+          legend.key.size = unit(3,"line"))
   
   if (export_plots) {
     ggsave(sprintf("%s/%sbreeds-newld.pdf", dest_path, pattern), 
