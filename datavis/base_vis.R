@@ -11,8 +11,8 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # script options, change for different file, output options and plot size
 
 to_run = c(
-  "p-inf-0"
-  ,"p-inf-100"
+  # "p-inf-0"
+  # ,"p-inf-100"
   # ,"action-none-6mo"
   # ,"action-none-1y"
   # ,"action-all-6mo"
@@ -24,10 +24,10 @@ to_run = c(
   # ,"action-all-opt"
   # ,"action-none"
   # ,"is-opt"
-  # ,"ld-opt"
+  "ld-opt"
   # ,"pp-opt"
   # ,"sv-opt"
-  # ,"tt-opt"
+  ,"tt-opt"
   # ,"is-sv-opt"
   # ,"is-sv-ld-opt"
   # ,"pp-tt-opt"
@@ -37,7 +37,7 @@ to_run = c(
 
 for (run in to_run) {
 
-run_name = sprintf("2020-08-12_%s", run)
+run_name = sprintf("2020-07-24_%s", run)
 dest_path = "visualisations/report"
 g_width = 22
 g_height = 16
@@ -380,11 +380,8 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
 ######### CONTACTS OVER TIME PLOT
 
 ggplot(cont_aggr, aes(x=step, y=mean)) +
-  geom_area(data = ld,
-          aes(x = step, y = max_cont * `currently_locked?`,
-              fill = as.factor(run_num)),
-          inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
-          show.legend = FALSE) + 
+  geom_area(data = ld_aggr, aes(x = step, y = locked_runs_per*5500), 
+            inherit.aes = FALSE, fill = "lightgrey", alpha = 0.7) +
     geom_line(size = 1, color = "orange") +
     geom_ribbon(aes(ymin=min, ymax=max), alpha=0.2, fill = "orange") +
     coord_cartesian(ylim = c(0, max_cont), xlim = c(0, num_ticks)) +

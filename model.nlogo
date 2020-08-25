@@ -15,14 +15,13 @@ globals [
   RA-contacts
   AA-contacts
 
-  first-lockdown?                   ;; whether a first lockdown has happened
   currently-locked?                 ;; whether a lockdown is currently in progress
   start-isolation?                  ;; whether the agent has to start isolating
   num-contacts                      ;; number of contacts occurred during each tick
   pop-size                          ;; number of agents in the simulation
   lockdown-threshold-num            ;; number of symptomatics to trigger lockdown
   protection-threshold-num          ;; number of symptomatics to trigger protections
-  isolation-threshold-num             ;; number of symptomatics to trigger isolation
+  isolation-threshold-num           ;; number of symptomatics to trigger isolation
   testtrace-threshold-num           ;; number of symptomatics to trigger test and trace
   shield-threshold-num              ;; number of symptomatics to trigger shielding
 
@@ -59,10 +58,10 @@ exposeds-own [
 ]
 
 asymptomatics-own [
-  to-remove?                ;; flags an A for recovery
   develop-sym?              ;; whether the agent will develop symptoms
   to-become-sym?            ;; flags an A for symptomatic infection
   sym-countdown             ;; individual symptom countdown
+  to-remove?                ;; flags an A for recovery
   rec-countdown             ;; individual recovery countdown
   tested?                   ;; whether the person is aware they're infected
   contact-list              ;; list of susceptibles the person interacted with
@@ -107,14 +106,13 @@ to setup-turtles
       set color green
       set to-become-exposed? false
       set p-infect p-infect-init / 100
+
       ;; set general turtle attributes
       set z-contact-init (pareto-dist z-contact-min 2)
       set z-contact z-contact-init
       set-age
       set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
-      if test-and-trace? [
-        set traced? false
-      ]
+      set traced? false
 
     ]
   ]
@@ -141,7 +139,6 @@ to setup-globals
   set RA-contacts 0
   set AA-contacts 0
 
-  set first-lockdown? false
   set currently-locked? false
   set start-isolation? false
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
@@ -287,7 +284,7 @@ to expose-susceptibles
 
     ;;;;; PERSONAL PROTECTION
     ;; if the option is on and the number of infecteds is past the threshold
-    ;; lowers probability of transmissions through measures such as the use of masks, 2 metre distancing, etc.
+    ;; lowers probability of transmissions through measures such as the use of masks, social distancing, etc.
     if (personal-protection? and ((count symptomatics) > protection-threshold-num)) [
       set p-infect (1 - (protection-strength / 100)) * (p-infect-init / 100)
     ]
@@ -305,7 +302,9 @@ to expose-susceptibles
   if not closed-system? [check-travel]
 end
 
-to infect-exposeds    ;; infects E that have reached the end of their incubation countdown
+to infect-exposeds
+  ;; advances E agents through their incubation countdown
+  ;; turns E into A at the end of the countdown
   ask exposeds [
     ifelse inc-countdown <= (random 3 + 1)
     [set to-become-infected? true]
@@ -314,7 +313,9 @@ to infect-exposeds    ;; infects E that have reached the end of their incubation
 
 end
 
-to develop-symptoms    ;; turns A into I at the end of their symptomatic countdown
+to develop-symptoms
+  ;; advances A agents through their symptoms countdown
+  ;; turns A into I at the end of the countdown
   ask asymptomatics with [develop-sym? = true] [
     ifelse sym-countdown <= 0
     [set to-become-sym? true]
@@ -322,8 +323,10 @@ to develop-symptoms    ;; turns A into I at the end of their symptomatic countdo
   ]
 end
 
-to remove-infecteds      ;; removes infecteds that have reached the end of their countdown
-  ask symptomatics [     ;; for symptomatics, this is either the death or recovery countdown
+to remove-infecteds
+  ;; advances A and I agents through their death or recovery countdown
+  ;; turns A into R and I into R/D at the end of the countdown
+  ask symptomatics [
     ifelse will-die?
     [
       ifelse death-countdown = 0
@@ -337,14 +340,16 @@ to remove-infecteds      ;; removes infecteds that have reached the end of their
     ]
   ]
 
-  ask asymptomatics with [develop-sym? = false] [    ;; for asymptomatics, it can only be the recovery countdown
+  ask asymptomatics with [develop-sym? = false] [
     ifelse rec-countdown = 0
     [set to-remove? true]
     [set rec-countdown (rec-countdown - 1)]
   ]
 end
 
-to lose-immunity    ;; makes susceptible the R that have reached the end of their immunity period if option is on
+to lose-immunity
+  ;; advances R agents through their immunity countdown if loss of immunity is on
+  ;; turns R into S at the end of the countdown
   if lose-immunity? [
     ask recovereds [
       ifelse imm-countdown = 0
@@ -419,7 +424,7 @@ to modify-measures
   ;; ensures that if an agent recovers while still in isolation either due to test and trace or
   ;; isolation of symptomatics and there is no end of lockdown to release them
   ;; they don't remain in isolation indefinitely
-  ;; this cuts isolation short for them and is a known problem of the model
+  ;; this cuts isolation short for them and is a known bug of the model
   if not imposed-lockdown? and (isolate-symptomatics? or test-and-trace?) [
     ask recovereds with [shape = "person-outline"] [not-isolate]
   ]
@@ -521,7 +526,8 @@ to set-breed-dead
   set color black
 end
 
-to start-lockdown                                         ;; triggers possibility of self-isolation for non-dead agents
+to start-lockdown
+  ;; triggers possibility of self-isolation for non-dead agents
   let alives turtles with [not member? self deads]        ;; groups non-dead turtles
   if not currently-locked? [                              ;; if the lockdown was not on in the previous tick
     ask alives [
@@ -529,11 +535,11 @@ to start-lockdown                                         ;; triggers possibilit
       if p < lockdown-strictness [isolate]                ;; if yes, z-contact is set to 0
     ]                                                     ;; otherwise, the turtle maintains z-contact-init
     set currently-locked? true                            ;; lockdown is flagged as currently happening
-    set first-lockdown? true                              ;; and the first lockdown is flagged as occurred
   ]
 end
 
-to end-lockdown                                           ;; end lockdown by returning all alive turtles to initial z-contact
+to end-lockdown
+  ;; ends lockdown by returning all alive turtles to initial z-contact
   let alives turtles with [not member? self deads]
   if currently-locked? [                                  ;; if lockdown was on in the previous tick
     ask alives [not-isolate]                              ;; set z-contact to z-contact init for all alive turtles
@@ -543,10 +549,10 @@ end
 
 to isolate-symptomatics
   ask symptomatics [check-isolation]
-;  ask recovereds [check-isolation] ;; this ensures recovereds before the end of isolation finish isolating
 end
 
-to check-isolation    ;; generic procedure for checking isolation countdown for an agent
+to check-isolation
+  ;; generic procedure for checking isolation countdown for an agent
   ifelse iso-countdown <= 0                             ;; if the countdown has ended
   [
     ifelse (imposed-lockdown? and currently-locked?)    ;; but lockdown is still on on
@@ -562,13 +568,15 @@ to check-isolation    ;; generic procedure for checking isolation countdown for 
   ]
 end
 
-to check-outline    ;; ensures turtles maintain correct shape when changing breed
+to check-outline
+  ;; ensures turtles maintain correct shape when changing breed
   ifelse z-contact = 0
   [set shape "person-outline"]
   [set shape "person"]
 end
 
-to check-death                          ;; checks whether an infected will die or recover and assigns correct countdown
+to check-death
+  ;; checks whether an infected will die or recover and assigns correct countdown
   let p random-float 100
   let p-death-here (actual-p-death age) ;; adjusts death rate by age range of the agent
   ifelse (p <= p-death-here)
@@ -582,17 +590,20 @@ to check-death                          ;; checks whether an infected will die o
   ]
 end
 
-to isolate        ;; sets z-contact and shape for self-isolation
+to isolate
+  ;; sets z-contact and shape for self-isolation
   set z-contact 0
   set shape "person-outline"
 end
 
-to not-isolate    ;; returns turtle to default z-contact and shape
+to not-isolate
+  ;; returns turtle to default z-contact and shape
   set z-contact z-contact-init
   set shape "person"
 end
 
-to test    ;; tests infecteds based on respective test coverage
+to test
+  ;; tests infecteds based on respective test coverage
   ask symptomatics with [tested? = false] [        ;; if the agent was not tested before
     let p random-float 100
     if p < sym-test-coverage [set tested? true]    ;; test them if they pass the check
@@ -605,7 +616,8 @@ to test    ;; tests infecteds based on respective test coverage
   ]
 end
 
-to trace    ;; flags contacts of tested infecteds as traced, they will be asked to isolate
+to trace
+  ;; flags contacts of tested infecteds as traced, they will be asked to isolate
   let infecteds (turtle-set exposeds symptomatics asymptomatics)
   ask infecteds with [tested? = true] [
     foreach contact-list [
@@ -631,7 +643,8 @@ to isolate-all
   ask turtles with [traced? = true] [check-isolation]
 end
 
-to add-inf-count  ;; keeps a running count of infections per age range
+to add-inf-count
+  ;; keeps a running count of infections per age range
   if age = "0-29" [set count-infecteds-0-29 (count-infecteds-0-29 + 1)]
   if age = "30-59" [set count-infecteds-30-59 (count-infecteds-30-59 + 1)]
   if age = "60+" [set count-infecteds-60+ (count-infecteds-60+ + 1)]

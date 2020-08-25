@@ -17,7 +17,6 @@ death-mean              G       mean of the normal dist for death
 death-stdev             G       stdev of the normal dist for death
 develop-sym?            A       whether the agent will develop symptoms
 duration                G       length of simulation (years)
-first-lockdown?         G       whether first lockdown occurred
 imm-countdown           R       individual immunity period
 immunity-mean           G       mean of the poisson dist for immunity
 imposed-lockdown?       G       whether to simulate gov-imposed lockdown
@@ -28,8 +27,8 @@ initial-inf             G       number of symptomatics at start of simulation
 iso-countdown           ALL     individual self-isolation countdown
 iso-countdown-max       G       maximum isolation period for symptomatics
 isolate-symptomatics?   G       whether symptomatics should be asked to isolate
-isolation-threshold       G       percentage of symptomatics to trigger isolation
-isolation-threshold-num   G       number of symptomatics to trigger isolation
+isolation-threshold     G       percentage of symptomatics to trigger isolation
+isolation-threshold-num G       number of symptomatics to trigger isolation
 isolation-strictness    G       the percentage of agents isolating for max days
 lockdown-strictness     G       likelihood a agent will obey lockdown
 lockdown-threshold      G       percentage of symptomatics to trigger lockdown
@@ -63,7 +62,7 @@ to-become-exposed?      S       flags a S for exposure
 to-become-infected?     E       flags a E for beginning of infection
 to-become-susceptible?  R       flags a R for loss of immunity
 to-become-sym?          A       flags an A for symptomatic infection
-to-remove               IA      flags an I/A for removal (recovery or death)
+to-remove?              IA      flags an I/A for removal (recovery or death)
 traced?                 ALL     whether the agent is a traced contact
 travel-strictness       G       probability of outside infections occurring
 will-die?               I       whether the symptomatic will die or recover
