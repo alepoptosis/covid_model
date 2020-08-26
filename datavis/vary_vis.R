@@ -1,20 +1,24 @@
-library(tidyverse)
-library(RColorBrewer)
-library(ggnewscale)
-library(viridis)
-library(gridExtra)
+packages <- c("tidyverse", "RColorBrewer", "ggnewscale", "gridExtra", "viridis")
+
+for (pkg in packages){
+  if (!require(package = pkg, character.only = TRUE)){
+    install.packages(pkgs = pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
+
 theme_set(theme_minimal(base_size = 40))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-21_vary-imm-none"
-varying_par = "immunity_mean" # use version with _ instead of -
-optimal_value = 50
-dest_path = "visualisations/report"
+run_name = "2020-07-21_vary-tt-threshold-01"
+varying_par = "testtrace_threshold" # use version with _ instead of -
+optimal_value = 0.25
+dest_path = "visualisations"
 g_width = 22
 g_height = 16
-metrics_plot = FALSE
+metrics_plot = TRUE
 fix_metric_plot = FALSE
 breed_plots = TRUE
 log_plots = FALSE

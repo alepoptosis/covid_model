@@ -1,48 +1,31 @@
-library(tidyverse)
-library(RColorBrewer)
-library(ggnewscale)
+# script already set up for demo, simply run everything
+
+packages <- c("tidyverse", "RColorBrewer", "ggnewscale")
+
+for (pkg in packages){
+  if (!require(package = pkg, character.only = TRUE)){
+    install.packages(pkgs = pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
+
 theme_set(theme_minimal(base_size = 40))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
-# pal = c("#80B1D3", "#B3B3B3", "#BEBADA", "#FFD92F", "#B3DE69", "#666666") 
-
-# TO-DO: 
-# - find a way to add a legend clarifying lockdown colour
 
 # script options, change for different file, output options and plot size
 
 to_run = c(
-  # "p-inf-0"
-  # ,"p-inf-100"
-  # ,"action-none-6mo"
-  # ,"action-none-1y"
-  # ,"action-all-6mo"
-  # ,"action-all-1y"
-  # "fast-weak"
-  # ,"fast-strong"
-  # ,"slow-weak"
-  # ,"slow-strong"
-  # ,"action-all-opt"
-  # ,"action-none"
-  # ,"is-opt"
-  "ld-opt"
-  # ,"pp-opt"
-  # ,"sv-opt"
-  ,"tt-opt"
-  # ,"is-sv-opt"
-  # ,"is-sv-ld-opt"
-  # ,"pp-tt-opt"
-  # ,"pp-tt-ld-opt"
-  # ,"pp-tt-sv-opt"
-  )
+  "action-none-1y"
+  ,"action-all-1y")
 
 for (run in to_run) {
 
-run_name = sprintf("2020-07-24_%s", run)
-dest_path = "visualisations/report"
+run_name = sprintf("2020-08-10_%s", run)
+dest_path = "visualisations"
 g_width = 22
 g_height = 16
 export_plots = TRUE
-new_ld_vis = TRUE
+new_ld_vis = TRUE # updated way of showing proportion of runs in lockdown
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
