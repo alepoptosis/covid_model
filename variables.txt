@@ -11,7 +11,9 @@ contact-list            EIA     list of susceptibles the agent interacted with
 count-infecteds-0-29    G       running total of I and A with age 0-29  
 count-infecteds-30-59   G       running total of I and A with age 30-59  
 count-infecteds-60+     G       running total of I and A with age 60+  
+counted?                ALL     whether the contact was already counted
 currently-locked?       G       whether a lockdown is in progress
+currently-shielding?    G       whether shielding is currently in progress
 death-countdown         I       individual death countdown
 death-mean              G       mean of the normal dist for death
 death-stdev             G       stdev of the normal dist for death
@@ -27,14 +29,17 @@ initial-inf             G       number of symptomatics at start of simulation
 iso-countdown           ALL     individual self-isolation countdown
 iso-countdown-max       G       maximum isolation period for symptomatics
 isolate-symptomatics?   G       whether symptomatics should be asked to isolate
+isolating?              ALL     whether the agent is isolating for any reason
+isolation-strictness    G       the percentage of agents isolating for max days
 isolation-threshold     G       percentage of symptomatics to trigger isolation
 isolation-threshold-num G       number of symptomatics to trigger isolation
-isolation-strictness    G       the percentage of agents isolating for max days
 lockdown-strictness     G       likelihood a agent will obey lockdown
 lockdown-threshold      G       percentage of symptomatics to trigger lockdown
 lockdown-threshold-num  G       number of symptomatics to trigger lockdown
 lose-immunity?          G       whether immunity of R agents decays
 mean-iso-reduction      G       mean of the poisson dist for isolation reduction
+min-radius              G       the minimum radius of contact neighbourhoods
+neighbours              ALL     set of the agent's neighbours
 num-contacts            G       the number of contacts occurring at that tick
 p-death                 G       probability of dying instead of recovering
 p-infect                S       individual transmission probability
@@ -44,6 +49,7 @@ personal-threshold      G       percentage of symptomatics to trigger protection
 personal-threshold-num  G       number of symptomatics to trigger protections
 pop-size                G       the number of agents in the simulation
 protection-strength     G       strength of measures to reduce transmission
+radius                  ALL     the normal radius of the agent's neighbourhood
 rec-countdown           IA      individual recovery countdown
 recovery-mean           G       mean of the normal dist for recovery
 recovery-stdev          G       stdev of the normal dist for recovery
@@ -66,6 +72,3 @@ to-remove?              IA      flags an I/A for removal (recovery or death)
 traced?                 ALL     whether the agent is a traced contact
 travel-strictness       G       probability of outside infections occurring
 will-die?               I       whether the symptomatic will die or recover
-z-contact               ALL     individual radius of contact neighbourhood
-z-contact-init          ALL     base radius of contact neighbourhood
-z-contact-min           G       the minimum radius of contact neighbourhoods

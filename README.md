@@ -196,3 +196,17 @@
 - Ensured all measures could operate independently of one another
 
 ## Week 11 onwards: write-up and minor code fixes
+
+## Post-dissertation
+
+### 11/9
+
+- Added profiler button to test speed of different procedures
+- Changed count-contacts system for a faster one that does not separate different types of contats, but simply counts all contacts per tick
+- Changed system regulating agent neighbourhood: instead of checking agents within n-radius every time it's necessary, each agent is now assigned an agentset of "neighbours" at setup based on their radius, which is interrogated when necessary. Instead of z-contact-init and z-contact, now the agent has a simple boolean that flags them as isolating or not
+- In modify-measures, number of cases is now only checked once at the beginning instead of at every measure
+- Optimised logical checks for lockdown and isolation of symptomatics to skip code where possible
+- Fixed shield-vulnerable mechanic, as it re-interrogated S agents over 60 at each tick instead of only when the threshold is first surpassed, leading to a change in which agents were shielding every tick. Now agents are only interrogated at first, and ALL over 60 are isolated, not just susceptibles
+- Ensured all isolation checks depend on "isolated?" flag and not agent shape anymore, to prepare for a version of the model that can toggle off visual elements to speed up headless simulations (not fully implemented yet)
+- Updated check-isolation to ensure 60+ agents who leave isolation for other reasons don't get released if shielding is in progress, not only if a lockdown is happening
+- Updated variables list accordingly
