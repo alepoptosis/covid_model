@@ -106,9 +106,9 @@ to setup-turtles
       set-age
       set iso-countdown (rev-poisson iso-countdown-max mean-iso-reduction)
       set traced? false
-      set radius (pareto-dist min-radius 2)
-      set isolating? false
       set counted? false
+      set isolating? false
+      set radius (pareto-dist min-radius 2)
 
       ;; set S-specific attributes
       set breed susceptibles
@@ -173,9 +173,12 @@ to count-contacts
   ;; counts the number of contacts between agents at each tick
   set num-contacts 0          ;; resets daily number of contacts
 
+  ;; each alive, non-isolating agent is flagged as counted and the
+  ;; number of non-counted, non isolating and alive neighbours they have
+  ;; is added to the number of total contacts of the day
   ask turtles with [not isolating? and not member? self deads] [
     set counted? true
-    let contacts (count neighbours with [not counted?])
+    let contacts (count neighbours with [not isolating? and not counted? and not member? self deads])
     set num-contacts (num-contacts + contacts)
   ]
 
@@ -184,6 +187,7 @@ to count-contacts
 end
 
 to trace-contacts
+  ;; updates a list of susceptibles contacted for each infected agent
   if test-and-trace? [
     if count(symptomatics) >= testtrace-threshold-num [
       let infecteds (turtle-set exposeds symptomatics asymptomatics) ;; selects all types of infecteds
@@ -510,7 +514,7 @@ to check-isolation
   ;; generic procedure for checking isolation countdown for an agent
   ifelse iso-countdown <= 0                             ;; if the countdown has ended
   [
-    ifelse currently-locked?                            ;; but lockdown is still on on
+    ifelse currently-locked? or (age = "60+" and currently-shielding?) ;; but lockdown (or shielding) is still on on
     [isolate]                                           ;; agent keeps isolating
     [
       not-isolate                                       ;; otherwise they stop isolating
@@ -1042,7 +1046,7 @@ SWITCH
 634
 personal-protection?
 personal-protection?
-1
+0
 1
 -1000
 
@@ -1346,7 +1350,7 @@ SWITCH
 706
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1402,7 +1406,7 @@ SWITCH
 670
 shield-vulnerable?
 shield-vulnerable?
-1
+0
 1
 -1000
 
