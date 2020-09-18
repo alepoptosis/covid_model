@@ -19,6 +19,8 @@ globals [
   protection-threshold-num  ;; number of I agents to trigger personal protections
   p-infect-adj              ;; p-infect after reduction of risk from protections
   testtrace-threshold-num   ;; number of I agents to trigger test and trace
+  isolation-threshold-num
+  start-isolation?
 ]
 
 turtles-own [
@@ -28,6 +30,8 @@ turtles-own [
   neighbours                ;; agentset of the agent's contact
   isolating?                ;; whether the agent is currently isolating
   counted?                  ;; whether the agent was already counted in daily contacts
+  traced?
+  iso-countdown
 ]
 
 susceptibles-own [
@@ -39,6 +43,8 @@ exposeds-own [
   inc-countdown             ;; individual incubation countdown
   to-become-asymptomatic?     ;; flags an E agent to become infectious (A)
   contact-list
+  tested?
+  contacts-alerted?
 ]
 
 asymptomatics-own [
@@ -47,6 +53,8 @@ asymptomatics-own [
   to-become-sym?            ;; flags an A agent to become symptomatic (I)
   to-recover?               ;; flags an A agent to recover (R)
   contact-list
+  tested?
+  contacts-alerted?
 ]
 
 symptomatics-own [
@@ -55,6 +63,9 @@ symptomatics-own [
   to-die?                   ;; flags a I agent to die (D)
   to-recover?               ;; flags a I agent to recover (R)
   contact-list
+  tested?
+  contacts-alerted?
+  asked-to-isolate?
 ]
 
 recovereds-own [
@@ -101,6 +112,8 @@ to setup-turtles
       set radius (pareto-dist min-radius 2)
       set isolating? false
       set counted? false
+      set traced? false
+      set iso-countdown -1
 
       ;;;;; S-specific attributes
       set-breed-susceptible
@@ -128,6 +141,8 @@ to setup-globals
   set protection-threshold-num (absolute-threshold protection-threshold)
   set p-infect-adj ((1 - (protection-strength / 100)) * (base-p-infect / 100))
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
+  set isolation-threshold-num (absolute-threshold isolation-threshold)
+  set start-isolation? false
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -138,7 +153,7 @@ to go
   ifelse ticks < (duration * 365)
   [
     count-contacts
-    if test-and-trace? [trace-contacts] ;;? should I check threshold here already?
+    if test-and-trace? [record-contacts] ;;? should I check threshold here already?
     expose-susceptibles
     become-infectious
     progress-asym
@@ -173,14 +188,16 @@ to count-contacts
   ask turtles [set counted? false]
 end
 
-to trace-contacts ;;? wondering if this can be merged with count-contacts without getting too messy
+to record-contacts ;;? wondering if this can be merged with count-contacts without getting too messy
   if count symptomatics >= testtrace-threshold-num [
     ask (turtle-set exposeds asymptomatics symptomatics) [
-      let contacts [self] of neighbours with [not isolating? and breed != deads]
-      foreach contacts [
-        contact ->
-        if not member? contact contact-list [
-          set contact-list lput contact contact-list
+      if length contact-list < count neighbours [
+        let contacts [self] of neighbours with [not isolating? and breed != deads]
+        foreach contacts [
+          contact ->
+          if not member? contact contact-list [
+            set contact-list lput contact contact-list
+          ]
         ]
       ]
     ]
@@ -325,6 +342,14 @@ to modify-measures
     isolate
   ]
 
+  ;;;; ISOLATE SYMPTOMATICS
+  if isolate-symptomatics? [
+    if start-isolation? [isolate-symptomatics]
+    if not start-isolation? and active-cases > isolation-threshold-num [
+      set start-isolation? true
+    ]
+  ]
+
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -352,6 +377,7 @@ to set-breed-susceptible
   if visual-elements? [set color green]
   set p-infect (base-p-infect / 100)
   set to-become-exposed? false
+  if visual-elements? [check-outline]
 end
 
 to set-breed-exposed
@@ -360,6 +386,9 @@ to set-breed-exposed
   set inc-countdown (log-normal incubation-mean incubation-stdev)
   set to-become-asymptomatic? false
   set contact-list []
+  set tested? false
+  set contacts-alerted? false
+  if visual-elements? [check-outline]
 end
 
 to set-breed-asymptomatic
@@ -369,6 +398,8 @@ to set-breed-asymptomatic
   set to-become-sym? false
   set to-recover? false
   ;; contact-list carries over from exposeds
+  ;; tested? carries over from exposeds
+  if visual-elements? [check-outline]
 end
 
 to check-symptoms
@@ -388,7 +419,10 @@ to set-breed-symptomatic
   check-death
   set to-die? false
   set to-recover? false
+  set asked-to-isolate? false
   ;; contact-list carries over from asymptomatic
+  ;; tested? carries over from asymptomatic
+  if visual-elements? [check-outline]
 end
 
 to check-death
@@ -407,6 +441,13 @@ to set-breed-recovered
   if visual-elements? [set color grey]
   set imm-countdown 180
   set to-become-susceptible? false
+  if visual-elements? [check-outline]
+end
+
+to check-outline
+  if isolating? [
+    set shape "person-outline"
+  ]
 end
 
 to set-breed-dead
@@ -481,12 +522,71 @@ to end-protection
 end
 
 to test
+  ask (turtle-set exposeds asymptomatics) with [not tested?] [
+    let p (random-float 100)
+    if p < asym-test-coverage [
+      set tested? true
+    ]
+  ]
+
+  ask symptomatics with [not tested?] [
+    let p (random-float 100)
+    if p < sym-test-coverage [
+      set tested? true
+    ]
+  ]
 end
 
 to trace
+  ask (turtle-set exposeds asymptomatics symptomatics) [ ;; ADD CONTACTS REACHED SO ONLY SOME OF THEM ISOLATE
+    if tested? and not contacts-alerted? [
+      foreach contact-list [
+        contact -> ask contact [set traced? true]
+      ]
+      set contacts-alerted? true
+    ]
+  ]
 end
 
 to isolate
+  ifelse isolate-symptomatics? [
+    ask (turtle-set exposeds asymptomatics) with [tested?] [
+      check-isolation
+    ]
+  ] [ ;; else
+    ask (turtle-set exposeds asymptomatics symptomatics) with [tested?] [
+      check-isolation
+    ]
+  ]
+
+  ask turtles with [traced?] [
+    check-isolation
+  ]
+end
+
+to check-isolation
+  if iso-countdown = -1 [
+    isolate-agent
+    set iso-countdown 14
+  ]
+
+  ifelse iso-countdown = 0 [
+    release-agent ;; ADD IF NO LOCKDOWN/SHIELDING IS IN PROGRESS
+    set iso-countdown -1
+    set traced? false
+  ] [ ;; else
+    set iso-countdown (iso-countdown - 1)
+  ]
+end
+
+to isolate-symptomatics
+  ask symptomatics with [not asked-to-isolate?] [
+    let p (random-float 100)
+    if p < isolation-strictness [
+      check-isolation
+    ]
+    set asked-to-isolate? true
+  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -701,7 +801,7 @@ asym-prevalence
 asym-prevalence
 0
 100
-60.0
+0.0
 1
 1
 %
@@ -902,7 +1002,7 @@ SWITCH
 312
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
@@ -943,7 +1043,7 @@ SWITCH
 351
 shield-vulnerable?
 shield-vulnerable?
-0
+1
 1
 -1000
 
@@ -995,7 +1095,7 @@ SWITCH
 388
 personal-protection?
 personal-protection?
-0
+1
 1
 -1000
 
@@ -1036,7 +1136,7 @@ SWITCH
 427
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1049,7 +1149,7 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-2.0
+0.0
 1
 1
 % of pop is I
@@ -1079,7 +1179,7 @@ asym-test-coverage
 asym-test-coverage
 0
 100
-100.0
+0.0
 1
 1
 % of pop
@@ -1098,6 +1198,47 @@ contacts-reached
 1
 1
 % of contacts
+HORIZONTAL
+
+SWITCH
+1255
+436
+1432
+469
+isolate-symptomatics?
+isolate-symptomatics?
+0
+1
+-1000
+
+SLIDER
+361
+647
+553
+680
+isolation-strictness
+isolation-strictness
+0
+100
+0.0
+1
+1
+% of I
+HORIZONTAL
+
+SLIDER
+359
+604
+585
+637
+isolation-threshold
+isolation-threshold
+0
+100
+0.0
+1
+1
+% of pop is I
 HORIZONTAL
 
 @#$#@#$#@
