@@ -19,8 +19,18 @@ globals [
   protection-threshold-num  ;; number of I agents to trigger personal protections
   p-infect-adj              ;; p-infect after reduction of risk from protections
   testtrace-threshold-num   ;; number of I agents to trigger test and trace
-  isolation-threshold-num
-  start-isolation?
+  isolation-threshold-num   ;; number of I agents to trigger isolation of symptomatics
+  start-isolation?          ;; whether isolation of symptomatics has begun
+
+  count-dead-0-29           ;; running total of dead agents with age 0-29
+  count-dead-30-59          ;; running total of dead agents with age 30-59
+  count-dead-60plus         ;; running total of dead agents with age 60+
+  count-dead-at-risk        ;; running total of dead agents with underlying conditions
+
+  count-infected-0-29       ;; running total of I and A with age 0-29
+  count-infected-30-59      ;; running total of I and A with age 30-59
+  count-infected-60+        ;; running total of I and A with age 60+
+  count-infected-at-risk    ;; running total of I and A agents with underlying conditions
 ]
 
 turtles-own [
@@ -30,8 +40,8 @@ turtles-own [
   neighbours                ;; agentset of the agent's contact
   isolating?                ;; whether the agent is currently isolating
   counted?                  ;; whether the agent was already counted in daily contacts
-  traced?
-  iso-countdown
+  traced?                   ;; whether the agent was traced as a contact of a tested agent
+  iso-countdown             ;; individual isolation countdown
 ]
 
 susceptibles-own [
@@ -41,10 +51,10 @@ susceptibles-own [
 
 exposeds-own [
   inc-countdown             ;; individual incubation countdown
-  to-become-asymptomatic?     ;; flags an E agent to become infectious (A)
-  contact-list
-  tested?
-  contacts-alerted?
+  to-become-asymptomatic?   ;; flags an E agent to become asymptomatic (A)
+  contact-list              ;; list of agents contacted since exposure
+  tested?                   ;; whether the agent is aware of their infection status
+  contacts-alerted?         ;; whether its contacts have been instructed to isolate
 ]
 
 asymptomatics-own [
@@ -52,9 +62,9 @@ asymptomatics-own [
   countdown                 ;; multi-purpose countdown: symptoms if will-develop-sym?, removal if not - TEST
   to-become-sym?            ;; flags an A agent to become symptomatic (I)
   to-recover?               ;; flags an A agent to recover (R)
-  contact-list
-  tested?
-  contacts-alerted?
+  contact-list              ;; list of agents contacted since exposure
+  tested?                   ;; whether the agent is aware of their infection status
+  contacts-alerted?         ;; whether its contacts have been instructed to isolate
 ]
 
 symptomatics-own [
@@ -62,10 +72,10 @@ symptomatics-own [
   countdown                 ;; multi-purpose countdown: death if will-die, recovery if not - TEST
   to-die?                   ;; flags a I agent to die (D)
   to-recover?               ;; flags a I agent to recover (R)
-  contact-list
-  tested?
-  contacts-alerted?
-  asked-to-isolate?
+  contact-list              ;; list of agents contacted since exposure
+  tested?                   ;; whether the agent is aware of their infection status
+  contacts-alerted?         ;; whether its contacts have been instructed to isolate
+  asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
 ]
 
 recovereds-own [
@@ -78,12 +88,12 @@ recovereds-own [
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to profile
-  setup                         ;; set up the model
-  profiler:start                ;; start profiling
-  repeat (duration * 365) [go]  ;; run one instance of the simulation
-  profiler:stop                 ;; stop profiling
-  print profiler:report         ;; view the results
-  profiler:reset                ;; clear the data
+  setup                         ;; sets up the model
+  profiler:start                ;; starts profiling
+  repeat (duration * 365) [go]  ;; runs one instance of the simulation
+  profiler:stop                 ;; stops profiling
+  print profiler:report         ;; prints the results
+  profiler:reset                ;; clears the data
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -105,8 +115,8 @@ to setup-turtles
   set-default-shape turtles "person"
   ask patches [
     set pcolor white
-    sprout-susceptibles 1 [
-      ;;;;; turtle attributes
+    sprout-susceptibles 1 [         ;; places a susceptible on each patch
+      ;;;;; setup turtle attributes
       set-age
       set-at-risk
       set radius (pareto-dist min-radius 2)
@@ -115,11 +125,12 @@ to setup-turtles
       set traced? false
       set iso-countdown -1
 
-      ;;;;; S-specific attributes
+      ;;;;; setup S-specific attributes
       set-breed-susceptible
     ]
   ]
 
+  ;; assigns neigbours agentsets (can only be done after all agents have a radius)
   ask turtles [
     set neighbours (other turtles in-radius radius with [radius >= distance myself])
   ]
@@ -132,17 +143,35 @@ end
 to setup-globals
   ;; pop-size is set in setup-turtles
   ;; num-contacts is reset at every tick in count-contacts
+
+  ;; lockdown globals
   set currently-locked? false
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
+
+  ;; shielding globals
   set currently-shielding? false
   set shield-threshold-num (absolute-threshold shield-threshold)
   set at-risk-agents (turtles with [age = "60+" or at-risk?])
+
+  ;; personal protection globals
   set currently-protecting? false
   set protection-threshold-num (absolute-threshold protection-threshold)
   set p-infect-adj ((1 - (protection-strength / 100)) * (base-p-infect / 100))
+
+  ;; test and trace globals
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
   set isolation-threshold-num (absolute-threshold isolation-threshold)
   set start-isolation? false
+
+  ;; reporters
+  set count-dead-0-29 0
+  set count-dead-30-59 0
+  set count-dead-60plus 0
+  set count-dead-at-risk 0
+
+  set count-infected-0-29 0
+  set count-infected-30-59 0
+  set count-infected-60+ 0
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -221,6 +250,16 @@ to expose-susceptibles
       ]
     ]
   ]
+
+  if allow-travel? [
+    let travellers (susceptibles with [not isolating?])    ;; group all S agents not isolating
+    if any? travellers [                                   ;; if the group is not empty
+      let p (random-float 100)                             ;; there is a chance that one agent
+      if p < travel-frequency [                            ;; from this group becomes exposed from travelling
+        ask one-of travellers [set-breed-exposed]
+      ]
+    ]
+  ]
 end
 
 to become-infectious
@@ -289,8 +328,12 @@ to update-breeds
     set-breed-recovered
   ]
 
-  ask symptomatics with [to-die?] [
-    set-breed-dead
+  ask symptomatics with [to-die?] [ ;;? leave as is or add a dead-add-count to mirror inf-add-count?
+    if age = "60+" [set count-dead-60plus (count-dead-60plus + 1)]
+    if age = "30-59" [set count-dead-30-59 (count-dead-30-59 + 1)]
+    if age = "0-29" [set count-dead-0-29 (count-dead-0-29 + 1)]
+    if at-risk? [set count-dead-at-risk (count-dead-at-risk + 1)]
+    die
   ]
 
   ask recovereds with [to-become-susceptible?] [
@@ -395,6 +438,7 @@ to set-breed-asymptomatic
   set breed asymptomatics
   if visual-elements? [set color violet]
   check-symptoms ;; sets will-develop-sym? and countdown
+  add-inf-count
   set to-become-sym? false
   set to-recover? false
   ;; contact-list carries over from exposeds
@@ -407,10 +451,18 @@ to check-symptoms
   ifelse p < asym-prevalence [
     set will-develop-sym? false
     set countdown (normal-dist recovery-mean recovery-stdev) ;; recovery countdown
-  ] [
+  ] [ ;; else
     set will-develop-sym? true
     set countdown (random 3 + 1) ;; symptoms countdown
   ]
+end
+
+to add-inf-count
+  ;; keeps a running count of infections per age range
+  if age = "0-29" [set count-infected-0-29 (count-infected-0-29 + 1)]
+  if age = "30-59" [set count-infected-30-59 (count-infected-30-59 + 1)]
+  if age = "60+" [set count-infected-60+ (count-infected-60+ + 1)]
+  if at-risk? [set count-infected-at-risk (count-infected-at-risk + 1)]
 end
 
 to set-breed-symptomatic
@@ -439,7 +491,7 @@ end
 to set-breed-recovered
   set breed recovereds
   if visual-elements? [set color grey]
-  set imm-countdown 180
+  if lose-immunity? [set imm-countdown 365]
   set to-become-susceptible? false
   if visual-elements? [check-outline]
 end
@@ -461,8 +513,8 @@ to isolate-agent
 end
 
 to release-agent
-  set isolating? false
-  if visual-elements? [set shape "person"]
+    set isolating? false
+    if visual-elements? [set shape "person"]
 end
 
 to start-lockdown
@@ -475,7 +527,7 @@ to start-lockdown
   set currently-locked? true
 end
 
-to end-lockdown
+to end-lockdown ;; this can be made better
   ask turtles [
     ifelse currently-shielding? [
       if not member? self at-risk-agents [
@@ -538,10 +590,16 @@ to test
 end
 
 to trace
-  ask (turtle-set exposeds asymptomatics symptomatics) [ ;; ADD CONTACTS REACHED SO ONLY SOME OF THEM ISOLATE
+  ask (turtle-set exposeds asymptomatics symptomatics) [
     if tested? and not contacts-alerted? [
       foreach contact-list [
-        contact -> ask contact [set traced? true]
+        ;; if the contact is not dead, flag them as traced
+        contact -> if contact != nobody [
+          let p (random-float 100)
+          if p < contacts-reached [
+            ask contact [set traced? true]
+          ]
+        ]
       ]
       set contacts-alerted? true
     ]
@@ -571,7 +629,8 @@ to check-isolation
   ]
 
   ifelse iso-countdown = 0 [
-    release-agent ;; ADD IF NO LOCKDOWN/SHIELDING IS IN PROGRESS
+    ;; ADD IF NO LOCKDOWN/SHIELDING IS IN PROGRESS HERE
+    release-agent
     set iso-countdown -1
     set traced? false
   ] [ ;; else
@@ -624,6 +683,10 @@ to-report normal-dist [#mu #sigma]                    ;; reports value from a no
     [report min_days]                                 ;; the value reported is the minimum
     [report 1]                                        ;; otherwise, if the minimum happens to be negative, 1 is reported
   ]
+end
+
+to-report count-locked
+  report count turtles with [isolating?]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -771,7 +834,7 @@ duration
 duration
 0
 10
-0.5
+3.0
 0.5
 1
 years
@@ -801,7 +864,7 @@ asym-prevalence
 asym-prevalence
 0
 100
-0.0
+60.0
 1
 1
 %
@@ -853,10 +916,10 @@ Population parameters
 1
 
 TEXTBOX
-621
-279
-771
-297
+617
+133
+767
+151
 Control measures parameters
 11
 0.0
@@ -1007,10 +1070,10 @@ imposed-lockdown?
 -1000
 
 SLIDER
-594
-312
-792
-345
+590
+166
+788
+199
 lockdown-threshold
 lockdown-threshold
 0
@@ -1022,10 +1085,10 @@ lockdown-threshold
 HORIZONTAL
 
 SLIDER
-594
-355
-792
-388
+590
+209
+788
+242
 lockdown-strictness
 lockdown-strictness
 0
@@ -1048,10 +1111,10 @@ shield-vulnerable?
 -1000
 
 SLIDER
-594
-413
-791
-446
+590
+267
+787
+300
 shield-threshold
 shield-threshold
 0
@@ -1063,10 +1126,10 @@ shield-threshold
 HORIZONTAL
 
 SLIDER
-594
-452
-791
-485
+590
+306
+787
+339
 shield-adherance
 shield-adherance
 0
@@ -1084,7 +1147,7 @@ SWITCH
 172
 lose-immunity?
 lose-immunity?
-1
+0
 1
 -1000
 
@@ -1100,10 +1163,10 @@ personal-protection?
 -1000
 
 SLIDER
-594
-541
-790
-574
+590
+398
+786
+431
 protection-strength
 protection-strength
 0
@@ -1115,10 +1178,10 @@ protection-strength
 HORIZONTAL
 
 SLIDER
-594
-502
-790
-535
+590
+359
+786
+392
 protection-threshold
 protection-threshold
 0
@@ -1136,15 +1199,15 @@ SWITCH
 427
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 
 SLIDER
-594
-587
-790
-620
+590
+452
+786
+485
 testtrace-threshold
 testtrace-threshold
 0
@@ -1156,10 +1219,10 @@ testtrace-threshold
 HORIZONTAL
 
 SLIDER
-593
-627
-790
-660
+589
+492
+786
+525
 sym-test-coverage
 sym-test-coverage
 0
@@ -1171,30 +1234,30 @@ sym-test-coverage
 HORIZONTAL
 
 SLIDER
-592
-667
-791
-700
+588
+532
+787
+565
 asym-test-coverage
 asym-test-coverage
 0
 100
-0.0
+100.0
 1
 1
 % of pop
 HORIZONTAL
 
 SLIDER
-592
-706
-791
-739
+588
+571
+787
+604
 contacts-reached
 contacts-reached
 0
 100
-100.0
+50.0
 1
 1
 % of contacts
@@ -1203,7 +1266,7 @@ HORIZONTAL
 SWITCH
 1255
 436
-1432
+1420
 469
 isolate-symptomatics?
 isolate-symptomatics?
@@ -1212,25 +1275,25 @@ isolate-symptomatics?
 -1000
 
 SLIDER
-361
-647
-553
-680
+586
+668
+786
+701
 isolation-strictness
 isolation-strictness
 0
 100
-0.0
+100.0
 1
 1
 % of I
 HORIZONTAL
 
 SLIDER
-359
-604
-585
-637
+586
+629
+786
+662
 isolation-threshold
 isolation-threshold
 0
@@ -1240,6 +1303,42 @@ isolation-threshold
 1
 % of pop is I
 HORIZONTAL
+
+SLIDER
+586
+719
+784
+752
+travel-frequency
+travel-frequency
+0
+100
+1.0
+1
+1
+% ticks
+HORIZONTAL
+
+SWITCH
+1266
+220
+1412
+253
+allow-travel?
+allow-travel?
+0
+1
+-1000
+
+TEXTBOX
+889
+586
+1039
+698
+STILL MISSING:\n\nimmunity-mean and iso-countdown-max/mean-iso reduction (need to figure out what distribution to use or if poisson was ok)\n\n
+11
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
