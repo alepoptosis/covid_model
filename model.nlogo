@@ -81,7 +81,6 @@ symptomatics-own [
 recovereds-own [
   imm-countdown             ;; individual immunity countdown
   to-become-susceptible?    ;; flags a R agent to lose immunity (S)
-  recovered-before-iso?
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -622,7 +621,7 @@ end
 to check-isolation
   if iso-countdown = -1 [
     isolate-agent
-    set iso-countdown 140
+    set iso-countdown 30
   ]
 
   ifelse iso-countdown = 0 [
@@ -645,6 +644,10 @@ to isolate-symptomatics
   ]
 
   ask symptomatics with [decided-to-isolate?] [
+    check-isolation
+  ]
+
+  ask recovereds with [iso-countdown >= 0] [
     check-isolation
   ]
 end
