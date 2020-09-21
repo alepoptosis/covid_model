@@ -75,11 +75,13 @@ symptomatics-own [
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
   asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
+  decided-to-isolate?       ;; whether the agent decided to respect isolation of symptomatics
 ]
 
 recovereds-own [
   imm-countdown             ;; individual immunity countdown
   to-become-susceptible?    ;; flags a R agent to lose immunity (S)
+  decided-to-isolate?       ;; whether the agent decided to respect isolation of symptomatics
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -471,6 +473,7 @@ to set-breed-symptomatic
   set to-die? false
   set to-recover? false
   set asked-to-isolate? false
+  set decided-to-isolate? false
   ;; contact-list carries over from asymptomatic
   ;; tested? carries over from asymptomatic
   if visual-elements? [check-outline]
@@ -619,7 +622,7 @@ end
 to check-isolation
   if iso-countdown = -1 [
     isolate-agent
-    set iso-countdown 14
+    set iso-countdown 140
   ]
 
   ifelse iso-countdown = 0 [
@@ -636,7 +639,7 @@ to isolate-symptomatics
   ask symptomatics with [not asked-to-isolate?] [
     let p (random-float 100)
     if p < isolation-strictness [
-      check-isolation
+      set decided-to-isolate? true
     ]
     set asked-to-isolate? true
   ]
@@ -1141,7 +1144,7 @@ SWITCH
 172
 lose-immunity?
 lose-immunity?
-0
+1
 1
 -1000
 
@@ -1320,7 +1323,7 @@ SWITCH
 253
 allow-travel?
 allow-travel?
-0
+1
 1
 -1000
 
