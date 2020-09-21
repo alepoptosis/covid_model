@@ -81,7 +81,7 @@ symptomatics-own [
 recovereds-own [
   imm-countdown             ;; individual immunity countdown
   to-become-susceptible?    ;; flags a R agent to lose immunity (S)
-  decided-to-isolate?       ;; whether the agent decided to respect isolation of symptomatics
+  recovered-before-iso?
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -642,6 +642,10 @@ to isolate-symptomatics
       set decided-to-isolate? true
     ]
     set asked-to-isolate? true
+  ]
+
+  ask symptomatics with [decided-to-isolate?] [
+    check-isolation
   ]
 end
 
