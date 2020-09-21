@@ -5,7 +5,6 @@ breed [exposeds exposed]            ;; exposed but not infectious (E)
 breed [symptomatics symptomatic]    ;; infectious and symptomatic (I)
 breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
 breed [recovereds recovered]        ;; recovered and immune (R)
-breed [deads dead]                  ;; removed from population (D)
 
 globals [
   pop-size                  ;; number of agents in simulation
@@ -178,9 +177,9 @@ to count-contacts
   ;; each alive, non-isolating agent is flagged as counted and the
   ;; number of non-counted, non isolating and alive neighbours they have
   ;; is added to the number of total contacts of the day
-  ask turtles with [not isolating? and breed != deads] [
+  ask turtles with [not isolating?] [
     set counted? true
-    let these-contacts (count neighbours with [not isolating? and not counted? and breed != deads])
+    let these-contacts (count neighbours with [not isolating? and not counted?])
     set num-contacts (num-contacts + these-contacts)
   ]
 
@@ -192,7 +191,7 @@ to record-contacts ;;? wondering if this can be merged with count-contacts witho
   if count symptomatics >= testtrace-threshold-num [
     ask (turtle-set exposeds asymptomatics symptomatics) [
       if length contact-list < count neighbours [
-        let contacts [self] of neighbours with [not isolating? and breed != deads]
+        let contacts [self] of neighbours with [not isolating?]
         foreach contacts [
           contact ->
           if not member? contact contact-list [
@@ -290,7 +289,7 @@ to update-breeds
   ]
 
   ask symptomatics with [to-die?] [
-    set-breed-dead
+    die
   ]
 
   ask recovereds with [to-become-susceptible?] [
@@ -450,11 +449,6 @@ to check-outline
   ]
 end
 
-to set-breed-dead
-  set breed deads
-  if visual-elements? [set color black]
-end
-
 to isolate-agent
   set isolating? true
   if visual-elements? [set shape "person-outline"]
@@ -466,7 +460,7 @@ to release-agent
 end
 
 to start-lockdown
-  ask turtles with [breed != deads] [
+  ask turtles [
     let p (random-float 100)
     if p < lockdown-strictness [
       isolate-agent
@@ -541,7 +535,8 @@ to trace
   ask (turtle-set exposeds asymptomatics symptomatics) [ ;; ADD CONTACTS REACHED SO ONLY SOME OF THEM ISOLATE
     if tested? and not contacts-alerted? [
       foreach contact-list [
-        contact -> ask contact [set traced? true]
+        ;; If the contact is not dead, ask them to set "traced?"
+        contact -> if contact != nobody [ ask contact [set traced? true] ]
       ]
       set contacts-alerted? true
     ]
