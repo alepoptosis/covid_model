@@ -637,10 +637,15 @@ to update-isolation-countdown
   ]
 
   ifelse iso-countdown = 0 [
-    ;; ADD IF NO LOCKDOWN/SHIELDING IS IN PROGRESS HERE
-    release-agent
-    set iso-countdown -1
-    set traced? false
+    if not currently-locked? [
+      if not currently-shielding? [
+        if not member? self at-risk-agents [
+          release-agent
+          set iso-countdown -1
+          set traced? false
+        ]
+      ]
+    ]
   ] [ ;; else
     set iso-countdown (iso-countdown - 1)
   ]
@@ -872,7 +877,7 @@ asym-prevalence
 asym-prevalence
 0
 100
-60.0
+0.0
 1
 1
 %
@@ -1073,7 +1078,7 @@ SWITCH
 312
 imposed-lockdown?
 imposed-lockdown?
-1
+0
 1
 -1000
 
@@ -1207,7 +1212,7 @@ SWITCH
 427
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 
@@ -1278,7 +1283,7 @@ SWITCH
 469
 isolate-symptomatics?
 isolate-symptomatics?
-1
+0
 1
 -1000
 
@@ -1306,7 +1311,7 @@ isolation-threshold
 isolation-threshold
 0
 100
-0.0
+5.0
 1
 1
 % of pop is I
@@ -1347,6 +1352,17 @@ STILL MISSING:\n\nimmunity-mean and iso-countdown-max/mean-iso reduction (need t
 11
 0.0
 1
+
+MONITOR
+361
+659
+456
+704
+NIL
+start-isolation?
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
