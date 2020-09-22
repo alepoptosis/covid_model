@@ -1353,17 +1353,6 @@ STILL MISSING:\n\nimmunity-mean and iso-countdown-max/mean-iso reduction (need t
 0.0
 1
 
-MONITOR
-361
-659
-456
-704
-NIL
-start-isolation?
-17
-1
-11
-
 @#$#@#$#@
 ## WHAT IS IT?
 
