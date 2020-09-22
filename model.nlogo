@@ -382,19 +382,18 @@ to modify-measures
       test
       trace
     ]
-    ;; isolate
-  ]
-
-  if test-and-trace? or start-isolation? [
-    isolate
   ]
 
   ;;;; ISOLATE SYMPTOMATICS
   if isolate-symptomatics? [
-    ;; if start-isolation? [isolate-symptomatics]
     if not start-isolation? and active-cases > isolation-threshold-num [
       set start-isolation? true
     ]
+  ]
+
+  ;; this section takes care of isolation for both IS and TT
+  if test-and-trace? or start-isolation? [
+    isolate
   ]
 end
 
@@ -606,27 +605,31 @@ to trace
 end
 
 to isolate
-  let agents-to-check nobody
+  let agents-to-check nobody ;; set of agents for whom isolation has to progress
 
 	if isolate-symptomatics? [
 		ask-symptomatics-to-isolate
-		;; Add agents who comply with the isolation of symptomatics
-		set agents-to-check (turtle-set symptomatics with [comply-with-isolation?])
+		;; add agents who comply with the isolation of symptomatics
+		set agents-to-check (symptomatics with [comply-with-isolation?])
 	]
 
 	if test-and-trace? [
-		;; Add agents who have been tested
-		set agents-to-check (turtle-set exposeds asymptomatics symptomatics with [tested?] agents-to-check)
+		;; add agents who have been tested (temp set needed for proper filtering)
+    let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
+		set agents-to-check (turtle-set agents-to-check tested-agents)
+    ;; add agents who have been traced as contacts
+    let traced-agents (turtles with [traced?])
+    set agents-to-check (turtle-set agents-to-check traced-agents)
 	]
 
-  ;; Add agents who have recovered but may still have an active isolation countdown:
-  ;; they have recovered before the end of their isolation countdown
+  ;; add agents who have recovered but may still have an active isolation countdown
+  ;; because they have recovered before the end of their isolation
   set agents-to-check (turtle-set recovereds with [iso-countdown >= 0] agents-to-check)
 
   ask agents-to-check [update-isolation-countdown]
 end
 
-;; Set or decrease the countdown, or release the agent
+;; set or decrease the countdown, or release the agent
 to update-isolation-countdown
   if iso-countdown = -1 [
     isolate-agent
@@ -1204,7 +1207,7 @@ SWITCH
 427
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1217,7 +1220,7 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-0.0
+1.0
 1
 1
 % of pop is I
@@ -1262,7 +1265,7 @@ contacts-reached
 contacts-reached
 0
 100
-50.0
+0.0
 1
 1
 % of contacts
@@ -1275,7 +1278,7 @@ SWITCH
 469
 isolate-symptomatics?
 isolate-symptomatics?
-0
+1
 1
 -1000
 
