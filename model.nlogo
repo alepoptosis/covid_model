@@ -75,7 +75,7 @@ symptomatics-own [
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
   asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
-  decided-to-isolate?       ;; whether the agent decided to respect isolation of symptomatics
+  comply-with-isolation?    ;; whether the agent decided to respect isolation of symptomatics
 ]
 
 recovereds-own [
@@ -382,17 +382,20 @@ to modify-measures
       test
       trace
     ]
+    ;; isolate
+  ]
+
+  if test-and-trace? or start-isolation? [
     isolate
   ]
 
   ;;;; ISOLATE SYMPTOMATICS
   if isolate-symptomatics? [
-    if start-isolation? [isolate-symptomatics]
+    ;; if start-isolation? [isolate-symptomatics]
     if not start-isolation? and active-cases > isolation-threshold-num [
       set start-isolation? true
     ]
   ]
-
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -472,7 +475,7 @@ to set-breed-symptomatic
   set to-die? false
   set to-recover? false
   set asked-to-isolate? false
-  set decided-to-isolate? false
+  set comply-with-isolation? false
   ;; contact-list carries over from asymptomatic
   ;; tested? carries over from asymptomatic
   if visual-elements? [check-outline]
@@ -603,22 +606,28 @@ to trace
 end
 
 to isolate
-  ifelse isolate-symptomatics? [
-    ask (turtle-set exposeds asymptomatics) with [tested?] [
-      check-isolation
-    ]
-  ] [ ;; else
-    ask (turtle-set exposeds asymptomatics symptomatics) with [tested?] [
-      check-isolation
-    ]
-  ]
+  let agents-to-check nobody
 
-  ask turtles with [traced?] [
-    check-isolation
-  ]
+	if isolate-symptomatics? [
+		ask-symptomatics-to-isolate
+		;; Add agents who comply with the isolation of symptomatics
+		set agents-to-check (turtle-set symptomatics with [comply-with-isolation?])
+	]
+
+	if test-and-trace? [
+		;; Add agents who have been tested
+		set agents-to-check (turtle-set exposeds asymptomatics symptomatics with [tested?] agents-to-check)
+	]
+
+  ;; Add agents who have recovered but may still have an active isolation countdown:
+  ;; they have recovered before the end of their isolation countdown
+  set agents-to-check (turtle-set recovereds with [iso-countdown >= 0] agents-to-check)
+
+  ask agents-to-check [update-isolation-countdown]
 end
 
-to check-isolation
+;; Set or decrease the countdown, or release the agent
+to update-isolation-countdown
   if iso-countdown = -1 [
     isolate-agent
     set iso-countdown 30
@@ -634,21 +643,13 @@ to check-isolation
   ]
 end
 
-to isolate-symptomatics
+to ask-symptomatics-to-isolate
   ask symptomatics with [not asked-to-isolate?] [
     let p (random-float 100)
     if p < isolation-strictness [
-      set decided-to-isolate? true
+      set comply-with-isolation? true
     ]
     set asked-to-isolate? true
-  ]
-
-  ask symptomatics with [decided-to-isolate?] [
-    check-isolation
-  ]
-
-  ask recovereds with [iso-countdown >= 0] [
-    check-isolation
   ]
 end
 
