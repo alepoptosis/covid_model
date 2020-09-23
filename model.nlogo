@@ -809,10 +809,10 @@ NIL
 1
 
 SWITCH
-1267
-179
-1412
-212
+1250
+220
+1395
+253
 visual-elements?
 visual-elements?
 0
@@ -820,10 +820,10 @@ visual-elements?
 -1000
 
 SLIDER
-601
-31
-773
-64
+610
+45
+782
+78
 min-radius
 min-radius
 0
@@ -865,10 +865,10 @@ years
 HORIZONTAL
 
 SLIDER
-896
-36
-1068
-69
+610
+170
+782
+203
 base-p-infect
 base-p-infect
 0
@@ -880,10 +880,10 @@ base-p-infect
 HORIZONTAL
 
 SLIDER
-895
-125
-1067
-158
+610
+250
+782
+283
 asym-prevalence
 asym-prevalence
 0
@@ -895,10 +895,10 @@ asym-prevalence
 HORIZONTAL
 
 SLIDER
-894
-83
-1066
-116
+610
+210
+782
+243
 p-death
 p-death
 0
@@ -910,10 +910,10 @@ p-death
 HORIZONTAL
 
 TEXTBOX
-920
-14
-1070
-32
+634
+140
+784
+158
 Pathogen parameters
 11
 0.0
@@ -930,30 +930,30 @@ Simulation options
 1
 
 TEXTBOX
-626
-11
-776
-29
+634
+25
+784
+43
 Population parameters
 11
 0.0
 1
 
 TEXTBOX
-617
-133
-767
-151
+946
+35
+1096
+53
 Control measures parameters
 11
 0.0
 1
 
 SLIDER
-602
-72
-774
-105
+610
+85
+782
+118
 percentage-at-risk
 percentage-at-risk
 0
@@ -965,10 +965,10 @@ percentage-at-risk
 HORIZONTAL
 
 SLIDER
-888
-405
-1060
-438
+605
+430
+777
+463
 death-mean
 death-mean
 0
@@ -980,10 +980,10 @@ days
 HORIZONTAL
 
 SLIDER
-888
-445
-1060
-478
+605
+470
+777
+503
 death-stdev
 death-stdev
 0
@@ -995,10 +995,10 @@ days
 HORIZONTAL
 
 SLIDER
-889
-313
-1061
-346
+605
+335
+777
+368
 recovery-mean
 recovery-mean
 0
@@ -1010,10 +1010,10 @@ days
 HORIZONTAL
 
 SLIDER
-889
-351
-1061
-384
+605
+375
+777
+408
 recovery-stdev
 recovery-stdev
 0
@@ -1025,20 +1025,20 @@ days
 HORIZONTAL
 
 TEXTBOX
-912
-279
-1062
-297
+630
+302
+780
+320
 Countdown parameters
 11
 0.0
 1
 
 SLIDER
-888
-493
-1061
-526
+605
+525
+778
+558
 incubation-mean
 incubation-mean
 0
@@ -1050,10 +1050,10 @@ log-days
 HORIZONTAL
 
 SLIDER
-888
-532
-1062
+605
 565
+779
+598
 incubation-stdev
 incubation-stdev
 0
@@ -1083,10 +1083,10 @@ PENS
 "default" 1.0 0 -955883 true "" ";plot num-contacts"
 
 SWITCH
-1256
-279
-1418
-312
+1250
+325
+1412
+358
 imposed-lockdown?
 imposed-lockdown?
 0
@@ -1094,10 +1094,10 @@ imposed-lockdown?
 -1000
 
 SLIDER
-590
-166
-788
-199
+915
+65
+1113
+98
 lockdown-threshold
 lockdown-threshold
 0
@@ -1109,10 +1109,10 @@ lockdown-threshold
 HORIZONTAL
 
 SLIDER
-590
-209
-788
-242
+915
+105
+1113
+138
 lockdown-strictness
 lockdown-strictness
 0
@@ -1124,10 +1124,10 @@ lockdown-strictness
 HORIZONTAL
 
 SWITCH
-1256
-318
-1419
-351
+1250
+364
+1413
+397
 shield-vulnerable?
 shield-vulnerable?
 1
@@ -1135,10 +1135,10 @@ shield-vulnerable?
 -1000
 
 SLIDER
-590
-267
-787
-300
+915
+160
+1112
+193
 shield-threshold
 shield-threshold
 0
@@ -1150,10 +1150,10 @@ shield-threshold
 HORIZONTAL
 
 SLIDER
-590
-306
-787
-339
+915
+200
+1112
+233
 shield-adherance
 shield-adherance
 0
@@ -1165,10 +1165,10 @@ shield-adherance
 HORIZONTAL
 
 SWITCH
-1267
-139
-1411
-172
+1250
+180
+1394
+213
 lose-immunity?
 lose-immunity?
 1
@@ -1176,10 +1176,10 @@ lose-immunity?
 -1000
 
 SWITCH
-1256
-355
-1420
-388
+1250
+401
+1414
+434
 personal-protection?
 personal-protection?
 1
@@ -1187,10 +1187,10 @@ personal-protection?
 -1000
 
 SLIDER
-590
-398
-786
-431
+915
+300
+1111
+333
 protection-strength
 protection-strength
 0
@@ -1202,10 +1202,10 @@ protection-strength
 HORIZONTAL
 
 SLIDER
-590
-359
-786
-392
+915
+260
+1111
+293
 protection-threshold
 protection-threshold
 0
@@ -1217,21 +1217,21 @@ protection-threshold
 HORIZONTAL
 
 SWITCH
-1256
-394
-1419
-427
+1250
+440
+1413
+473
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
 SLIDER
-590
-452
-786
-485
+915
+360
+1111
+393
 testtrace-threshold
 testtrace-threshold
 0
@@ -1243,10 +1243,10 @@ testtrace-threshold
 HORIZONTAL
 
 SLIDER
-589
-492
-786
-525
+915
+400
+1112
+433
 sym-test-coverage
 sym-test-coverage
 0
@@ -1258,10 +1258,10 @@ sym-test-coverage
 HORIZONTAL
 
 SLIDER
-588
-532
-787
-565
+915
+440
+1114
+473
 asym-test-coverage
 asym-test-coverage
 0
@@ -1273,10 +1273,10 @@ asym-test-coverage
 HORIZONTAL
 
 SLIDER
-588
-571
-787
-604
+915
+480
+1114
+513
 contacts-reached
 contacts-reached
 0
@@ -1288,10 +1288,10 @@ contacts-reached
 HORIZONTAL
 
 SWITCH
-1255
-436
-1420
-469
+1249
+482
+1414
+515
 isolate-symptomatics?
 isolate-symptomatics?
 0
@@ -1314,10 +1314,10 @@ isolation-compliance-symptomatics
 HORIZONTAL
 
 SLIDER
-586
-629
-786
-662
+915
+545
+1115
+578
 isolation-threshold
 isolation-threshold
 0
@@ -1329,10 +1329,10 @@ isolation-threshold
 HORIZONTAL
 
 SLIDER
-586
-719
-784
-752
+1250
+120
+1448
+153
 travel-frequency
 travel-frequency
 0
@@ -1344,10 +1344,10 @@ travel-frequency
 HORIZONTAL
 
 SWITCH
-1266
-220
-1412
-253
+1249
+261
+1395
+294
 allow-travel?
 allow-travel?
 1
@@ -1355,10 +1355,10 @@ allow-travel?
 -1000
 
 TEXTBOX
-889
-586
-1039
-698
+607
+609
+757
+721
 STILL MISSING:\n\nimmunity-mean and iso-countdown-max/mean-iso reduction (need to figure out what distribution to use or if poisson was ok)\n\n
 11
 0.0
