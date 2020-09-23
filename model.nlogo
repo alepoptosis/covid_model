@@ -41,6 +41,8 @@ turtles-own [
   counted?                  ;; whether the agent was already counted in daily contacts
   traced?                   ;; whether the agent was traced as a contact of a tested agent
   iso-countdown             ;; individual isolation countdown
+  asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
+  comply-with-isolation?    ;; whether the agent decided to respect isolation of symptomatics
 ]
 
 susceptibles-own [
@@ -74,8 +76,6 @@ symptomatics-own [
   contact-list              ;; list of agents contacted since exposure
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
-  asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
-  comply-with-isolation?    ;; whether the agent decided to respect isolation of symptomatics
 ]
 
 recovereds-own [
@@ -124,6 +124,8 @@ to setup-turtles
       set counted? false
       set traced? false
       set iso-countdown -1
+      set asked-to-isolate? false
+      set comply-with-isolation? false
 
       ;;;;; setup S-specific attributes
       set-breed-susceptible
@@ -473,8 +475,6 @@ to set-breed-symptomatic
   check-death
   set to-die? false
   set to-recover? false
-  set asked-to-isolate? false
-  set comply-with-isolation? false
   ;; contact-list carries over from asymptomatic
   ;; tested? carries over from asymptomatic
   if visual-elements? [check-outline]
@@ -607,20 +607,22 @@ end
 to isolate
   let agents-to-check nobody ;; set of agents for whom isolation has to progress
 
-	if isolate-symptomatics? [
-		ask-symptomatics-to-isolate
-		;; add agents who comply with the isolation of symptomatics
-		set agents-to-check (symptomatics with [comply-with-isolation?])
-	]
+  if isolate-symptomatics? [
+    ;; add agents who comply with the isolation of symptomatics
+    ask-agents-to-isolate symptomatics
+    set agents-to-check (symptomatics with [comply-with-isolation?])
+  ]
 
-	if test-and-trace? [
-		;; add agents who have been tested (temp set needed for proper filtering)
+  if test-and-trace? [
+    ;; add agents who have been tested
     let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
-		set agents-to-check (turtle-set agents-to-check tested-agents)
+    ask-agents-to-isolate tested-agents
+    set agents-to-check (turtle-set tested-agents with [comply-with-isolation?] agents-to-check)
+
     ;; add agents who have been traced as contacts
     let traced-agents (turtles with [traced?])
     set agents-to-check (turtle-set agents-to-check traced-agents)
-	]
+  ]
 
   ;; add agents who have recovered but may still have an active isolation countdown
   ;; because they have recovered before the end of their isolation
@@ -651,12 +653,21 @@ to update-isolation-countdown
   ]
 end
 
-to ask-symptomatics-to-isolate
-  ask symptomatics with [not asked-to-isolate?] [
+to ask-agents-to-isolate [agents]
+  ask agents with [not asked-to-isolate?] [
     let p (random-float 100)
-    if p < isolation-strictness [
-      set comply-with-isolation? true
-    ]
+
+    ;; Agents who tested positive are more likely to comply with isolation,
+    ;; so we use two different probabilities for each case.
+    ifelse tested? ;; or traced?
+    [
+      if p < isolation-compliance-test-and-trace [
+        set comply-with-isolation? true
+    ]]
+    [
+      if p < isolation-compliance-symptomatics [
+        set comply-with-isolation? true
+    ]]
     set asked-to-isolate? true
   ]
 end
@@ -1288,15 +1299,15 @@ isolate-symptomatics?
 -1000
 
 SLIDER
-586
-668
-786
-701
-isolation-strictness
-isolation-strictness
+915
+585
+1193
+618
+isolation-compliance-symptomatics
+isolation-compliance-symptomatics
 0
 100
-100.0
+10.0
 1
 1
 % of I
@@ -1352,6 +1363,21 @@ STILL MISSING:\n\nimmunity-mean and iso-countdown-max/mean-iso reduction (need t
 11
 0.0
 1
+
+SLIDER
+915
+625
+1233
+658
+isolation-compliance-test-and-trace
+isolation-compliance-test-and-trace
+0
+100
+80.0
+1
+1
+% of I
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1725,5 +1751,5 @@ true
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-0
+1
 @#$#@#$#@
