@@ -21,14 +21,19 @@ globals [
   isolation-threshold-num   ;; number of I agents to trigger isolation of symptomatics
   start-isolation?          ;; whether isolation of symptomatics has begun
 
-  count-dead-0-29           ;; running total of dead agents with age 0-29
-  count-dead-30-59          ;; running total of dead agents with age 30-59
-  count-dead-60plus         ;; running total of dead agents with age 60+
+  count-inf-0-39
+  count-inf-40-49
+  count-inf-50-59
+  count-inf-60-69
+  count-inf-70-79
+  count-inf-80plus
 
-  count-infected-0-29       ;; running total of I and A with age 0-29
-  count-infected-30-59      ;; running total of I and A with age 30-59
-  count-infected-60+        ;; running total of I and A with age 60+
-  count-infected-at-risk    ;; running total of I and A agents with underlying conditions
+  count-dead-0-39
+  count-dead-40-49
+  count-dead-50-59
+  count-dead-60-69
+  count-dead-70-79
+  count-dead-80plus
 ]
 
 turtles-own [
@@ -41,6 +46,7 @@ turtles-own [
   iso-countdown             ;; individual isolation countdown
   asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
   comply-with-isolation?    ;; whether the agent decided to comply with an isolation request
+  p-death
 ]
 
 susceptibles-own [
@@ -124,6 +130,7 @@ to setup-turtles
       set iso-countdown -1
       set asked-to-isolate? false
       set comply-with-isolation? false
+      set p-death (actual-p-death age)
 
       ;; setup S-specific attributes
       set-breed-susceptible
@@ -150,7 +157,7 @@ to setup-globals
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
 
   ;; shielding globals
-  set agents-at-risk (turtles with [age = "60+"])
+  set agents-at-risk (turtles with [age = "70-79" or age = "80+"])
   set shielding-active? false
   set shield-threshold-num (absolute-threshold shield-threshold)
 
@@ -165,13 +172,19 @@ to setup-globals
   set start-isolation? false
 
   ;; reporters
-  set count-dead-0-29 0
-  set count-dead-30-59 0
-  set count-dead-60plus 0
+  set count-inf-0-39 0
+  set count-inf-40-49 0
+  set count-inf-50-59 0
+  set count-inf-60-69 0
+  set count-inf-70-79 0
+  set count-inf-80plus 0
 
-  set count-infected-0-29 0
-  set count-infected-30-59 0
-  set count-infected-60+ 0
+  set count-dead-0-39 0
+  set count-dead-40-49 0
+  set count-dead-50-59 0
+  set count-dead-60-69 0
+  set count-dead-70-79 0
+  set count-dead-80plus 0
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -345,10 +358,8 @@ to update-breeds
     set-breed-recovered
   ]
 
-  ask symptomatics with [to-die?] [ ;;? leave as is or add a dead-add-count to mirror inf-add-count?
-    if age = "60+" [set count-dead-60plus (count-dead-60plus + 1)]
-    if age = "30-59" [set count-dead-30-59 (count-dead-30-59 + 1)]
-    if age = "0-29" [set count-dead-0-29 (count-dead-0-29 + 1)]
+  ask symptomatics with [to-die?] [
+    add-dead-count
     die
   ]
 
@@ -429,9 +440,12 @@ end
 
 to set-age
   let p random-float 100
-  if p <= 40 [set age "30-59"]                ;; 40% (30-59)
-  if p > 40 and p <= 77 [set age "0-29"]      ;; 37% (0-29)
-  if p > 77 [set age "60+"]                   ;; 23% (60+)
+  if p < 50 [set age "0-39"]                     ;; 50% (UK census 2019)
+  if p >= 50 and p < 63 [set age "40-49"]        ;; 13%
+  if p >= 63 and p < 76 [set age "50-59"]        ;; 13%
+  if p >= 76 and p < 87 [set age "60-69"]        ;; 11%
+  if p >= 87 and p < 95 [set age "70-79"]        ;; 8%
+  if p >= 95 [set age "80+"]                     ;; 5%
 end
 
 to check-outline
@@ -492,9 +506,22 @@ end
 
 to add-inf-count
   ;; keeps a running count of infections per age range
-  if age = "0-29" [set count-infected-0-29 (count-infected-0-29 + 1)]
-  if age = "30-59" [set count-infected-30-59 (count-infected-30-59 + 1)]
-  if age = "60+" [set count-infected-60+ (count-infected-60+ + 1)]
+  if age = "0-39"  [set count-inf-0-39 (count-inf-0-39 + 1)]
+  if age = "40-49" [set count-inf-40-49 (count-inf-40-49 + 1)]
+  if age = "50-59" [set count-inf-50-59 (count-inf-50-59 + 1)]
+  if age = "60-69" [set count-inf-60-69 (count-inf-60-69 + 1)]
+  if age = "70-79" [set count-inf-70-79 (count-inf-70-79 + 1)]
+  if age = "80+"   [set count-inf-80plus (count-inf-80plus + 1)]
+end
+
+to add-dead-count
+  ;; keeps a running count of deaths per age range
+  if age = "0-39"  [set count-dead-0-39 (count-dead-0-39 + 1)]
+  if age = "40-49" [set count-dead-40-49 (count-dead-40-49 + 1)]
+  if age = "50-59" [set count-dead-50-59 (count-dead-50-59 + 1)]
+  if age = "60-69" [set count-dead-60-69 (count-dead-60-69 + 1)]
+  if age = "70-79" [set count-dead-70-79 (count-dead-70-79 + 1)]
+  if age = "80+"   [set count-dead-80plus (count-dead-80plus + 1)]
 end
 
 to set-breed-symptomatic
@@ -701,6 +728,17 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to-report actual-p-death [#age]
+  let p 0
+  if #age = "0-39"  [set p 0.2]   ;; based on worldometer 24/9/2020
+  if #age = "40-49" [set p 0.4]
+  if #age = "50-59" [set p 1.3]
+  if #age = "60-69" [set p 3.6]
+  if #age = "70-79" [set p 8]
+  if #age = "80+"   [set p 14.8]
+  report p
+end
 
 to-report absolute-threshold [#per]
   report round (#per * pop-size / 100)
@@ -920,21 +958,6 @@ asym-prevalence
 %
 HORIZONTAL
 
-SLIDER
-610
-210
-782
-243
-p-death
-p-death
-0
-100
-2.5
-1
-1
-%
-HORIZONTAL
-
 TEXTBOX
 634
 140
@@ -1115,7 +1138,7 @@ SWITCH
 358
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
@@ -1249,7 +1272,7 @@ SWITCH
 473
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 
@@ -1320,7 +1343,7 @@ SWITCH
 515
 isolate-symptomatics?
 isolate-symptomatics?
-0
+1
 1
 -1000
 
