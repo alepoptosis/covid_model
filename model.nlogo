@@ -638,12 +638,10 @@ to update-isolation-countdown
 
   ifelse iso-countdown = 0 [
     if not currently-locked? [
-      if not currently-shielding? [
-        if not member? self at-risk-agents [
-          release-agent
-          set iso-countdown -1
-          set traced? false
-        ]
+      if not currently-shielding? or not member? self at-risk-agents [
+        release-agent
+        set iso-countdown -1
+        set traced? false
       ]
     ]
   ] [ ;; else
