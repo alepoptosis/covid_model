@@ -9,12 +9,12 @@ breed [recovereds recovered]        ;; recovered and immune (R)
 globals [
   pop-size                  ;; number of agents in simulation
   num-contacts              ;; number of contacts between agents for current tick
-  currently-locked?         ;; whether an imposed lockdown is in progress
+  lockdown-active?         ;; whether an imposed lockdown is in progress
   lockdown-threshold-num    ;; number of I agents to trigger lockdown
-  currently-shielding?      ;; whether shielding of vulnerable is in progress
+  agents-at-risk            ;; set of agents over 60
+  shielding-active?      ;; whether shielding of vulnerable is in progress
   shield-threshold-num      ;; number of I agents to trigger shielding
-  at-risk-agents            ;; set of agents at risk
-  currently-protecting?     ;; whether personal protections are in place
+  protection-active?     ;; whether personal protections are in place
   protection-threshold-num  ;; number of I agents to trigger personal protections
   p-infect-adj              ;; p-infect after reduction of risk from protections
   testtrace-threshold-num   ;; number of I agents to trigger test and trace
@@ -24,7 +24,6 @@ globals [
   count-dead-0-29           ;; running total of dead agents with age 0-29
   count-dead-30-59          ;; running total of dead agents with age 30-59
   count-dead-60plus         ;; running total of dead agents with age 60+
-  count-dead-at-risk        ;; running total of dead agents with underlying conditions
 
   count-infected-0-29       ;; running total of I and A with age 0-29
   count-infected-30-59      ;; running total of I and A with age 30-59
@@ -34,7 +33,6 @@ globals [
 
 turtles-own [
   age                       ;; age range of the agent (0-29, 30-59, 60+)
-  at-risk?                  ;; whether the agent has an aggravating condition
   radius                    ;; contact radius of the agent
   neighbours                ;; agentset of the agent's contact
   isolating?                ;; whether the agent is currently isolating
@@ -119,7 +117,6 @@ to setup-turtles
     sprout-susceptibles 1 [
       ;; setup turtle attributes
       set-age
-      set-at-risk
       set radius (pareto-dist min-radius 2)
       set isolating? false
       set counted? false
@@ -149,16 +146,16 @@ to setup-globals
   ;; num-contacts is reset at every tick in count-contacts
 
   ;; lockdown globals
-  set currently-locked? false
+  set lockdown-active? false
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
 
   ;; shielding globals
-  set currently-shielding? false
+  set agents-at-risk (turtles with [age = "60+"])
+  set shielding-active? false
   set shield-threshold-num (absolute-threshold shield-threshold)
-  set at-risk-agents (turtles with [age = "60+" or at-risk?])
 
   ;; personal protection globals
-  set currently-protecting? false
+  set protection-active? false
   set protection-threshold-num (absolute-threshold protection-threshold)
   set p-infect-adj ((1 - (protection-strength / 100)) * (base-p-infect / 100))
 
@@ -171,7 +168,6 @@ to setup-globals
   set count-dead-0-29 0
   set count-dead-30-59 0
   set count-dead-60plus 0
-  set count-dead-at-risk 0
 
   set count-infected-0-29 0
   set count-infected-30-59 0
@@ -353,7 +349,6 @@ to update-breeds
     if age = "60+" [set count-dead-60plus (count-dead-60plus + 1)]
     if age = "30-59" [set count-dead-30-59 (count-dead-30-59 + 1)]
     if age = "0-29" [set count-dead-0-29 (count-dead-0-29 + 1)]
-    if at-risk? [set count-dead-at-risk (count-dead-at-risk + 1)]
     die
   ]
 
@@ -373,9 +368,9 @@ to modify-measures
   ;; lockdown ends once active cases are below the threshold, if it was still active
   if imposed-lockdown? [
     ifelse active-cases >= lockdown-threshold-num [
-      if not currently-locked? [start-lockdown]
+      if not lockdown-active? [start-lockdown]
     ] [ ;; else
-      if currently-locked? [end-lockdown]
+      if lockdown-active? [end-lockdown]
     ]
   ]
 
@@ -384,9 +379,9 @@ to modify-measures
   ;; shielding ends once active cases are below the threshold, if it was still active
   if shield-vulnerable? [
     ifelse active-cases >= shield-threshold-num [
-      if not currently-shielding? [start-shielding]
+      if not shielding-active? [start-shielding]
     ] [ ;; else
-      if currently-shielding? [end-shielding]
+      if shielding-active? [end-shielding]
     ]
   ]
 
@@ -395,9 +390,9 @@ to modify-measures
   ;; while active cases are below the threshold, p-infect returns to base-p-infect for all susceptible agents
   if personal-protection? [
     ifelse active-cases >= protection-threshold-num [
-      if not currently-protecting? [start-protection]
+      if not protection-active? [start-protection]
     ] [ ;; else
-      if currently-protecting? [end-protection]
+      if protection-active? [end-protection]
     ]
   ]
 
@@ -437,15 +432,6 @@ to set-age
   if p <= 40 [set age "30-59"]                ;; 40% (30-59)
   if p > 40 and p <= 77 [set age "0-29"]      ;; 37% (0-29)
   if p > 77 [set age "60+"]                   ;; 23% (60+)
-end
-
-to set-at-risk
-  let p random-float 100
-  ifelse p < percentage-at-risk [
-    set at-risk? true
-  ] [ ;; else
-    set at-risk? false
-  ]
 end
 
 to check-outline
@@ -492,6 +478,8 @@ to set-breed-asymptomatic
 end
 
 to check-symptoms
+  ;; checks whether the agent will remain asymptomatic or develop symptoms
+  ;; and assigns a value to the countdown accordingly
   let p random-float 100
   ifelse p < asym-prevalence [
     set will-develop-sym? false
@@ -507,7 +495,6 @@ to add-inf-count
   if age = "0-29" [set count-infected-0-29 (count-infected-0-29 + 1)]
   if age = "30-59" [set count-infected-30-59 (count-infected-30-59 + 1)]
   if age = "60+" [set count-infected-60+ (count-infected-60+ + 1)]
-  if at-risk? [set count-infected-at-risk (count-infected-at-risk + 1)]
 end
 
 to set-breed-symptomatic
@@ -524,6 +511,8 @@ to set-breed-symptomatic
 end
 
 to check-death
+  ;; checks whether the agent will recover or die
+  ;; and assigns a value to the countdown accordingly
   let p random-float 100
   ifelse p <= p-death [
     set will-die? true
@@ -557,53 +546,53 @@ end
 to start-lockdown
   ask turtles [
     let p (random-float 100)
-    if p < lockdown-strictness [
+    if p < lockdown-compliance [
       isolate-agent
     ]
   ]
-  set currently-locked? true
+  set lockdown-active? true
 end
 
 to end-lockdown
   ask turtles [
-    if not currently-shielding? or not member? self at-risk-agents [
+    if not shielding-active? or not member? self agents-at-risk [
       release-agent
     ]
   ]
-  set currently-locked? false
+  set lockdown-active? false
 end
 
 to start-shielding
-  ask at-risk-agents [
+  ask agents-at-risk [
     let p (random-float 100)
-    if p < shield-adherance [
+    if p < shield-compliance [
       isolate-agent
     ]
   ]
-  set currently-shielding? true
+  set shielding-active? true
 end
 
 to end-shielding
-  if not currently-locked? [
-    ask at-risk-agents [
+  if not lockdown-active? [
+    ask agents-at-risk [
       release-agent
     ]
   ]
-  set currently-shielding? false
+  set shielding-active? false
 end
 
 to start-protection
   ask susceptibles [
     set p-infect p-infect-adj
   ]
-  set currently-protecting? true
+  set protection-active? true
 end
 
 to end-protection
   ask susceptibles [
     set p-infect (base-p-infect / 100)
   ]
-  set currently-protecting? false
+  set protection-active? false
 end
 
 to test
@@ -650,11 +639,11 @@ to ask-agents-to-isolate [agents]
     ;; complying with isolation, so each case has different probabilities
     ifelse tested?
     [
-      if p < isolation-compliance-test-and-trace [
+      if p < isolation-compliance-tested [
         set comply-with-isolation? true
       ]
     ] [ ;; else they are just symptomatics
-      if p < isolation-compliance-symptomatics [
+      if p < isolation-compliance-sym [
         set comply-with-isolation? true
       ]
     ]
@@ -697,8 +686,8 @@ to update-isolation-countdown
   ]
 
   ifelse iso-countdown = 0 [
-    if not currently-locked? [
-      if not currently-shielding? or not member? self at-risk-agents [
+    if not lockdown-active? [
+      if not shielding-active? or not member? self agents-at-risk [
         release-agent
         set iso-countdown -1
         set traced? false
@@ -1148,10 +1137,10 @@ HORIZONTAL
 SLIDER
 915
 105
-1113
+1157
 138
-lockdown-strictness
-lockdown-strictness
+lockdown-compliance
+lockdown-compliance
 0
 100
 75.0
@@ -1189,10 +1178,10 @@ HORIZONTAL
 SLIDER
 915
 200
-1112
+1137
 233
-shield-adherance
-shield-adherance
+shield-compliance
+shield-compliance
 0
 100
 50.0
@@ -1338,10 +1327,10 @@ isolate-symptomatics?
 SLIDER
 915
 585
-1193
+1115
 618
-isolation-compliance-symptomatics
-isolation-compliance-symptomatics
+isolation-compliance-sym
+isolation-compliance-sym
 0
 100
 10.0
@@ -1404,10 +1393,10 @@ STILL MISSING:\n\nimmunity-mean and iso-countdown-max/mean-iso reduction (need t
 SLIDER
 915
 625
-1233
+1115
 658
-isolation-compliance-test-and-trace
-isolation-compliance-test-and-trace
+isolation-compliance-tested
+isolation-compliance-tested
 0
 100
 80.0
