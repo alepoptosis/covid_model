@@ -466,7 +466,7 @@ end
 
 to set-breed-exposed
   set breed exposeds
-  set inc-countdown (log-normal incubation-mean incubation-stdev)
+  set inc-countdown (log-normal incubation-mean incubation-stdev 0)
   set to-become-asymptomatic? false
   set contact-list []
   set tested? false
@@ -552,7 +552,9 @@ end
 
 to set-breed-recovered
   set breed recovereds
-  if lose-immunity? [set imm-countdown 365]
+  if lose-immunity? [
+    set imm-countdown (log-normal 1 0.5 min-immunity-duration)
+    ]
   set to-become-susceptible? false
   if visual-elements? [
     set color grey
@@ -709,7 +711,7 @@ to update-isolation-countdown
   ;; set or decrease the countdown, or release the agent at the end of it
   if iso-countdown = -1 [
     isolate-agent
-    set iso-countdown 30
+    set iso-countdown isolation-duration
   ]
 
   ifelse iso-countdown = 0 [
@@ -755,11 +757,12 @@ to-report pareto-dist [#min #alpha]                   ;; reports value from a pa
 ;  [report y]
 end
 
-to-report log-normal [#mu #sigma]                     ;; reports value from a log-normal distribution with mean #mu and stdev #sigma
-  ;  let z (random-normal #mu #sigma)                 ;; this was the original formula I thought was correct
-  ;  let x (exp (#mu + (#sigma * z)))                 ;; but only works if mean and stdev are of the normal dist
-  report round (exp random-normal #mu #sigma)         ;; this works if the mean and stdev are of the log-normal dist (comment as needed)
+to-report log-normal [#mu #sigma #shift]                   ;; reports value from a log-normal distribution with mean #mu and stdev #sigma (#shift used for immunity)
+  ;  let z (random-normal #mu #sigma)                      ;; this was the original formula I thought was correct
+  ;  let x (exp (#mu + (#sigma * z)))                      ;; but only works if mean and stdev are of the normal dist
+  report round ((exp random-normal #mu #sigma + #shift))   ;; this works if the mean and stdev are of the log-normal dist (comment as needed)
 end
+
 
 to-report normal-dist [#mu #sigma]                    ;; reports value from a normal distribution with mean #mu and stdev #sigma
   let x round (random-normal #mu #sigma)              ;; draw a value x from the normal distribution
@@ -771,6 +774,10 @@ to-report normal-dist [#mu #sigma]                    ;; reports value from a no
     [report min_days]                                 ;; the value reported is the minimum
     [report 1]                                        ;; otherwise, if the minimum happens to be negative, 1 is reported
   ]
+end
+
+to-report normal-dist-positive [#mu #sigma]
+
 end
 
 to-report count-locked
@@ -873,10 +880,10 @@ NIL
 1
 
 SWITCH
-1250
-220
-1395
-253
+1245
+240
+1390
+273
 visual-elements?
 visual-elements?
 0
@@ -899,10 +906,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1250
-81
-1423
-114
+1245
+101
+1418
+134
 initial-infected
 initial-infected
 0
@@ -914,10 +921,10 @@ initial-infected
 HORIZONTAL
 
 SLIDER
-1250
-40
-1422
-73
+1245
+60
+1417
+93
 duration
 duration
 0
@@ -945,9 +952,9 @@ HORIZONTAL
 
 SLIDER
 610
-250
+210
 782
-283
+243
 asym-prevalence
 asym-prevalence
 0
@@ -969,10 +976,10 @@ Pathogen parameters
 1
 
 TEXTBOX
-1297
-16
-1447
-34
+1292
+36
+1442
+54
 Simulation options
 11
 0.0
@@ -1132,10 +1139,10 @@ PENS
 "default" 1.0 0 -955883 true "" ";plot num-contacts"
 
 SWITCH
-1250
-325
-1412
-358
+1245
+345
+1407
+378
 imposed-lockdown?
 imposed-lockdown?
 1
@@ -1173,10 +1180,10 @@ lockdown-compliance
 HORIZONTAL
 
 SWITCH
-1250
-364
-1413
-397
+1245
+384
+1408
+417
 shield-vulnerable?
 shield-vulnerable?
 1
@@ -1214,21 +1221,21 @@ shield-compliance
 HORIZONTAL
 
 SWITCH
-1250
-180
-1394
-213
+1245
+200
+1389
+233
 lose-immunity?
 lose-immunity?
-1
+0
 1
 -1000
 
 SWITCH
-1250
-401
-1414
-434
+1245
+421
+1409
+454
 personal-protection?
 personal-protection?
 1
@@ -1266,10 +1273,10 @@ protection-threshold
 HORIZONTAL
 
 SWITCH
-1250
-440
-1413
-473
+1245
+460
+1408
+493
 test-and-trace?
 test-and-trace?
 1
@@ -1337,10 +1344,10 @@ contacts-reached
 HORIZONTAL
 
 SWITCH
-1249
-482
-1414
-515
+1244
+502
+1409
+535
 isolate-symptomatics?
 isolate-symptomatics?
 1
@@ -1378,10 +1385,10 @@ isolation-threshold
 HORIZONTAL
 
 SLIDER
-1250
-120
-1448
-153
+1245
+140
+1443
+173
 travel-frequency
 travel-frequency
 0
@@ -1393,10 +1400,10 @@ travel-frequency
 HORIZONTAL
 
 SWITCH
-1249
-261
-1395
-294
+1244
+281
+1390
+314
 allow-travel?
 allow-travel?
 1
@@ -1426,6 +1433,36 @@ isolation-compliance-tested
 1
 1
 % of I
+HORIZONTAL
+
+SLIDER
+610
+250
+785
+283
+min-immunity-duration
+min-immunity-duration
+0
+365
+365.0
+1
+1
+days
+HORIZONTAL
+
+SLIDER
+915
+685
+1115
+718
+isolation-duration
+isolation-duration
+0
+100
+14.0
+1
+1
+days
 HORIZONTAL
 
 @#$#@#$#@
