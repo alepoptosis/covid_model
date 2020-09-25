@@ -763,21 +763,12 @@ to-report log-normal [#mu #sigma #shift]                   ;; reports value from
   report round ((exp random-normal #mu #sigma + #shift))   ;; this works if the mean and stdev are of the log-normal dist (comment as needed)
 end
 
-
-to-report normal-dist [#mu #sigma]                    ;; reports value from a normal distribution with mean #mu and stdev #sigma
-  let x round (random-normal #mu #sigma)              ;; draw a value x from the normal distribution
-  let min_days (precision (#mu - #sigma) 0)           ;; let the minimum number be mean - stdev
-  ifelse x >= min_days                                ;; if the resulting value is equal to or above the minimum
-  [report x]                                          ;; then it can be reported as is
-  [                                                   ;; otherwise, if it's below the minimum
-    ifelse min_days > 0                               ;; and the minimum is above 0 (i.e. valid)
-    [report min_days]                                 ;; the value reported is the minimum
-    [report 1]                                        ;; otherwise, if the minimum happens to be negative, 1 is reported
+to-report normal-dist [#mu #sigma]            ;; reports value from a normal distribution with mean #mu and stdev #sigma
+  let x 0
+  while [x <= 0] [                            ;; ensures value is resampled until it's not negative
+    set x round (random-normal #mu #sigma)
   ]
-end
-
-to-report normal-dist-positive [#mu #sigma]
-
+  report x
 end
 
 to-report count-locked
@@ -959,7 +950,7 @@ asym-prevalence
 asym-prevalence
 0
 100
-0.0
+60.0
 1
 1
 %
