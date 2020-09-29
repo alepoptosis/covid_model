@@ -1,3 +1,5 @@
+# VARYING PARAMETERS VISUALISATION SCRIPT: for runs with 1-2 varying parameters
+
 packages <- c("tidyverse", "RColorBrewer", "ggnewscale", "gridExtra", "viridis")
 
 for (pkg in packages){
@@ -12,33 +14,37 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
-run_name = "2020-07-21_vary-tt-threshold-01"
-varying_par = "testtrace_threshold" # use version with _ instead of -
-optimal_value = 0.25
-dest_path = "visualisations"
-g_width = 22
+
+run_name = "2020-07-21_vary-tt-threshold-01" # change name accordingly
+varying_par = "testtrace_threshold" # use "_" instead of "-"
+optimal_value = 0.25 # optimal value chosen for measure (if needed)
+dest_path = "visualisations" # folder for visualisations
+g_width = 22     # size of plots
 g_height = 16
-metrics_plot = TRUE
-fix_metric_plot = FALSE
-breed_plots = TRUE
-log_plots = FALSE
-export_plots = TRUE
+
+# choose which plots to make
+metrics_plot = TRUE         # output metrics vs param value (1 or 2 params)
+fix_metric_plot = FALSE     # fix one metric and vary the other (2 param only)
+                            # MORE OPTIONS NEEDED FOR THIS (see its code)
+breed_plots = TRUE          # one breed plot per parameter value (1 param only)
+log_plots = FALSE           # for varying p-infect only
+export_plots = TRUE         # export plots or just display them
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
 pattern = sprintf("%s_", run_name) # date and test name
 
+# if the collated csv already exists, use it
 if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
   
   raw = read.csv(sprintf("%s/%sfull.csv", path, pattern), 
                  stringsAsFactors=FALSE, check.names = FALSE)
   
 } else {
-  
-  # get list of csvs
+  # otherwise, get list of csvs
   csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
   
-  # merge in one csv and add a run_num id while removing the useless one
+  # merge in one csv and add a run ID while removing the useless one
   raw = csvs %>%
     set_names() %>%
     map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
@@ -63,8 +69,9 @@ if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
 par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
                          names(raw), perl=TRUE)])
 
-num_ticks = max(raw$step) # num ticks for xaxis
+num_ticks = max(raw$step) # number of ticks/steps for xaxis
 
+# summary plot with death toll and peak size
 summary = raw %>%
   group_by(run_num) %>%
   summarise(death_toll = max(`count deads`), 
@@ -76,6 +83,7 @@ summary = raw %>%
              names_to = "metric",
              values_to = "count")
 
+# if experiment ran for more than a year, add death toll for year 1
 if (num_ticks > 365) {
   first_year = raw %>%
     group_by(run_num) %>%
@@ -92,12 +100,14 @@ if (num_ticks > 365) {
 }
 
 # various plotting information
-num_runs = max(summary$run_num) # num runs for ylabel
+num_runs = max(summary$run_num) # number of runs for ylabel
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
+
+# formatted information on parameters varying and metrics in place
 formatted_par = str_to_sentence(str_replace_all(varying_par, "_", " "))
 formatted_metrics = str_to_sentence(str_replace_all(unique((summary$metric)), "_", " "))
 
-######### DEATHS AND PEAK VS PARAM 
+######### PARAMETER VALUES vs DEATH TOLL AND PEAK SIZE 
 
 if (metrics_plot) {
   
@@ -137,7 +147,7 @@ if (metrics_plot) {
   }
 }
   
-######### HEATMAPS FOR 2 PARAM COMBO
+######### HEATMAPS FOR COMBINATION OF 2 VARYING PARAMETERS
   
   if (length(varying_par) == 2) {
     summary_aggr = summary %>%
@@ -200,7 +210,7 @@ if (metrics_plot) {
     
   }
 
-######### BREEDS PLOT (IF OPTION TURNED ON)
+######### BREEDS PLOT (ONE PER PARAMETER VALUE)
 
 if (breed_plots) {
   
@@ -275,10 +285,10 @@ if (breed_plots) {
   }
 }
 
-######### 2 METRICS BUT ONE FIXED
+######### FIX ONE METRIC AND VARY THE OTHER
 
 if (fix_metric_plot) {
-  focus_par = "sym_test_coverage" # which one of the parameter to vary
+  focus_par = "sym_test_coverage" # which one of the parameters to vary
   fixed_value = 0 # value to fix other parameter at
   focus_formatted = str_to_sentence(str_replace_all(focus_par, "_", " "))
   

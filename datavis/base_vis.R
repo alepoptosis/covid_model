@@ -1,4 +1,4 @@
-# script already set up for demo, simply run everything
+# BASIC RUN VISUALISATION SCRIPT: for runs with no parameter variations
 
 packages <- c("tidyverse", "RColorBrewer", "ggnewscale")
 
@@ -14,34 +14,36 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 
 # script options, change for different file, output options and plot size
 
+# names of experiments to visualise
 to_run = c(
   "action-none-1y"
   ,"action-all-1y")
 
+# rest of the script is looped for each of the experiments
 for (run in to_run) {
 
-run_name = sprintf("2020-08-10_%s", run)
-dest_path = "visualisations"
-g_width = 22
+run_name = sprintf("2020-08-10_%s", run) # change date accordingly
+dest_path = "visualisations"             # folder for visualisations
+g_width = 22                             # size of plots
 g_height = 16
-export_plots = TRUE
+export_plots = TRUE                      # export plots or just display them
 new_ld_vis = TRUE # updated way of showing proportion of runs in lockdown
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
 pattern = sprintf("%s_", run_name) # date and test name
 
+# if the collated csv already exists, use it
 if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
   
   raw = read.csv(sprintf("%s/%sfull.csv", path, pattern), 
                  stringsAsFactors=FALSE, check.names = FALSE)
   
 } else {
-  
-  # get list of csvs
+  # otherwise, get list of csvs
   csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
   
-  # merge in one csv and add a run_num id while removing the useless one
+  # merge in one csv and add a run ID while removing the useless one
   raw = csvs %>%
     set_names() %>%
     map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
@@ -62,7 +64,7 @@ if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
 # subset containing only data on counts, run number and step
 data = raw[ ,grepl("^count |^step|^run_num", names(raw))]
 
-# turns data into long format for plotting
+# turn data into long format for plotting
 data_long = data %>% pivot_longer (
   cols = starts_with("count"),
   names_to = "breed", 
@@ -70,7 +72,7 @@ data_long = data %>% pivot_longer (
   values_to = "count"
 )
 
-# aggregates data from all runs into an average count and stdev, min and max
+# aggregate data from all runs into an average count and stdev, min and max
 data_aggr = data_long %>%
   group_by(step, breed) %>%
   summarise(mean = mean(count), stdev = round(sd(count), 2),
@@ -84,16 +86,16 @@ data_aggr = data_aggr %>% filter(breed != "locked")
 par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
                           names(raw), perl=TRUE)])
 
-# save parameter file first time
+# save parameter file if it doesn't already exist
 if (!file.exists(sprintf("%s/%sparameters.par", path, pattern))) {
   write.csv(raw, sprintf("%s/%sparameters.par", path, pattern), row.names = FALSE)
 }
 
 # subset containing lockdown info
-
 if ("currently_locked?" %in% colnames(raw)) {
   ld = raw[ ,grepl("run_num|step|locked", names(raw))]
-} else { # for old files where currently_locked wasn't tracked
+} else { 
+  # for old files where currently_locked wasn't tracked
   pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1]
   
   if (par$`imposed_lockdown?`[1] == TRUE) {
@@ -106,8 +108,9 @@ if ("currently_locked?" %in% colnames(raw)) {
     select(-c("breed", "count"))
 }
 
-num_runs = max(data_long$run_num) # num runs for ylabel
+num_runs = max(data_long$run_num) # number of runs for ylabel
 
+# aggregate data from all runs into a percentage of locked runs per step
 ld_aggr = ld %>%
   select(-`count locked`) %>%
   group_by(step) %>%
@@ -126,7 +129,7 @@ cont_aggr = contact %>%
 # subset containing info on dead agents
 deads = raw[ ,grepl("^dead|run_num|step|deads", names(raw))]
 
-# turns data into long format for plotting
+# turn data into long format for plotting
 deads_long = deads %>% pivot_longer (
   cols = contains("dead"),
   names_to = "age",
@@ -135,7 +138,7 @@ deads_long = deads %>% pivot_longer (
 ) %>%
   mutate_at("age", ~gsub("count deads", "total", .))
 
-# adds column with new deaths per step
+# add column with new deaths per step
 deads_long = deads_long %>%
   group_by(run_num,age) %>%
   mutate(new_deaths = c(0,diff(cum_count)))
@@ -149,7 +152,7 @@ deads_aggr = deads_long %>%
             max_new = max(new_deaths), min_new = min(new_deaths))
 
 if ("count_infecteds_0_29" %in% colnames(raw)) {
-  # subset containing info on infected agents
+  # if information is available, subset containing info on infected agents
   infs = raw[ ,grepl("^count_infecteds_|run_num|step", names(raw))]
   
   infs = infs %>%
@@ -158,7 +161,7 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
                                        count_infecteds_30_59, 
                                        `count_infecteds_60+`))
   
-  # turns data into long format for plotting
+  # turn data into long format for plotting
   infs_long = infs %>% pivot_longer (
     cols = starts_with("count_infecteds_"),
     names_to = "age",
@@ -166,7 +169,7 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
     values_to = "cum_count"
   )
   
-  # adds column with total and new infections per step
+  # add column with total and new infections per step
   infs_long = infs_long %>%
     group_by(run_num,age) %>%
     mutate(new_infs = c(0,diff(cum_count)))
@@ -182,19 +185,20 @@ if ("count_infecteds_0_29" %in% colnames(raw)) {
 
 ##### various plotting information
 
-# list of measures used in run
+# list of measures featured in experiment
 measures = paste(unlist(str_to_sentence(colnames(par[, 3:8])[par[1, 3:8] == "TRUE"])), collapse = ", ")
 measures = gsub("[^[:alnum:][:blank:]+\\,]", " ", measures)
 measures = gsub(" ,", ",", measures)
 measures = gsub("control measures", "personal protection", measures)
 if (measures == "") {measures = "None"}
 
-num_ticks = max(data_long$step) # num ticks for xaxis
+num_ticks = max(data_long$step) # number of ticks/steps for xaxis
 max_cont = max(cont_aggr$mean) # max avg contacts for ylim (contacts plot)
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
 
 ##### CAPTION METRICS
 
+# find out the size of the peak of known cases
 peak_sym = pull(data_long %>%
   filter(breed == "symptomatics") %>%
   group_by(run_num) %>%
@@ -202,6 +206,7 @@ peak_sym = pull(data_long %>%
   group_by() %>%
   summarise(peak_sym = mean(sym_peak)))
 
+# find out the total number of deaths
 tot_deaths = pull(data_long %>%
   filter(breed == "deads") %>%
   group_by(run_num) %>%
@@ -209,6 +214,7 @@ tot_deaths = pull(data_long %>%
   group_by() %>%
   summarise(tot_deaths = mean(tot_deaths)))
 
+# find out the deaths in first year (if it ran for more than 1)
 if (num_ticks >= 365) { 
   year1_deaths = round(data_aggr %>% 
                          filter(step == 365, breed == "deads") %>% 
@@ -217,6 +223,7 @@ if (num_ticks >= 365) {
   year1_deaths = "n/a"
 }
 
+# if available, find out number of infections over entire run
 if ("count_infecteds_0_29" %in% colnames(raw)) {
   tot_infs = round(max(infs_aggr$mean), 2)
 } else {
@@ -232,9 +239,10 @@ data_aggr$breed = factor(data_aggr$breed, levels=order)
 
 #################################### PLOTS ####################################
 
-######### BREEDS AVERAGE COUNT OVER TIME PLOT, NON-AGGR LOCKDOWN
+######### AVERAGE COUNT PER BREED OVER TIME
 
 if (!new_ld_vis) {
+  # old version of lockdown visualisation
   ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
   geom_area(data = ld,
             aes(x = step, y = pop_size * `currently_locked?`, 
@@ -269,6 +277,7 @@ if (!new_ld_vis) {
        width = g_width, height = g_height)
   }
 } else {
+  # new version of lockdown visualisation
   ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
     geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
     geom_area(data = ld_aggr, aes(x = step, y = locked_runs_per*900), 
@@ -299,7 +308,7 @@ if (!new_ld_vis) {
   }
 }
 
-######### NON-AGGR NEW DEATHS PLOT
+######### NEW DEATHS PER TICK PLOT, NON AGGREGATED
 
 ggplot(subset(deads_aggr, age != "total"), aes(x=step, y=mean_new)) + 
   geom_area(data = ld,
@@ -328,7 +337,7 @@ ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern),
        width = g_width, height = g_height)
 }
 
-######### NON-AGGR NEW INFECTIONS PLOT
+######### NEW INFECTIONS PER TICK PLOT, NON AGGREGATED
 
 if ("count_infecteds_0_29" %in% colnames(raw)) {
   

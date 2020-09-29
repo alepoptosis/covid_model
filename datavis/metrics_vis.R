@@ -1,4 +1,4 @@
-# script already set up for demo, simply run everything
+# METRIC COMPARISON VISUALISATION SCRIPT: for comparing multiple experiments
 
 packages <- c("tidyverse", "RColorBrewer", "ggnewscale", "gridExtra")
 
@@ -12,28 +12,34 @@ for (pkg in packages){
 theme_set(theme_minimal(base_size = 25))
 
 path = "results/metrics" # put all full files needed in this folder
-prefix = c("2020-08-10_", "2020-07-24_", "/", path, 
-           "_full.csv", "-opt", "-6mo")
-g_width = 11.69
+prefix = c("2020-08-10_", "2020-07-24_", "/", path, # add all possible dates
+           "_full.csv", "-opt", "-6mo")             # and extra descriptors
+g_width = 11.69     # size of plots
 g_height = 8.27
-export_plots = TRUE
-separate_plots = FALSE
-dest_path = "visualisations"
+export_plots = TRUE     # export plots or just display them
+separate_plots = FALSE     # whether each metric should have its own plot
+dest_path = "visualisations"     # folder for visualisations
 
+# obtain list of csvs
 csvs = list.files(path = path, pattern = ".csv", full.names = TRUE)
 
+# obtain string to use as regex to clean the file names
 pattern = paste(unlist(prefix), collapse = "|")
 
+# collate the csvs into one dataframe and clean the run_name column
 raw = csvs %>%
   set_names() %>%
   map_dfr( ~ read_csv(.x, col_types = cols()),
            .id = "run_name", stringsAsFactors=FALSE, check.names = FALSE) %>%
   mutate_at("run_name", ~gsub(pattern, "", .))
 
+# subset containing only data on counts, run number and step
 data = raw[ ,grepl("^count |^step|^run_num|^run_name", names(raw))]
+# subset containing parameter information for each run
 par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
                          names(raw), perl=TRUE)])
-pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1]
+
+pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
 
 ##### SYMPTOMATIC PEAK
 
@@ -107,9 +113,11 @@ pivot_longer(
   names_pattern = "(.+)_(.+)"
 )
 
+# order factors
 metrics$metric = factor(metrics$metric, 
                         levels = c("sympeak", "totinfs", "totdeaths", "totcontacts"))
 
+# expanded labels for the metrics
 met_lab = c("sympeak" = "Peak cases", "totinfs" = "10 infections",
             "totdeaths" = "Death toll", "totcontacts" = "10,000 contacts")
 
@@ -134,6 +142,7 @@ if (separate_plots) {
     }
   }
 } else {
+  # CHANGE LABELS ACCORDINGLY - HAS TO BE DONE MANUALLY
   # labels = c("All", "None", "IS", "LD", "PP", "SV", "TT")
   labels = c("All", "None", "IS+SV", "IS+SV\n+DLD", 
              "PP+TT", "PP+TT\n+DLD", "PP+TT\n+SV")
