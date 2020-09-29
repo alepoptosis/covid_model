@@ -8,27 +8,37 @@ breed [recovereds recovered]        ;; recovered and immune (R)
 
 globals [
   pop-size                  ;; number of agents in simulation
-  num-contacts              ;; number of contacts between agents for current tick
-  lockdown-active?         ;; whether an imposed lockdown is in progress
+
+  ;; lockdown globals
+  lockdown-active?          ;; whether an imposed lockdown is in progress
   lockdown-threshold-num    ;; number of I agents to trigger lockdown
+
+  ;; shielding globals
   agents-at-risk            ;; set of agents over 60
-  shielding-active?      ;; whether shielding of vulnerable is in progress
+  shielding-active?         ;; whether shielding of vulnerable is in progress
   shield-threshold-num      ;; number of I agents to trigger shielding
-  protection-active?     ;; whether personal protections are in place
+
+  ;; personal protection globals
+  protection-active?        ;; whether personal protections are in place
   protection-threshold-num  ;; number of I agents to trigger personal protections
   p-infect-adj              ;; p-infect after reduction of risk from protections
+
+  ;; test and trace globals
   testtrace-threshold-num   ;; number of I agents to trigger test and trace
   isolation-threshold-num   ;; number of I agents to trigger isolation of symptomatics
   start-isolation?          ;; whether isolation of symptomatics has begun
 
-  count-inf-0-39
+  ;; reporters
+  num-contacts              ;; number of contacts between agents for current tick
+
+  count-inf-0-39            ;; cumulative counts of infecteds for each age range
   count-inf-40-49
   count-inf-50-59
   count-inf-60-69
   count-inf-70-79
   count-inf-80plus
 
-  count-dead-0-39
+  count-dead-0-39           ;; cumulative counts of dead agents for each age range
   count-dead-40-49
   count-dead-50-59
   count-dead-60-69
@@ -37,16 +47,16 @@ globals [
 ]
 
 turtles-own [
-  age                       ;; age range of the agent (0-29, 30-59, 60+)
+  age                       ;; age range of the agent
+  p-death                   ;; individual probability of death based on age range
   radius                    ;; contact radius of the agent
-  neighbours                ;; agentset of the agent's contact
+  neighbours                ;; set containing the agent's contact
   isolating?                ;; whether the agent is currently isolating
-  counted?                  ;; whether the agent was already counted in daily contacts
   traced?                   ;; whether the agent was traced as a contact of a tested agent
-  iso-countdown             ;; individual isolation countdown
   asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
   comply-with-isolation?    ;; whether the agent decided to comply with an isolation request
-  p-death
+  iso-countdown             ;; individual isolation countdown
+  counted?                  ;; whether the agent was already counted in daily contacts
 ]
 
 susceptibles-own [
@@ -64,7 +74,7 @@ exposeds-own [
 
 asymptomatics-own [
   will-develop-sym?         ;; whether the agent will develop symptoms (become I) or not (stay A)
-  countdown                 ;; multi-purpose countdown: symptoms if will-develop-sym?, removal if not - TEST
+  countdown                 ;; multi-purpose countdown: symptoms if will-develop-sym?, removal if not
   to-become-sym?            ;; flag an A agent to become symptomatic (I)
   to-recover?               ;; flag an A agent to recover (R)
   contact-list              ;; list of agents contacted since exposure
@@ -74,7 +84,7 @@ asymptomatics-own [
 
 symptomatics-own [
   will-die?                 ;; whether the agent will die (become D) or not (become R)
-  countdown                 ;; multi-purpose countdown: death if will-die, recovery if not - TEST
+  countdown                 ;; multi-purpose countdown: death if will-die, recovery if not
   to-die?                   ;; flag a I agent to die (D)
   to-recover?               ;; flag a I agent to recover (R)
   contact-list              ;; list of agents contacted since exposure
@@ -123,14 +133,14 @@ to setup-turtles
     sprout-susceptibles 1 [
       ;; setup turtle attributes
       set-age
+      set p-death (actual-p-death age)
       set radius (pareto-dist min-radius 2)
       set isolating? false
-      set counted? false
       set traced? false
-      set iso-countdown -1
       set asked-to-isolate? false
       set comply-with-isolation? false
-      set p-death (actual-p-death age)
+      set iso-countdown -1
+      set counted? false
 
       ;; setup S-specific attributes
       set-breed-susceptible
@@ -150,7 +160,6 @@ end
 
 to setup-globals
   ;; pop-size is set in setup-turtles
-  ;; num-contacts is reset at every tick in count-contacts
 
   ;; lockdown globals
   set lockdown-active? false
@@ -172,6 +181,9 @@ to setup-globals
   set start-isolation? false
 
   ;; reporters
+
+  ;; num-contacts is reset at every tick in count-contacts
+
   set count-inf-0-39 0
   set count-inf-40-49 0
   set count-inf-50-59 0
@@ -194,15 +206,15 @@ end
 to go
   ifelse ticks < (duration * 365)
   [
-    count-contacts
-    if test-and-trace? [record-contacts]
-    expose-susceptibles
-    become-infectious
-    progress-asym
-    progress-sym
-    if lose-immunity? [lose-immunity]
-    update-breeds
-    modify-measures
+    count-contacts                        ;; count the number of contacts between agents at each tick
+    if test-and-trace? [record-contacts]  ;; record contacts of infected agents (E, A or I) and update their contact list
+    expose-susceptibles                   ;; check whether non-isolating susceptibles become exposed to the virus
+    become-infectious                     ;; turn exposed agents that are almost the end of their incubation countdown into asymptomatic
+    progress-asym                         ;; progress asymptomatic agents through their countdown (to either develop symptoms or recover)
+    progress-sym                          ;; progress symptomatic agents through their countdown (to either die or recover)
+    if lose-immunity? [lose-immunity]     ;; progress recovered agents through their immunity countdown (to return susceptible)
+    update-breeds                         ;; change breeds of agents who moved onto a different stage
+    modify-measures                       ;; update control measures based on the new number of active cases
     tick
   ] [
     stop
@@ -254,9 +266,9 @@ to expose-susceptibles
   ask susceptibles with [not isolating?] [
     let num-sym (count neighbours with [breed = symptomatics and not isolating?])
 
-    ;; adjusts number of asymptomatics to account for their lower probability of transmission (currently 10%)
+    ;; adjust number of asymptomatics to account for their lower probability of transmission (currently 10%)
     let num-asym ((count neighbours with [breed = asymptomatics and not isolating?]) * 0.1)
-    ;; if the new number is between 0 and 1 (exclusive) it is set to 1, as raising a number to a decimal lowers it
+    ;; if the new number is between 0 and 1 (exclusive) set it to 1, as raising a number to a decimal lowers it
     if num-asym > 0 and num-asym < 1 [set num-asym 1]
 
     let total-inf (num-sym + num-asym)
@@ -341,12 +353,13 @@ end
 
 
 to update-breeds
-  ;; actually changes breeds of agents who moved onto a different stage
+  ;; change breeds of agents who moved onto a different stage
   ask susceptibles with [to-become-exposed?] [
     set-breed-exposed
   ]
 
   ask exposeds with [to-become-asymptomatic?] [
+    add-inf-count
     set-breed-asymptomatic
   ]
 
@@ -371,7 +384,7 @@ to update-breeds
 end
 
 to modify-measures
-  ;; updates control measures based on the new number of active cases
+  ;; update control measures based on the new number of active cases
   let active-cases (count symptomatics)
 
   ;;;; IMPOSED LOCKDOWN
@@ -425,7 +438,7 @@ to modify-measures
     ]
   ]
 
-  ;;;;; IS AND TT
+  ;;;;; ISOLATION (IS and TT)
   ;; this section carries out isolation for both test and trace and isolation of symptomatics
   ;; test and trace doesn't check threshold to ensure agents finish their isolation even if
   ;; active cases dip below it
@@ -439,6 +452,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to set-age
+  ;; sets an agent's age based on UK population data
   let p random-float 100
   if p < 50 [set age "0-39"]                     ;; 50% (UK census 2019)
   if p >= 50 and p < 63 [set age "40-49"]        ;; 13%
@@ -449,6 +463,7 @@ to set-age
 end
 
 to check-outline
+  ;; ensures agents retain their outline when changing breed
   if isolating? [
     set shape "person-outline"
   ]
@@ -479,8 +494,7 @@ end
 
 to set-breed-asymptomatic
   set breed asymptomatics
-  check-symptoms ;; sets will-develop-sym? and countdown
-  add-inf-count
+  check-symptoms               ;; sets will-develop-sym? and countdown
   set to-become-sym? false
   set to-recover? false
   ;; contact-list carries over from exposeds
@@ -492,15 +506,15 @@ to set-breed-asymptomatic
 end
 
 to check-symptoms
-  ;; checks whether the agent will remain asymptomatic or develop symptoms
-  ;; and assigns a value to the countdown accordingly
+  ;; check whether the agent will remain asymptomatic or develop symptoms
+  ;; and assign a value to the countdown accordingly
   let p random-float 100
   ifelse p < asym-prevalence [
     set will-develop-sym? false
     set countdown (normal-dist recovery-mean recovery-stdev) ;; recovery countdown
   ] [ ;; else
     set will-develop-sym? true
-    set countdown (random 3 + 1) ;; symptoms countdown
+    set countdown (random 3 + 1)                             ;; symptoms countdown
   ]
 end
 
@@ -526,7 +540,7 @@ end
 
 to set-breed-symptomatic
   set breed symptomatics
-  check-death
+  check-death                  ;; sets will-die? and countdown
   set to-die? false
   set to-recover? false
   ;; contact-list carries over from asymptomatic
@@ -538,8 +552,8 @@ to set-breed-symptomatic
 end
 
 to check-death
-  ;; checks whether the agent will recover or die
-  ;; and assigns a value to the countdown accordingly
+  ;; check whether the agent will recover or die
+  ;; and assign a value to the countdown accordingly
   let p random-float 100
   ifelse p <= p-death [
     set will-die? true
@@ -573,6 +587,8 @@ to release-agent
 end
 
 to start-lockdown
+  ;; ask all agents to go into lockdown 
+  ;; and ensure only a percentage (lockdown-compliance) does so
   ask turtles [
     let p (random-float 100)
     if p < lockdown-compliance [
@@ -583,6 +599,8 @@ to start-lockdown
 end
 
 to end-lockdown
+  ;; ask all agents to exit lockdown
+  ;; unless they are at risk and shielding is still active
   ask turtles [
     if not shielding-active? or not member? self agents-at-risk [
       release-agent
@@ -592,6 +610,8 @@ to end-lockdown
 end
 
 to start-shielding
+  ;; ask all agents at risk to start shielding
+  ;; and ensure only a percentage (shield-compliance) does so
   ask agents-at-risk [
     let p (random-float 100)
     if p < shield-compliance [
@@ -602,6 +622,8 @@ to start-shielding
 end
 
 to end-shielding
+  ;; ask all agents at risk to  stop shielding
+  ;; unless a lockdown is currently in progress
   if not lockdown-active? [
     ask agents-at-risk [
       release-agent
@@ -611,6 +633,7 @@ to end-shielding
 end
 
 to start-protection
+  ;; give all susceptible agents the adjusted p-infect
   ask susceptibles [
     set p-infect p-infect-adj
   ]
@@ -618,6 +641,7 @@ to start-protection
 end
 
 to end-protection
+  ;; give all susceptible agents the base p-infect
   ask susceptibles [
     set p-infect (base-p-infect / 100)
   ]
@@ -625,6 +649,7 @@ to end-protection
 end
 
 to test
+  ;; test symptomatics and exposed/asymptomatics at their respective rates
   ask (turtle-set exposeds asymptomatics) with [not tested?] [
     let p (random-float 100)
     if p < asym-test-coverage [
@@ -641,6 +666,7 @@ to test
 end
 
 to trace
+  ;; identify contacts of tested agents and flag them as traced
   ask (turtle-set exposeds asymptomatics symptomatics) [
     ;; flagging once contacts are alerted ensures each tested
     ;; agent attempts to reach its contacts only once
@@ -661,6 +687,8 @@ to trace
 end
 
 to ask-agents-to-isolate [agents]
+  ;; ask a set of agents to isolate either due to the test and trace or
+  ;; isolation of symptomatic measures
   ask agents with [not asked-to-isolate?] [
     let p (random-float 100)
 
@@ -681,6 +709,7 @@ to ask-agents-to-isolate [agents]
 end
 
 to isolate
+  ;; isolate tested agents and their traced contacts
   let agents-to-check nobody ;; agents for whom isolation has to progress
 
   if isolate-symptomatics? [
@@ -732,6 +761,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to-report actual-p-death [#age]
+  ;; return adjusted probability of death based on age range
   let p 0
   if #age = "0-39"  [set p 0.2]   ;; based on worldometer 24/9/2020
   if #age = "40-49" [set p 0.4]
@@ -743,10 +773,12 @@ to-report actual-p-death [#age]
 end
 
 to-report absolute-threshold [#per]
+  ;; turn percentage-based thresholds into absolute numbers
   report round (#per * pop-size / 100)
 end
 
-to-report pareto-dist [#min #alpha]                   ;; reports value from a pareto distribution with minimum #min and shape #alpha
+to-report pareto-dist [#min #alpha] ;;? should this one use a while loop like lognormal to establish a minimum?                    
+  ;; report value from a pareto distribution with minimum #min and shape #alpha
   let x (random 100 + 1)
   let num (#alpha * (#min ^ #alpha))
   let den (x ^ (#alpha + 1))
@@ -757,13 +789,15 @@ to-report pareto-dist [#min #alpha]                   ;; reports value from a pa
 ;  [report y]
 end
 
-to-report log-normal [#mu #sigma #shift]                   ;; reports value from a log-normal distribution with mean #mu and stdev #sigma (#shift used for immunity)
+to-report log-normal [#mu #sigma #shift]                   
+  ;; report value from a log-normal distribution with mean #mu and stdev #sigma (#shift used for immunity)
   ;  let z (random-normal #mu #sigma)                      ;; this was the original formula I thought was correct
   ;  let x (exp (#mu + (#sigma * z)))                      ;; but only works if mean and stdev are of the normal dist
   report round ((exp random-normal #mu #sigma + #shift))   ;; this works if the mean and stdev are of the log-normal dist (comment as needed)
 end
 
-to-report normal-dist [#mu #sigma]            ;; reports value from a normal distribution with mean #mu and stdev #sigma
+to-report normal-dist [#mu #sigma]            
+  ;; report value from a normal distribution with mean #mu and stdev #sigma
   let x 0
   while [x <= 0] [                            ;; ensures value is resampled until it's not negative
     set x round (random-normal #mu #sigma)
@@ -1400,16 +1434,6 @@ allow-travel?
 1
 1
 -1000
-
-TEXTBOX
-607
-609
-757
-721
-STILL MISSING:\n\nimmunity-mean and iso-countdown-max/mean-iso reduction (need to figure out what distribution to use or if poisson was ok)\n\n
-11
-0.0
-1
 
 SLIDER
 915
