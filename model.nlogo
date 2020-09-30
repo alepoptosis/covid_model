@@ -14,7 +14,7 @@ globals [
   lockdown-threshold-num    ;; number of I agents to trigger lockdown
 
   ;; shielding globals
-  agents-at-risk            ;; set of agents over 60
+  agents-at-risk            ;; set of agents over 70
   shielding-active?         ;; whether shielding of vulnerable is in progress
   shield-threshold-num      ;; number of I agents to trigger shielding
 
@@ -25,8 +25,10 @@ globals [
 
   ;; test and trace globals
   testtrace-threshold-num   ;; number of I agents to trigger test and trace
-  isolation-threshold-num   ;; number of I agents to trigger isolation of symptomatics
+
+  ;; isolation of symptomatics globals
   start-isolation?          ;; whether isolation of symptomatics has begun
+  isolation-threshold-num   ;; number of I agents to trigger isolation of symptomatics
 
   ;; reporters
   num-contacts              ;; number of contacts between agents for current tick
@@ -51,10 +53,10 @@ turtles-own [
   p-death                   ;; individual probability of death based on age range
   radius                    ;; contact radius of the agent
   neighbours                ;; set containing the agent's contact
-  isolating?                ;; whether the agent is currently isolating
+  staying-at-home?          ;; whether the agent is currently isolating, shielding or in lockdown
   traced?                   ;; whether the agent was traced as a contact of a tested agent
-  asked-to-isolate?         ;; whether the agent was already asked to isolate by any measure
-  comply-with-isolation?    ;; whether the agent decided to comply with an isolation request
+  asked-to-isolate?         ;; whether the agent was already asked to isolate by IS or TT
+  comply-with-isolation?    ;; whether the agent decided to comply with an isolation request by IS or TT
   iso-countdown             ;; individual isolation countdown
   counted?                  ;; whether the agent was already counted in daily contacts
 ]
@@ -67,7 +69,7 @@ susceptibles-own [
 exposeds-own [
   inc-countdown             ;; individual incubation countdown
   to-become-asymptomatic?   ;; flag an E agent to become asymptomatic (A)
-  contact-list              ;; list of agents contacted since exposure
+  contact-list              ;; list of neighbours the agent came in contact with since exposure
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
 ]
@@ -135,7 +137,7 @@ to setup-turtles
       set-age
       set p-death (actual-p-death age)
       set radius (pareto-dist min-radius 2)
-      set isolating? false
+      set staying-at-home? false
       set traced? false
       set asked-to-isolate? false
       set comply-with-isolation? false
@@ -209,7 +211,7 @@ to go
     count-contacts                        ;; count the number of contacts between agents at each tick
     if test-and-trace? [record-contacts]  ;; record contacts of infected agents (E, A or I) and update their contact list
     expose-susceptibles                   ;; check whether non-isolating susceptibles become exposed to the virus
-    become-infectious                     ;; turn exposed agents that are almost the end of their incubation countdown into asymptomatic
+    progress-exposed                      ;; turn exposed agents that are almost the end of their incubation countdown into asymptomatic
     progress-asym                         ;; progress asymptomatic agents through their countdown (to either develop symptoms or recover)
     progress-sym                          ;; progress symptomatic agents through their countdown (to either die or recover)
     if lose-immunity? [lose-immunity]     ;; progress recovered agents through their immunity countdown (to return susceptible)
@@ -232,9 +234,9 @@ to count-contacts
   ;; each alive, non-isolating agent is flagged as counted and the
   ;; number of non-counted, non isolating and alive neighbours they have
   ;; is added to the number of total contacts of the day
-  ask turtles with [not isolating?] [
+  ask turtles with [not staying-at-home?] [
     set counted? true
-    let these-contacts (count neighbours with [not isolating? and not counted?])
+    let these-contacts (count neighbours with [not staying-at-home? and not counted?])
     set num-contacts (num-contacts + these-contacts)
   ]
 
@@ -248,7 +250,7 @@ to record-contacts
     ask (turtle-set exposeds asymptomatics symptomatics) [
       ;; only check for new contacts if contact-list doesn't already include all neighbours
       if length contact-list < count neighbours [
-        let contacts [self] of neighbours with [not isolating?]
+        let contacts [self] of neighbours with [not staying-at-home?]
         foreach contacts [
           contact ->
           ;; prevents duplicate contacts
@@ -263,11 +265,11 @@ end
 
 to expose-susceptibles
   ;; check whether non-isolating susceptibles become exposed to the virus
-  ask susceptibles with [not isolating?] [
-    let num-sym (count neighbours with [breed = symptomatics and not isolating?])
+  ask susceptibles with [not staying-at-home?] [
+    let num-sym (count neighbours with [breed = symptomatics and not staying-at-home?])
 
     ;; adjust number of asymptomatics to account for their lower probability of transmission (currently 10%)
-    let num-asym ((count neighbours with [breed = asymptomatics and not isolating?]) * 0.1)
+    let num-asym ((count neighbours with [breed = asymptomatics and not staying-at-home?]) * 0.1)
     ;; if the new number is between 0 and 1 (exclusive) set it to 1, as raising a number to a decimal lowers it
     if num-asym > 0 and num-asym < 1 [set num-asym 1]
 
@@ -283,20 +285,20 @@ to expose-susceptibles
     ]
   ]
 
-  ;; if travel is allowed, there is a travel-frequency probability that
+  ;; if imported infections are allowed, there is a imported-infection probability that
   ;; one non-isolating susceptible will become exposed
-  if allow-travel? [
-    let travellers (susceptibles with [not isolating?])
-    if any? travellers [
+  if allow-imported-infections? [
+    let candidates (susceptibles with [not staying-at-home?])
+    if any? candidates [
       let p (random-float 100)
-      if p < travel-frequency [
-        ask one-of travellers [set-breed-exposed]
+      if p < imported-infection [
+        ask one-of candidates [set-breed-exposed]
       ]
     ]
   ]
 end
 
-to become-infectious
+to progress-exposed
   ;; turn exposed agents that are almost the end of their incubation countdown into asymptomatic
   ask exposeds [
     ifelse inc-countdown <= (random 3 + 1)
@@ -313,7 +315,7 @@ to progress-asym
     [
       ifelse will-develop-sym? [
         set to-become-sym? true
-      ] [
+      ] [ ;; else
         set to-recover? true
       ]
     ] [ ;; else
@@ -330,7 +332,7 @@ to progress-sym
     [
       ifelse will-die? [
         set to-die? true
-      ] [
+      ] [ ;; else
         set to-recover? true
       ]
     ] [ ;; else
@@ -432,8 +434,8 @@ to modify-measures
   ;;;; ISOLATE SYMPTOMATICS
   ;; once active cases are past the threshold, isolation of symptomatic agents is switched on
   ;; and remains active for the entirety of the simulation
-  if isolate-symptomatics? [
-    if not start-isolation? and active-cases > isolation-threshold-num [
+  if isolate-symptomatics? and not start-isolation? [
+    if active-cases >= isolation-threshold-num [
       set start-isolation? true
     ]
   ]
@@ -464,7 +466,7 @@ end
 
 to check-outline
   ;; ensures agents retain their outline when changing breed
-  if isolating? [
+  if staying-at-home? [
     set shape "person-outline"
   ]
 end
@@ -577,17 +579,17 @@ to set-breed-recovered
 end
 
 to isolate-agent
-  set isolating? true
+  set staying-at-home? true
   if visual-elements? [set shape "person-outline"]
 end
 
 to release-agent
-    set isolating? false
+    set staying-at-home? false
     if visual-elements? [set shape "person"]
 end
 
 to start-lockdown
-  ;; ask all agents to go into lockdown 
+  ;; ask all agents to go into lockdown
   ;; and ensure only a percentage (lockdown-compliance) does so
   ask turtles [
     let p (random-float 100)
@@ -673,10 +675,10 @@ to trace
     if tested? and not contacts-alerted? [
       foreach contact-list [
         ;; if the contact is not dead, flag them as traced
-        ;; with probability contacts-reached
+        ;; with probability contacts-traced
         contact -> if contact != nobody [
           let p (random-float 100)
-          if p < contacts-reached [
+          if p < contacts-traced [
             ask contact [set traced? true]
           ]
         ]
@@ -684,6 +686,34 @@ to trace
       set contacts-alerted? true
     ]
   ]
+end
+
+to isolate
+  ;; isolate tested agents and their traced contacts
+  let agents-to-check nobody ;; agents for whom isolation has to progress
+
+  if test-and-trace? [
+    ;; add agents who have been tested
+    let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
+    ask-agents-to-isolate tested-agents
+    set agents-to-check (turtle-set tested-agents with [comply-with-isolation?] agents-to-check)
+
+    ;; add agents who have been traced as contacts (those reached always isolate)
+    let traced-agents (turtles with [traced?])
+    set agents-to-check (turtle-set agents-to-check traced-agents)
+  ]
+
+  if isolate-symptomatics? [
+    ;; add agents who comply with the isolation of symptomatics
+    ask-agents-to-isolate symptomatics
+    set agents-to-check (symptomatics with [comply-with-isolation?])
+  ]
+
+  ;; add agents who have recovered but may still have an active isolation countdown
+  ;; because they have recovered before the end of their isolation
+  set agents-to-check (turtle-set recovereds with [iso-countdown >= 0] agents-to-check)
+
+  ask agents-to-check [update-isolation-countdown]
 end
 
 to ask-agents-to-isolate [agents]
@@ -706,34 +736,6 @@ to ask-agents-to-isolate [agents]
     ]
     set asked-to-isolate? true
   ]
-end
-
-to isolate
-  ;; isolate tested agents and their traced contacts
-  let agents-to-check nobody ;; agents for whom isolation has to progress
-
-  if isolate-symptomatics? [
-    ;; add agents who comply with the isolation of symptomatics
-    ask-agents-to-isolate symptomatics
-    set agents-to-check (symptomatics with [comply-with-isolation?])
-  ]
-
-  if test-and-trace? [
-    ;; add agents who have been tested
-    let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
-    ask-agents-to-isolate tested-agents
-    set agents-to-check (turtle-set tested-agents with [comply-with-isolation?] agents-to-check)
-
-    ;; add agents who have been traced as contacts (those reached always isolate)
-    let traced-agents (turtles with [traced?])
-    set agents-to-check (turtle-set agents-to-check traced-agents)
-  ]
-
-  ;; add agents who have recovered but may still have an active isolation countdown
-  ;; because they have recovered before the end of their isolation
-  set agents-to-check (turtle-set recovereds with [iso-countdown >= 0] agents-to-check)
-
-  ask agents-to-check [update-isolation-countdown]
 end
 
 to update-isolation-countdown
@@ -777,26 +779,22 @@ to-report absolute-threshold [#per]
   report round (#per * pop-size / 100)
 end
 
-to-report pareto-dist [#min #alpha] ;;? should this one use a while loop like lognormal to establish a minimum?                    
+to-report pareto-dist [#min #alpha] ;;? should this one use a while loop like lognormal to establish a minimum?
   ;; report value from a pareto distribution with minimum #min and shape #alpha
   let x (random 100 + 1)
   let num (#alpha * (#min ^ #alpha))
   let den (x ^ (#alpha + 1))
   report round ((num / den) + #min)
-;  let y round (num / den)                            ;; version with true minimum instead of plus minimum
-;  ifelse y < #min                                    ;; as the version above always sums the minimum to all results
-;  [report #min]                                      ;; while this simply reports the minimum if the results falls under it
-;  [report y]
 end
 
-to-report log-normal [#mu #sigma #shift]                   
+to-report log-normal [#mu #sigma #shift]
   ;; report value from a log-normal distribution with mean #mu and stdev #sigma (#shift used for immunity)
   ;  let z (random-normal #mu #sigma)                      ;; this was the original formula I thought was correct
   ;  let x (exp (#mu + (#sigma * z)))                      ;; but only works if mean and stdev are of the normal dist
   report round ((exp random-normal #mu #sigma + #shift))   ;; this works if the mean and stdev are of the log-normal dist (comment as needed)
 end
 
-to-report normal-dist [#mu #sigma]            
+to-report normal-dist [#mu #sigma]
   ;; report value from a normal distribution with mean #mu and stdev #sigma
   let x 0
   while [x <= 0] [                            ;; ensures value is resampled until it's not negative
@@ -806,7 +804,7 @@ to-report normal-dist [#mu #sigma]
 end
 
 to-report count-locked
-  report count turtles with [isolating?]
+  report count turtles with [staying-at-home?]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -1021,29 +1019,14 @@ Population parameters
 1
 
 TEXTBOX
-946
-35
-1096
-53
+945
+20
+1095
+38
 Control measures parameters
 11
 0.0
 1
-
-SLIDER
-610
-85
-782
-118
-percentage-at-risk
-percentage-at-risk
-0
-100
-29.0
-1
-1
-%
-HORIZONTAL
 
 SLIDER
 605
@@ -1175,10 +1158,10 @@ imposed-lockdown?
 -1000
 
 SLIDER
-915
-65
-1113
-98
+914
+50
+1112
+83
 lockdown-threshold
 lockdown-threshold
 0
@@ -1190,10 +1173,10 @@ lockdown-threshold
 HORIZONTAL
 
 SLIDER
-915
-105
-1157
-138
+914
+90
+1156
+123
 lockdown-compliance
 lockdown-compliance
 0
@@ -1216,10 +1199,10 @@ shield-vulnerable?
 -1000
 
 SLIDER
-915
-160
-1112
-193
+914
+145
+1111
+178
 shield-threshold
 shield-threshold
 0
@@ -1231,10 +1214,10 @@ shield-threshold
 HORIZONTAL
 
 SLIDER
-915
-200
-1137
-233
+914
+185
+1136
+218
 shield-compliance
 shield-compliance
 0
@@ -1268,10 +1251,10 @@ personal-protection?
 -1000
 
 SLIDER
-915
-300
-1111
-333
+914
+285
+1110
+318
 protection-strength
 protection-strength
 0
@@ -1283,10 +1266,10 @@ protection-strength
 HORIZONTAL
 
 SLIDER
-915
-260
-1111
-293
+914
+245
+1110
+278
 protection-threshold
 protection-threshold
 0
@@ -1309,10 +1292,10 @@ test-and-trace?
 -1000
 
 SLIDER
-915
-360
-1111
-393
+914
+345
+1110
+378
 testtrace-threshold
 testtrace-threshold
 0
@@ -1324,10 +1307,10 @@ testtrace-threshold
 HORIZONTAL
 
 SLIDER
-915
-400
-1112
-433
+914
+385
+1111
+418
 sym-test-coverage
 sym-test-coverage
 0
@@ -1339,10 +1322,10 @@ sym-test-coverage
 HORIZONTAL
 
 SLIDER
-915
-440
-1114
-473
+914
+425
+1113
+458
 asym-test-coverage
 asym-test-coverage
 0
@@ -1354,12 +1337,12 @@ asym-test-coverage
 HORIZONTAL
 
 SLIDER
-915
-480
-1114
-513
-contacts-reached
-contacts-reached
+914
+465
+1131
+498
+contacts-traced
+contacts-traced
 0
 100
 0.0
@@ -1369,10 +1352,10 @@ contacts-reached
 HORIZONTAL
 
 SWITCH
-1244
-502
-1409
-535
+1245
+500
+1410
+533
 isolate-symptomatics?
 isolate-symptomatics?
 1
@@ -1380,10 +1363,10 @@ isolate-symptomatics?
 -1000
 
 SLIDER
-915
-585
-1115
-618
+914
+605
+1114
+638
 isolation-compliance-sym
 isolation-compliance-sym
 0
@@ -1395,10 +1378,10 @@ isolation-compliance-sym
 HORIZONTAL
 
 SLIDER
-915
-545
-1115
-578
+914
+565
+1114
+598
 isolation-threshold
 isolation-threshold
 0
@@ -1412,34 +1395,34 @@ HORIZONTAL
 SLIDER
 1245
 140
-1443
+1430
 173
-travel-frequency
-travel-frequency
+imported-infection
+imported-infection
 0
 100
 1.0
 1
 1
-% ticks
+% prob/tick
 HORIZONTAL
 
 SWITCH
 1244
 281
-1390
+1441
 314
-allow-travel?
-allow-travel?
+allow-imported-infections?
+allow-imported-infections?
 1
 1
 -1000
 
 SLIDER
-915
-625
-1115
-658
+914
+505
+1114
+538
 isolation-compliance-tested
 isolation-compliance-tested
 0
@@ -1466,10 +1449,10 @@ days
 HORIZONTAL
 
 SLIDER
-915
-685
-1115
-718
+914
+665
+1114
+698
 isolation-duration
 isolation-duration
 0
