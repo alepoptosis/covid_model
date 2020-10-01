@@ -797,10 +797,16 @@ end
 to-report normal-dist [#mu #sigma]
   ;; report value from a normal distribution with mean #mu and stdev #sigma
   let x 0
-  while [x <= 0] [                            ;; ensures value is resampled until it's not negative
+  let counter 100                                             ;; counter prevents infinite loops
+  while [x <= 0 and counter > 0] [                            ;; ensures value is resampled until it's not negative
     set x round (random-normal #mu #sigma)
+    set counter (counter - 1)
   ]
-  report x
+  ifelse counter > 0 [
+    report x
+  ] [ ;; else
+    report #mu
+  ]
 end
 
 to-report count-locked
@@ -909,7 +915,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-0
+1
 1
 -1000
 
