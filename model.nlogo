@@ -10,17 +10,17 @@ globals [
   pop-size                  ;; number of agents in simulation
 
   ;; lockdown globals
-  lockdown-active?          ;; whether an imposed lockdown is currently in progress
+  lockdown-active?          ;; whether an imposed lockdown is in progress
   lockdown-threshold-num    ;; number of I agents to trigger lockdown
 
   ;; shielding globals
   agents-at-risk            ;; set of agents over 70
-  shielding-active?         ;; whether shielding of vulnerable is currently in progress
+  shielding-active?         ;; whether shielding of vulnerable is in progress
   shield-threshold-num      ;; number of I agents to trigger shielding
 
   ;; personal protection globals
-  protection-active?        ;; whether personal protections are currently in place
-  protection-threshold-num  ;; number of I agents to trigger personal protections
+  protections-active?        ;; whether personal protections are in place
+  protections-threshold-num  ;; number of I agents to trigger personal protections
   p-infect-adj              ;; p-infect after reduction of risk from protections
 
   ;; test and trace globals
@@ -52,10 +52,10 @@ turtles-own [
   age                       ;; age range of the agent
   p-death                   ;; individual probability of death based on age range
   radius                    ;; contact radius of the agent
-  neighbours                ;; set containing the agent's contacts
+  neighbours                ;; set containing the agent's contact
   staying-at-home?          ;; whether the agent is currently isolating, shielding or in lockdown
   traced?                   ;; whether the agent was traced as a contact of a tested agent
-  asked-to-isolate?         ;; whether the agent was personally asked to isolate by IS or TT
+  asked-to-isolate?         ;; whether the agent was already asked to isolate by IS or TT
   comply-with-isolation?    ;; whether the agent decided to comply with an isolation request by IS or TT
   iso-countdown             ;; individual isolation countdown
   counted?                  ;; whether the agent was already counted in daily contacts
@@ -71,7 +71,7 @@ exposeds-own [
   to-become-asymptomatic?   ;; flag an E agent to become asymptomatic (A)
   contact-list              ;; list of neighbours the agent came in contact with since exposure
   tested?                   ;; whether the agent is aware of their infection status
-  contacts-alerted?         ;; whether the agent's contacts have been instructed to isolate
+  contacts-alerted?         ;; whether its contacts have been instructed to isolate
 ]
 
 asymptomatics-own [
@@ -173,9 +173,9 @@ to setup-globals
   set shield-threshold-num (absolute-threshold shield-threshold)
 
   ;; personal protection globals
-  set protection-active? false
-  set protection-threshold-num (absolute-threshold protection-threshold)
-  set p-infect-adj ((1 - (protection-strength / 100)) * (base-p-infect / 100))
+  set protections-active? false
+  set protections-threshold-num (absolute-threshold protections-threshold)
+  set p-infect-adj ((1 - (protections-strength / 100)) * (base-p-infect / 100))
 
   ;; test and trace globals
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
@@ -414,11 +414,11 @@ to modify-measures
   ;;;; PERSONAL PROTECTION
   ;; while active cases are past the threshold, p-infect is lowered for all susceptible agents
   ;; while active cases are below the threshold, p-infect returns to base-p-infect for all susceptible agents
-  if personal-protection? [
-    ifelse active-cases >= protection-threshold-num [
-      if not protection-active? [start-protection]
+  if personal-protections? [
+    ifelse active-cases >= protections-threshold-num [
+      if not protections-active? [start-protection]
     ] [ ;; else
-      if protection-active? [end-protection]
+      if protections-active? [end-protection]
     ]
   ]
 
@@ -639,7 +639,7 @@ to start-protection
   ask susceptibles [
     set p-infect p-infect-adj
   ]
-  set protection-active? true
+  set protections-active? true
 end
 
 to end-protection
@@ -647,21 +647,21 @@ to end-protection
   ask susceptibles [
     set p-infect (base-p-infect / 100)
   ]
-  set protection-active? false
+  set protections-active? false
 end
 
 to test
   ;; test symptomatics and exposed/asymptomatics at their respective rates
   ask (turtle-set exposeds asymptomatics) with [not tested?] [
     let p (random-float 100)
-    if p < asym-test-coverage [
+    if p < test-coverage-asym [
       set tested? true
     ]
   ]
 
   ask symptomatics with [not tested?] [
     let p (random-float 100)
-    if p < sym-test-coverage [
+    if p < test-coverage-sym [
       set tested? true
     ]
   ]
@@ -1242,10 +1242,10 @@ lose-immunity?
 SWITCH
 1245
 421
-1409
+1417
 454
-personal-protection?
-personal-protection?
+personal-protections?
+personal-protections?
 1
 1
 -1000
@@ -1253,10 +1253,10 @@ personal-protection?
 SLIDER
 914
 285
-1110
+1146
 318
-protection-strength
-protection-strength
+protections-strength
+protections-strength
 0
 100
 50.0
@@ -1268,10 +1268,10 @@ HORIZONTAL
 SLIDER
 914
 245
-1110
+1156
 278
-protection-threshold
-protection-threshold
+protections-threshold
+protections-threshold
 0
 100
 2.0
@@ -1311,8 +1311,8 @@ SLIDER
 385
 1111
 418
-sym-test-coverage
-sym-test-coverage
+test-coverage-sym
+test-coverage-sym
 0
 100
 100.0
@@ -1326,8 +1326,8 @@ SLIDER
 425
 1113
 458
-asym-test-coverage
-asym-test-coverage
+test-coverage-asym
+test-coverage-asym
 0
 100
 100.0
