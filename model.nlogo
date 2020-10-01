@@ -703,7 +703,8 @@ to isolate
 
     ;; add agents who have been traced as contacts (those reached always isolate)
     let traced-agents (turtles with [traced?])
-    set agents-to-check (turtle-set agents-to-check traced-agents)
+    ask-agents-to-isolate traced-agents
+    set agents-to-check (turtle-set traced-agents with [comply-with-isolation?] agents-to-check)
   ]
 
   if isolate-symptomatics? [
@@ -725,14 +726,19 @@ to ask-agents-to-isolate [agents]
   ask agents with [not asked-to-isolate?] [
     let p (random-float 100)
 
-    ;; agents who tested positive might have a different chance of
-    ;; complying with isolation, so each case has different probabilities
-    ifelse tested?
-    [
-      if p < isolation-compliance-tested [
-        set comply-with-isolation? true
+    ;; agents who were tested or traced might have a different chance of complying with
+    ;; isolation than just those with symptoms, so each case has different probabilities
+    ifelse traced? or tested? [
+      ifelse traced? [
+        if p < isolation-compliance-traced [
+          set comply-with-isolation? true
+        ]
+      ] [ ;; else they're tested - this is to prevent asking tested? to breed who do not own that attribute
+        if p < isolation-compliance-tested [
+          set comply-with-isolation? true
+        ]
       ]
-    ] [ ;; else they are just symptomatics
+    ] [ ;; else they're only symptomatics
       if p < isolation-compliance-sym [
         set comply-with-isolation? true
       ]
@@ -1296,7 +1302,7 @@ SWITCH
 493
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1309,7 +1315,7 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-1.0
+0.0
 1
 1
 % of pop is I
@@ -1354,7 +1360,7 @@ contacts-traced
 contacts-traced
 0
 100
-0.0
+100.0
 1
 1
 % of contacts
@@ -1436,7 +1442,7 @@ isolation-compliance-tested
 isolation-compliance-tested
 0
 100
-80.0
+100.0
 1
 1
 % of tested
@@ -1485,6 +1491,21 @@ protections-compliance
 1
 1
 % compliance
+HORIZONTAL
+
+SLIDER
+915
+575
+1155
+608
+isolation-compliance-traced
+isolation-compliance-traced
+0
+100
+100.0
+1
+1
+% of contacts
 HORIZONTAL
 
 @#$#@#$#@

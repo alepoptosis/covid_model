@@ -25,6 +25,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | test-coverage-asym          | G       | % of untested exposed and asymptomatic agents that get tested each tick       |
 | contacts-traced             | G       | % of contacts of the tested agent that are asked to isolate                   |
 | isolation-compliance-tested | G       | % of tested agents that isolate following a positive test result              |
+| isolation-compliance-traced | G       | % of tested agents that isolate when being traced as contacts                 |
 | isolation-sym-threshold     | G       | % of population that needs to be I to trigger isolation of symptomatics       |
 | isolation-compliance-sym    | G       | % of symptomatic agents that complies with isolation of symptomatics          |
 | isolation-duration          | G       | duration of isolation period for isolation of symptomatics and test and trace |

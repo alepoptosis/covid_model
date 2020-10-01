@@ -2,8 +2,8 @@
 
 - Assign asymptomatic prevalence by age range, like probability of death
 - ~~Add protection-compliance to determine what percentage of agents adopts personal protection~~
-- Reduce the risk of exposure from agents with personal protection, like for asymptomatics
-- Add an isolation-compliance-traced for traced contacts
+- Reduce the risk of exposure from agents with personal protection, like for asymptomatics - this implies that PP needs to be extended to all breeds
+- ~~Add an isolation-compliance-traced for traced contacts~~
 - Ensure naming convention is consistent (e.g. test-coverage-sym instead of sym-test-coverage)
 - ~~Turn isoltion-threshold into isolation-sym-threhsold to specify measure~~
 - Introduce separate isolation duration for contacts vs symptomatics
