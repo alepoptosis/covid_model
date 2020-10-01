@@ -210,3 +210,5 @@
 - Ensured all isolation checks depend on "isolated?" flag and not agent shape anymore, to prepare for a version of the model that can toggle off visual elements to speed up headless simulations (not fully implemented yet)
 - Updated check-isolation to ensure 60+ agents who leave isolation for other reasons don't get released if shielding is in progress, not only if a lockdown is happening
 - Updated variables list accordingly
+
+## Refer to commits for further updates

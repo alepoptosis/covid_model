@@ -10,16 +10,16 @@ globals [
   pop-size                  ;; number of agents in simulation
 
   ;; lockdown globals
-  lockdown-active?          ;; whether an imposed lockdown is in progress
+  lockdown-active?          ;; whether an imposed lockdown is currently in progress
   lockdown-threshold-num    ;; number of I agents to trigger lockdown
 
   ;; shielding globals
   agents-at-risk            ;; set of agents over 70
-  shielding-active?         ;; whether shielding of vulnerable is in progress
+  shielding-active?         ;; whether shielding of vulnerable is currently in progress
   shield-threshold-num      ;; number of I agents to trigger shielding
 
   ;; personal protection globals
-  protection-active?        ;; whether personal protections are in place
+  protection-active?        ;; whether personal protections are currently in place
   protection-threshold-num  ;; number of I agents to trigger personal protections
   p-infect-adj              ;; p-infect after reduction of risk from protections
 
@@ -52,10 +52,10 @@ turtles-own [
   age                       ;; age range of the agent
   p-death                   ;; individual probability of death based on age range
   radius                    ;; contact radius of the agent
-  neighbours                ;; set containing the agent's contact
+  neighbours                ;; set containing the agent's contacts
   staying-at-home?          ;; whether the agent is currently isolating, shielding or in lockdown
   traced?                   ;; whether the agent was traced as a contact of a tested agent
-  asked-to-isolate?         ;; whether the agent was already asked to isolate by IS or TT
+  asked-to-isolate?         ;; whether the agent was personally asked to isolate by IS or TT
   comply-with-isolation?    ;; whether the agent decided to comply with an isolation request by IS or TT
   iso-countdown             ;; individual isolation countdown
   counted?                  ;; whether the agent was already counted in daily contacts
@@ -71,7 +71,7 @@ exposeds-own [
   to-become-asymptomatic?   ;; flag an E agent to become asymptomatic (A)
   contact-list              ;; list of neighbours the agent came in contact with since exposure
   tested?                   ;; whether the agent is aware of their infection status
-  contacts-alerted?         ;; whether its contacts have been instructed to isolate
+  contacts-alerted?         ;; whether the agent's contacts have been instructed to isolate
 ]
 
 asymptomatics-own [
