@@ -751,7 +751,11 @@ to update-isolation-countdown
   ;; set or decrease the countdown, or release the agent at the end of it
   if isolation-countdown = -1 [
     isolate-agent
-    set isolation-countdown isolation-duration
+    ifelse traced? [
+      set isolation-countdown isolation-duration-contact
+    ] [ ;; else they're a case (untested symptomatic or tested agent)
+      set isolation-countdown isolation-duration-case
+    ]
   ]
 
   ifelse isolation-countdown = 0 [
@@ -1468,11 +1472,11 @@ SLIDER
 635
 1430
 668
-isolation-duration
-isolation-duration
+isolation-duration-case
+isolation-duration-case
 0
 100
-14.0
+7.0
 1
 1
 days
@@ -1506,6 +1510,21 @@ isolation-compliance-traced
 1
 1
 % of contacts
+HORIZONTAL
+
+SLIDER
+1230
+675
+1447
+708
+isolation-duration-contact
+isolation-duration-contact
+0
+100
+14.0
+1
+1
+days
 HORIZONTAL
 
 @#$#@#$#@

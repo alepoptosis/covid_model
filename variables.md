@@ -28,7 +28,8 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | isolation-compliance-traced | G       | % of tested agents that isolate when being traced as contacts                 |
 | isolation-sym-threshold     | G       | % of population that needs to be I to trigger isolation of symptomatics       |
 | isolation-compliance-sym    | G       | % of symptomatic agents that complies with isolation of symptomatics          |
-| isolation-duration          | G       | duration of isolation period for isolation of symptomatics and test and trace |
+| isolation-duration-case     | G       | duration of isolation period for infected or symptomatic agents (TT or IS)    |
+| isolation-duration-contact  | G       | duration of isolation period for contacts of tested agents                    |
 | duration                    | G       | number of years to simulate                                                   |
 | initial-infected            | G       | % of population that is exposed at the start of the simulation                |
 | imported-infection          | G       | probability per tick to introduce an external infection                       |
