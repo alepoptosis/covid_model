@@ -1,7 +1,7 @@
 # TO-DO list from code review
 
 - Assign asymptomatic prevalence by age range, like probability of death
-- Add protection-compliance to determine what percentage of agents adopts personal protection
+- ~~Add protection-compliance to determine what percentage of agents adopts personal protection~~
 - Reduce the risk of exposure from agents with personal protection, like for asymptomatics
 - Add an isolation-compliance-traced for traced contacts
 - Ensure naming convention is consistent (e.g. test-coverage-sym instead of sym-test-coverage)

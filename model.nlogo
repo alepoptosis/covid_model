@@ -175,7 +175,7 @@ to setup-globals
   ;; personal protection globals
   set protections-active? false
   set protections-threshold-num (absolute-threshold protections-threshold)
-  set p-infect-adj ((1 - (protections-strength / 100)) * (base-p-infect / 100))
+  set p-infect-adj ((1 - (protections-strength / 100)) * (p-infect-base / 100))
 
   ;; test and trace globals
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
@@ -413,7 +413,7 @@ to modify-measures
 
   ;;;; PERSONAL PROTECTION
   ;; while active cases are past the threshold, p-infect is lowered for all susceptible agents
-  ;; while active cases are below the threshold, p-infect returns to base-p-infect for all susceptible agents
+  ;; while active cases are below the threshold, p-infect returns to p-infect-base for all susceptible agents
   if personal-protections? [
     ifelse active-cases >= protections-threshold-num [
       if not protections-active? [start-protection]
@@ -473,7 +473,7 @@ end
 
 to set-breed-susceptible
   set breed susceptibles
-  set p-infect (base-p-infect / 100)
+  set p-infect (p-infect-base / 100)
   set to-become-exposed? false
   if visual-elements? [
     set color green
@@ -637,7 +637,10 @@ end
 to start-protection
   ;; give all susceptible agents the adjusted p-infect
   ask susceptibles [
-    set p-infect p-infect-adj
+    let p (random-float 100)
+    if p < protections-compliance [
+      set p-infect p-infect-adj
+    ]
   ]
   set protections-active? true
 end
@@ -645,7 +648,7 @@ end
 to end-protection
   ;; give all susceptible agents the base p-infect
   ask susceptibles [
-    set p-infect (base-p-infect / 100)
+    set p-infect (p-infect-base / 100)
   ]
   set protections-active? false
 end
@@ -915,7 +918,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-1
+0
 1
 -1000
 
@@ -969,8 +972,8 @@ SLIDER
 170
 782
 203
-base-p-infect
-base-p-infect
+p-infect-base
+p-infect-base
 0
 100
 10.0
@@ -1190,7 +1193,7 @@ lockdown-compliance
 75.0
 1
 1
-% adherance
+% compliance
 HORIZONTAL
 
 SWITCH
@@ -1231,7 +1234,7 @@ shield-compliance
 50.0
 1
 1
-% adherance
+% compliance
 HORIZONTAL
 
 SWITCH
@@ -1257,10 +1260,10 @@ personal-protections?
 -1000
 
 SLIDER
-914
-285
-1146
-318
+915
+280
+1147
+313
 protections-strength
 protections-strength
 0
@@ -1272,15 +1275,15 @@ protections-strength
 HORIZONTAL
 
 SLIDER
-914
-245
-1156
-278
+915
+240
+1157
+273
 protections-threshold
 protections-threshold
 0
 100
-2.0
+1.0
 1
 1
 % of pop is I
@@ -1298,10 +1301,10 @@ test-and-trace?
 -1000
 
 SLIDER
-914
-345
-1110
-378
+915
+375
+1111
+408
 testtrace-threshold
 testtrace-threshold
 0
@@ -1313,10 +1316,10 @@ testtrace-threshold
 HORIZONTAL
 
 SLIDER
-914
-385
-1111
-418
+915
+415
+1112
+448
 test-coverage-sym
 test-coverage-sym
 0
@@ -1328,10 +1331,10 @@ test-coverage-sym
 HORIZONTAL
 
 SLIDER
-914
-425
-1113
-458
+915
+455
+1114
+488
 test-coverage-asym
 test-coverage-asym
 0
@@ -1343,10 +1346,10 @@ test-coverage-asym
 HORIZONTAL
 
 SLIDER
-914
-465
-1131
-498
+915
+495
+1132
+528
 contacts-traced
 contacts-traced
 0
@@ -1369,10 +1372,10 @@ isolate-symptomatics?
 -1000
 
 SLIDER
-914
-605
-1114
-638
+915
+635
+1115
+668
 isolation-compliance-sym
 isolation-compliance-sym
 0
@@ -1384,10 +1387,10 @@ isolation-compliance-sym
 HORIZONTAL
 
 SLIDER
-914
-565
-1114
-598
+915
+595
+1115
+628
 isolation-threshold
 isolation-threshold
 0
@@ -1425,10 +1428,10 @@ allow-imported-infections?
 -1000
 
 SLIDER
-914
-505
-1114
-538
+915
+535
+1115
+568
 isolation-compliance-tested
 isolation-compliance-tested
 0
@@ -1455,10 +1458,10 @@ days
 HORIZONTAL
 
 SLIDER
-914
-665
-1114
-698
+915
+695
+1115
+728
 isolation-duration
 isolation-duration
 0
@@ -1467,6 +1470,21 @@ isolation-duration
 1
 1
 days
+HORIZONTAL
+
+SLIDER
+916
+320
+1168
+353
+protections-compliance
+protections-compliance
+0
+100
+50.0
+1
+1
+% compliance
 HORIZONTAL
 
 @#$#@#$#@

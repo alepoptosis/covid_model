@@ -5,7 +5,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | name                     	  | access 	| description                                                               	|
 |--------------------------	  |--------	|---------------------------------------------------------------------------	|
 | min-radius                  | G       | minimum radius an agent can have                                              |
-| base-p-infect               | G       | basic probability of catching the virus upon contact                          |
+| p-infect-base               | G       | basic probability of catching the virus upon contact                          |
 | asym-prevalence             | G       | % of infections that does not develop symptoms                                |
 | min-immunity-duration       | G       | minimum number of days a recovered agent will have immunity                   |
 | recovery-mean               | G       | mean of the normal distribution for recovery countdowns                       |
