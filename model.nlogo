@@ -57,7 +57,7 @@ turtles-own [
   traced?                   ;; whether the agent was traced as a contact of a tested agent
   asked-to-isolate?         ;; whether the agent was already asked to isolate by IS or TT
   comply-with-isolation?    ;; whether the agent decided to comply with an isolation request by IS or TT
-  iso-countdown             ;; individual isolation countdown
+  isolation-countdown       ;; individual isolation countdown
   counted?                  ;; whether the agent was already counted in daily contacts
 ]
 
@@ -67,7 +67,7 @@ susceptibles-own [
 ]
 
 exposeds-own [
-  inc-countdown             ;; individual incubation countdown
+  incubation-countdown      ;; individual incubation countdown
   to-become-asymptomatic?   ;; flag an E agent to become asymptomatic (A)
   contact-list              ;; list of neighbours the agent came in contact with since exposure
   tested?                   ;; whether the agent is aware of their infection status
@@ -95,7 +95,7 @@ symptomatics-own [
 ]
 
 recovereds-own [
-  imm-countdown             ;; individual immunity countdown
+  immunity-countdown        ;; individual immunity countdown
   to-become-susceptible?    ;; flag a R agent to lose immunity (S)
 ]
 
@@ -141,7 +141,7 @@ to setup-turtles
       set traced? false
       set asked-to-isolate? false
       set comply-with-isolation? false
-      set iso-countdown -1
+      set isolation-countdown -1
       set counted? false
 
       ;; setup S-specific attributes
@@ -301,9 +301,9 @@ end
 to progress-exposed
   ;; turn exposed agents that are almost the end of their incubation countdown into asymptomatic
   ask exposeds [
-    ifelse inc-countdown <= (random 3 + 1)
+    ifelse incubation-countdown <= (random 3 + 1)
     [set to-become-asymptomatic? true]
-    [set inc-countdown (inc-countdown - 1)]
+    [set incubation-countdown (incubation-countdown - 1)]
   ]
 end
 
@@ -345,10 +345,10 @@ to lose-immunity
   ;; progress recovered agents through their immunity countdown
   ;; at the end of it, they return susceptible
   ask recovereds [
-    ifelse imm-countdown <= 0 [
+    ifelse immunity-countdown <= 0 [
       set to-become-susceptible? true
     ] [ ;; else
-      set imm-countdown (imm-countdown - 1)
+      set immunity-countdown (immunity-countdown - 1)
     ]
   ]
 end
@@ -483,7 +483,7 @@ end
 
 to set-breed-exposed
   set breed exposeds
-  set inc-countdown (log-normal incubation-mean incubation-stdev 0)
+  set incubation-countdown (log-normal incubation-mean incubation-stdev 0)
   set to-become-asymptomatic? false
   set contact-list []
   set tested? false
@@ -569,7 +569,7 @@ end
 to set-breed-recovered
   set breed recovereds
   if lose-immunity? [
-    set imm-countdown (log-normal 1 0.5 min-immunity-duration)
+    set immunity-countdown (log-normal 1 0.5 min-immunity-duration)
     ]
   set to-become-susceptible? false
   if visual-elements? [
@@ -711,7 +711,7 @@ to isolate
 
   ;; add agents who have recovered but may still have an active isolation countdown
   ;; because they have recovered before the end of their isolation
-  set agents-to-check (turtle-set recovereds with [iso-countdown >= 0] agents-to-check)
+  set agents-to-check (turtle-set recovereds with [isolation-countdown >= 0] agents-to-check)
 
   ask agents-to-check [update-isolation-countdown]
 end
@@ -740,21 +740,21 @@ end
 
 to update-isolation-countdown
   ;; set or decrease the countdown, or release the agent at the end of it
-  if iso-countdown = -1 [
+  if isolation-countdown = -1 [
     isolate-agent
-    set iso-countdown isolation-duration
+    set isolation-countdown isolation-duration
   ]
 
-  ifelse iso-countdown = 0 [
+  ifelse isolation-countdown = 0 [
     if not lockdown-active? [
       if not shielding-active? or not member? self agents-at-risk [
         release-agent
-        set iso-countdown -1
+        set isolation-countdown -1
         set traced? false
       ]
     ]
   ] [ ;; else
-    set iso-countdown (iso-countdown - 1)
+    set isolation-countdown (isolation-countdown - 1)
   ]
 end
 

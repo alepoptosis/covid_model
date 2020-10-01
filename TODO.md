@@ -8,7 +8,7 @@
 - Turn isoltion-threshold into isolation-sym-threhsold to specify measure
 - Introduce separate isolation duration for contacts vs symptomatics
 - Find better name for imported-infection (maybe unusual-infection or extraneous-infection)
-- Expand countdown names (iso-countdown to isolation-countdown etc.)
+- ~~Expand countdown names (iso-countdown to isolation-countdown etc.)~~
 - Add a neighbours-met-per-day slider and make it so that each agent only interacts with that fixed percentage of their neighbourhood every tick
 - Test possible ways to only record contacts from x days before
 - Test using an external file to set age ranges, their prevalence, and relative asymptomatic percentages and risk of death
