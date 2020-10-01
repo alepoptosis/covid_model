@@ -21,14 +21,14 @@ globals [
   ;; personal protection globals
   protections-active?        ;; whether personal protections are in place
   protections-threshold-num  ;; number of I agents to trigger personal protections
-  p-infect-adj              ;; p-infect after reduction of risk from protections
+  p-infect-adj               ;; p-infect after reduction of risk from protections
 
   ;; test and trace globals
   testtrace-threshold-num   ;; number of I agents to trigger test and trace
 
   ;; isolation of symptomatics globals
   start-isolation?          ;; whether isolation of symptomatics has begun
-  isolation-threshold-num   ;; number of I agents to trigger isolation of symptomatics
+  isolation-sym-threshold-num   ;; number of I agents to trigger isolation of symptomatics
 
   ;; reporters
   num-contacts              ;; number of contacts between agents for current tick
@@ -179,7 +179,7 @@ to setup-globals
 
   ;; test and trace globals
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
-  set isolation-threshold-num (absolute-threshold isolation-threshold)
+  set isolation-sym-threshold-num (absolute-threshold isolation-sym-threshold)
   set start-isolation? false
 
   ;; reporters
@@ -435,7 +435,7 @@ to modify-measures
   ;; once active cases are past the threshold, isolation of symptomatic agents is switched on
   ;; and remains active for the entirety of the simulation
   if isolate-symptomatics? and not start-isolation? [
-    if active-cases >= isolation-threshold-num [
+    if active-cases >= isolation-sym-threshold-num [
       set start-isolation? true
     ]
   ]
@@ -1373,9 +1373,9 @@ isolate-symptomatics?
 
 SLIDER
 915
-635
+670
 1115
-668
+703
 isolation-compliance-sym
 isolation-compliance-sym
 0
@@ -1388,11 +1388,11 @@ HORIZONTAL
 
 SLIDER
 915
-595
-1115
-628
-isolation-threshold
-isolation-threshold
+630
+1135
+663
+isolation-sym-threshold
+isolation-sym-threshold
 0
 100
 5.0
@@ -1430,7 +1430,7 @@ allow-imported-infections?
 SLIDER
 915
 535
-1115
+1155
 568
 isolation-compliance-tested
 isolation-compliance-tested
@@ -1439,7 +1439,7 @@ isolation-compliance-tested
 80.0
 1
 1
-% of I
+% of tested
 HORIZONTAL
 
 SLIDER
@@ -1458,10 +1458,10 @@ days
 HORIZONTAL
 
 SLIDER
-915
-695
-1115
-728
+1230
+635
+1430
+668
 isolation-duration
 isolation-duration
 0

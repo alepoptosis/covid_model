@@ -25,7 +25,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | test-coverage-asym          | G       | % of untested exposed and asymptomatic agents that get tested each tick       |
 | contacts-traced             | G       | % of contacts of the tested agent that are asked to isolate                   |
 | isolation-compliance-tested | G       | % of tested agents that isolate following a positive test result              |
-| isolation-threshold         | G       | % of population that needs to be I to trigger isolation of symptomatics       |
+| isolation-sym-threshold     | G       | % of population that needs to be I to trigger isolation of symptomatics       |
 | isolation-compliance-sym    | G       | % of symptomatic agents that complies with isolation of symptomatics          |
 | isolation-duration          | G       | duration of isolation period for isolation of symptomatics and test and trace |
 | duration                    | G       | number of years to simulate                                                   |
@@ -50,7 +50,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | p-infect-adj             	  | G      	| p-infect after reduction of risk from protections                         	|
 | testtrace-threshold-num  	  | G      	| number of I agents to trigger test and trace                              	|
 | start-isolation?         	  | G      	| whether isolation of symptomatics has begun                               	|
-| isolation-threshold-num  	  | G      	| number of I agents to trigger isolation of symptomatics                   	|
+| isolation-sym-threshold-num | G      	| number of I agents to trigger isolation of symptomatics                   	|
 | num-contacts             	  | G      	| number of contacts between agents for current tick                        	|
 | count-inf-0-39           	  | G      	| cumulative counts of infecteds for each age range                         	|
 | count-inf-40-49          	  | G      	| cumulative counts of infecteds for each age range                         	|

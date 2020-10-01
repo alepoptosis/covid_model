@@ -5,7 +5,7 @@
 - Reduce the risk of exposure from agents with personal protection, like for asymptomatics
 - Add an isolation-compliance-traced for traced contacts
 - Ensure naming convention is consistent (e.g. test-coverage-sym instead of sym-test-coverage)
-- Turn isoltion-threshold into isolation-sym-threhsold to specify measure
+- ~~Turn isoltion-threshold into isolation-sym-threhsold to specify measure~~
 - Introduce separate isolation duration for contacts vs symptomatics
 - Find better name for imported-infection (maybe unusual-infection or extraneous-infection)
 - ~~Expand countdown names (iso-countdown to isolation-countdown etc.)~~
