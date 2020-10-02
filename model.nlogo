@@ -59,6 +59,7 @@ turtles-own [
   comply-with-isolation?    ;; whether the agent decided to comply with an isolation request by IS or TT
   isolation-countdown       ;; individual isolation countdown
   counted?                  ;; whether the agent was already counted in daily contacts
+  using-protections?        ;; whether the agent is currently adopting personal protections e.g. masks, hand-washing
 ]
 
 susceptibles-own [
@@ -143,6 +144,7 @@ to setup-turtles
       set comply-with-isolation? false
       set isolation-countdown -1
       set counted? false
+      set using-protections? false
 
       ;; setup S-specific attributes
       set-breed-susceptible
@@ -266,7 +268,11 @@ end
 to expose-susceptibles
   ;; check whether non-isolating susceptibles become exposed to the virus
   ask susceptibles with [not staying-at-home?] [
-    let num-sym (count neighbours with [breed = symptomatics and not staying-at-home?])
+    let num-sym (count neighbours with [breed = symptomatics and not staying-at-home? and not using-protections?])
+    ;; adjust number of symptomatics that use protections to account for their lower probability of transmission (determined by protections-strength)
+    let num-sym-prot ((count neighbours with [breed = symptomatics and not staying-at-home? and using-protections?]) * (protections-strength / 100))
+    ;; if the new number is between 0 and 1 (exclusive) set it to 1, as raising a number to a decimal lowers it
+    if num-sym-prot > 0 and num-sym-prot < 1 [set num-sym-prot 1]
 
     ;; adjust number of asymptomatics to account for their lower probability of transmission (currently 10%)
     let num-asym ((count neighbours with [breed = asymptomatics and not staying-at-home?]) * 0.1)
@@ -635,20 +641,28 @@ to end-shielding
 end
 
 to start-protection
-  ;; give all susceptible agents the adjusted p-infect
-  ask susceptibles [
+  ;; protections-compliance % of agents start using protections
+  ;; and susceptibles have their p-infect lowered to p-infect-adj
+  ask turtles [
     let p (random-float 100)
     if p < protections-compliance [
-      set p-infect p-infect-adj
+      set using-protections? true
+      if breed = susceptibles [
+        set p-infect p-infect-adj
+      ]
     ]
   ]
   set protections-active? true
 end
 
 to end-protection
-  ;; give all susceptible agents the base p-infect
-  ask susceptibles [
-    set p-infect (p-infect-base / 100)
+  ;; all agents stop using protections
+  ;; and susceptibles return to base p-infect
+  ask turtles [
+    set using-protections? false
+    if breed = susceptibles [
+      set p-infect (p-infect-base / 100)
+    ]
   ]
   set protections-active? false
 end
@@ -1265,7 +1279,7 @@ SWITCH
 454
 personal-protections?
 personal-protections?
-1
+0
 1
 -1000
 
@@ -1306,7 +1320,7 @@ SWITCH
 493
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 
@@ -1491,7 +1505,7 @@ protections-compliance
 protections-compliance
 0
 100
-50.0
+100.0
 1
 1
 % compliance
@@ -1526,6 +1540,17 @@ isolation-duration-contact
 1
 days
 HORIZONTAL
+
+MONITOR
+410
+630
+527
+675
+NIL
+protections-active?
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
