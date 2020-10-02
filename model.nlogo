@@ -58,8 +58,8 @@ turtles-own [
   asked-to-isolate?         ;; whether the agent was already asked to isolate by IS or TT
   comply-with-isolation?    ;; whether the agent decided to comply with an isolation request by IS or TT
   isolation-countdown       ;; individual isolation countdown
-  counted?                  ;; whether the agent was already counted in daily contacts
   using-protections?        ;; whether the agent is currently adopting personal protections e.g. masks, hand-washing
+  todays-contacts           ;; set containing the neighbours contacted by the agent in the current tick
 ]
 
 susceptibles-own [
@@ -143,8 +143,8 @@ to setup-turtles
       set asked-to-isolate? false
       set comply-with-isolation? false
       set isolation-countdown -1
-      set counted? false
       set using-protections? false
+      set todays-contacts nobody
 
       ;; setup S-specific attributes
       set-breed-susceptible
@@ -210,6 +210,7 @@ end
 to go
   ifelse ticks < (duration * 365)
   [
+    make-contact
     count-contacts                        ;; count the number of contacts between agents at each tick
     if test-and-trace? [record-contacts]  ;; record contacts of infected agents (E, A or I) and update their contact list
     expose-susceptibles                   ;; check whether non-isolating susceptibles become exposed to the virus
@@ -229,37 +230,33 @@ end
 ;;;;;;;;;;; GO PROCEDURES ;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+to make-contact
+  ;; establish who makes contact with each agent in this tick
+  ask turtles with [not staying-at-home?] [
+    let available-neighbours (neighbours with [not staying-at-home?])
+
+    ;; prevents useless calculations if agents contacts everyone they can daily
+    ifelse daily-contacts = 100 [
+      set todays-contacts available-neighbours
+    ] [ ;; else
+      let n round (count available-neighbours * daily-contacts / 100)
+      set todays-contacts (n-of n available-neighbours)
+    ]
+  ]
+end
+
 to count-contacts
   ;; count the number of contacts between agents at each tick
-  set num-contacts 0          ;; reset daily number of contacts
-
-  ;; each alive, non-isolating agent is flagged as counted and the
-  ;; number of non-counted, non isolating and alive neighbours they have
-  ;; is added to the number of total contacts of the day
-  ask turtles with [not staying-at-home?] [
-    set counted? true
-    let these-contacts (count neighbours with [not staying-at-home? and not counted?])
-    set num-contacts (num-contacts + these-contacts)
-  ]
-
-  ;; reset counted flag for all agents
-  ask turtles [set counted? false]
+  set num-contacts (round (sum [count todays-contacts] of turtles / 2))
 end
 
 to record-contacts
   ;; record contacts of infected agents (E, A or I) and update their contact list
   if count symptomatics >= testtrace-threshold-num [
+    ;; only check for new contacts if contact-list doesn't already include all neighbours
     ask (turtle-set exposeds asymptomatics symptomatics) [
-      ;; only check for new contacts if contact-list doesn't already include all neighbours
-      if length contact-list < count neighbours [
-        let contacts [self] of neighbours with [not staying-at-home?]
-        foreach contacts [
-          contact ->
-          ;; prevents duplicate contacts
-          if not member? contact contact-list [
-            set contact-list lput contact contact-list
-          ]
-        ]
+      if contact-list = nobody or count contact-list < count neighbours [
+        set contact-list (turtle-set todays-contacts contact-list)
       ]
     ]
   ]
@@ -268,20 +265,20 @@ end
 to expose-susceptibles
   ;; check whether non-isolating susceptibles become exposed to the virus
   ask susceptibles with [not staying-at-home?] [
-    let num-sym (count neighbours with [breed = symptomatics and not staying-at-home? and not using-protections?])
+
+    let sym-contacts (todays-contacts with [breed = symptomatics and not staying-at-home?])
+    let num-sym (count sym-contacts with [not using-protections?])
     ;; adjust number of symptomatics that use protections to account for their lower probability of transmission (determined by protections-strength)
-    let num-sym-prot ((count neighbours with [breed = symptomatics and not staying-at-home? and using-protections?]) * (protections-strength / 100))
+    let num-sym-protections ((count sym-contacts - num-sym) * protections-strength / 100)
     ;; if the new number is between 0 and 1 (exclusive) set it to 1, as raising a number to a decimal lowers it
-    if num-sym-prot > 0 and num-sym-prot < 1 [set num-sym-prot 1]
+    if num-sym-protections > 0 and num-sym-protections < 1 [set num-sym-protections 1]
 
     ;; adjust number of asymptomatics to account for their lower probability of transmission (currently 10%)
-    let num-asym ((count neighbours with [breed = asymptomatics and not staying-at-home?]) * 0.1)
-    ;; if the new number is between 0 and 1 (exclusive) set it to 1, as raising a number to a decimal lowers it
+    let num-asym ((count todays-contacts with [breed = asymptomatics and not staying-at-home? and not using-protections?]) * 0.1)
     if num-asym > 0 and num-asym < 1 [set num-asym 1]
 
-    let total-inf (num-sym + num-asym)
+    let total-inf (num-sym + num-sym-protections + num-asym)
 
-    ;; probability of becoming exposed is only calculated if the total number of infecteds isn't 0
     if total-inf != 0 [
       let p-exposure (1 - ((1 - p-infect) ^ total-inf))
       let p (random-float 100)
@@ -291,8 +288,6 @@ to expose-susceptibles
     ]
   ]
 
-  ;; if imported infections are allowed, there is a imported-infection probability that
-  ;; one non-isolating susceptible will become exposed
   if allow-imported-infections? [
     let candidates (susceptibles with [not staying-at-home?])
     if any? candidates [
@@ -491,7 +486,7 @@ to set-breed-exposed
   set breed exposeds
   set incubation-countdown (log-normal incubation-mean incubation-stdev 0)
   set to-become-asymptomatic? false
-  set contact-list []
+  set contact-list nobody
   set tested? false
   set contacts-alerted? false
   if visual-elements? [
@@ -690,15 +685,9 @@ to trace
     ;; flagging once contacts are alerted ensures each tested
     ;; agent attempts to reach its contacts only once
     if tested? and not contacts-alerted? [
-      foreach contact-list [
-        ;; if the contact is not dead, flag them as traced
-        ;; with probability contacts-traced
-        contact -> if contact != nobody [
-          let p (random-float 100)
-          if p < contacts-traced [
-            ask contact [set traced? true]
-          ]
-        ]
+      if contact-list != nobody [
+        let n round (count contact-list * contacts-traced / 100)
+        ask n-of n contact-list [set traced? true]
       ]
       set contacts-alerted? true
     ]
@@ -1279,7 +1268,7 @@ SWITCH
 454
 personal-protections?
 personal-protections?
-0
+1
 1
 -1000
 
@@ -1541,16 +1530,20 @@ isolation-duration-contact
 days
 HORIZONTAL
 
-MONITOR
-410
-630
-527
-675
-NIL
-protections-active?
-17
+SLIDER
+610
+85
+805
+118
+daily-contacts
+daily-contacts
+0
+100
+50.0
+10
 1
-11
+% of neighbours
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
