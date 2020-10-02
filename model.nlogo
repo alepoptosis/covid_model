@@ -417,9 +417,9 @@ to modify-measures
   ;; while active cases are below the threshold, p-infect returns to p-infect-base for all susceptible agents
   if personal-protections? [
     ifelse active-cases >= protections-threshold-num [
-      if not protections-active? [start-protection]
+      if not protections-active? [start-protections]
     ] [ ;; else
-      if protections-active? [end-protection]
+      if protections-active? [end-protections]
     ]
   ]
 
@@ -592,12 +592,8 @@ end
 to start-lockdown
   ;; ask all agents to go into lockdown
   ;; and ensure only a percentage (lockdown-compliance) does so
-  ask turtles [
-    let p (random-float 100)
-    if p < lockdown-compliance [
-      isolate-agent
-    ]
-  ]
+  let n round (count turtles * lockdown-compliance / 100)
+  ask n-of n turtles [isolate-agent]
   set lockdown-active? true
 end
 
@@ -615,12 +611,8 @@ end
 to start-shielding
   ;; ask all agents at risk to start shielding
   ;; and ensure only a percentage (shield-compliance) does so
-  ask agents-at-risk [
-    let p (random-float 100)
-    if p < shield-compliance [
-      isolate-agent
-    ]
-  ]
+  let n round (count agents-at-risk * shield-compliance / 100)
+  ask n-of n agents-at-risk [isolate-agent]
   set shielding-active? true
 end
 
@@ -635,22 +627,18 @@ to end-shielding
   set shielding-active? false
 end
 
-to start-protection
-  ;; protections-compliance % of agents start using protections
-  ;; and susceptibles have their p-infect lowered to p-infect-adj
-  ask turtles [
-    let p (random-float 100)
-    if p < protections-compliance [
-      set using-protections? true
-      if breed = susceptibles [
-        set p-infect p-infect-adj
-      ]
-    ]
+to start-protections
+  let n round (count turtles * protections-compliance / 100)
+  ask n-of n turtles [set using-protections? true]
+
+  ask susceptibles with [using-protections?] [
+    set p-infect p-infect-adj
   ]
+
   set protections-active? true
 end
 
-to end-protection
+to end-protections
   ;; all agents stop using protections
   ;; and susceptibles return to base p-infect
   ask turtles [
@@ -664,19 +652,12 @@ end
 
 to test
   ;; test symptomatics and exposed/asymptomatics at their respective rates
-  ask (turtle-set exposeds asymptomatics) with [not tested?] [
-    let p (random-float 100)
-    if p < test-coverage-asym [
-      set tested? true
-    ]
-  ]
+  let untested-nonsym ((turtle-set exposeds asymptomatics) with [not tested?])
+  let n ceiling (count untested-nonsym * test-coverage-asym / 100)
+  ask n-of n untested-nonsym [set tested? true]
 
-  ask symptomatics with [not tested?] [
-    let p (random-float 100)
-    if p < test-coverage-sym [
-      set tested? true
-    ]
-  ]
+  set n ceiling (count symptomatics * test-coverage-sym / 100)
+  ask n-of n symptomatics [set tested? true]
 end
 
 to trace
