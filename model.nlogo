@@ -1,4 +1,7 @@
-extensions [profiler]
+extensions [
+  profiler
+  csv
+]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
 breed [exposeds exposed]            ;; exposed but not infectious (E)
@@ -7,6 +10,8 @@ breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
 breed [recovereds recovered]        ;; recovered and immune (R)
 
 globals [
+  pop-data                  ;; test csv for population data
+
   pop-size                  ;; number of agents in simulation
 
   ;; lockdown globals
@@ -29,6 +34,8 @@ globals [
   ;; isolation of symptomatics globals
   start-isolation?          ;; whether isolation of symptomatics has begun
   isolation-sym-threshold-num   ;; number of I agents to trigger isolation of symptomatics
+
+  update-thresholds?
 
   ;; reporters
   num-contacts              ;; number of contacts between agents for current tick
@@ -119,6 +126,7 @@ end
 
 to setup
   clear-all
+;  setup-csv
   setup-turtles
   setup-globals
   reset-ticks
@@ -127,6 +135,11 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;; SETUP PROCEDURES ;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to setup-csv
+  set pop-data csv:from-file "pop-data.csv"
+  print pop-data
+end
 
 to setup-turtles
   set-default-shape turtles "person"
@@ -181,8 +194,14 @@ to setup-globals
 
   ;; test and trace globals
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
+
+  ;; isolation of symptomatics globals
   set isolation-sym-threshold-num (absolute-threshold isolation-sym-threshold)
+
+  ;; tt & is globals
   set start-isolation? false
+
+  set update-thresholds? false
 
   ;; reporters
 
@@ -374,9 +393,31 @@ to update-breeds
     set-breed-recovered
   ]
 
-  ask symptomatics with [to-die?] [
+  let agents-to-die (symptomatics with [to-die?])
+
+  ;; before agents marked for death are removed from the population
+  ;; the model is notified that the threshold will have to be updated
+  if any? agents-to-die [
+    set update-thresholds? true
+  ]
+
+  ask agents-to-die [
     add-dead-count
     die
+  ]
+
+  ;; population size and tresholds are updated only if needed
+  ;;? should they only be updated if the measure is on or regardless?
+  if update-thresholds? [
+    set pop-size (count turtles)
+
+    set lockdown-threshold-num (absolute-threshold lockdown-threshold)
+    set shield-threshold-num (absolute-threshold shield-threshold)
+    set protections-threshold-num (absolute-threshold protections-threshold)
+    set testtrace-threshold-num (absolute-threshold testtrace-threshold)
+    set isolation-sym-threshold-num (absolute-threshold isolation-sym-threshold)
+
+    set update-thresholds? false
   ]
 
   if lose-immunity? [
@@ -931,7 +972,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-0
+1
 1
 -1000
 
@@ -974,7 +1015,7 @@ duration
 duration
 0
 10
-3.0
+0.5
 0.5
 1
 years
