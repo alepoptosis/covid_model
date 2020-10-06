@@ -1,4 +1,7 @@
-extensions [profiler]
+extensions [
+  profiler
+  csv
+]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
 breed [exposeds exposed]            ;; exposed but not infectious (E)
@@ -7,6 +10,8 @@ breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
 breed [recovereds recovered]        ;; recovered and immune (R)
 
 globals [
+  pop-data
+
   pop-size                  ;; number of agents in simulation
 
   ;; lockdown globals
@@ -119,6 +124,8 @@ end
 
 to setup
   clear-all
+  set pop-data csv:from-file "pop-data.csv"
+  print pop-data
   setup-turtles
   setup-globals
   reset-ticks
