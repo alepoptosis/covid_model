@@ -33,16 +33,17 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | isolation-duration-contact  | G       | duration of isolation period for contacts of tested agents                    |
 | duration                    | G       | number of years to simulate                                                   |
 | initial-infected            | G       | % of population that is exposed at the start of the simulation                |
-| imported-infection          | G       | probability per tick to introduce an external infection                       |
+| extraneous-infection        | G       | probability per tick to introduce an external infection into the system       |
 | lose-immunity?              | G       | whether recovereds can lose post-infection immunity                           |
 | visual-elements?            | G       | whether visual elements should be rendered (turn off when running headless)   |
-| allow-imported-infections?  | G       | whether external infections can occur                                         |
+| allow-extraneous-infections?| G       | whether external infections can occur                                         |
 | imposed-lockdown?           | G       | whether to simulate imposed lockdown measures                                 |
 | shield-vulnerable?          | G       | whether to simulate shielding of the vulnerable measures                      |
 | personal-protections?       | G       | whether to simulate personal protections measures                             |
 | test-and-trace?             | G       | whether to simulate test and trace measures                                   |
 | isolate-symptomatics?       | G       | whether to simulate isolation of symptomatics measures                        |
 | pop-size                 	  | G      	| number of agents in simulation                                            	|
+| update-thresholds?          | G       | whether thresholds need to be updated due to the death of a number of agents  |
 | lockdown-active?         	  | G      	| whether an imposed lockdown is currently in progress                      	|
 | lockdown-threshold-num   	  | G      	| number of I agents to trigger lockdown                                    	|
 | agents-at-risk           	  | G      	| set of agents over at-risk age (70)                                       	|

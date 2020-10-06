@@ -11,8 +11,8 @@ breed [recovereds recovered]        ;; recovered and immune (R)
 
 globals [
   pop-data                  ;; test csv for population data
-
   pop-size                  ;; number of agents in simulation
+  update-thresholds?        ;; whether thresholds need to be updated due to the death of a number of agents
 
   ;; lockdown globals
   lockdown-active?          ;; whether an imposed lockdown is in progress
@@ -34,8 +34,6 @@ globals [
   ;; isolation of symptomatics globals
   start-isolation?          ;; whether isolation of symptomatics has begun
   isolation-sym-threshold-num   ;; number of I agents to trigger isolation of symptomatics
-
-  update-thresholds?
 
   ;; reporters
   num-contacts              ;; number of contacts between agents for current tick
@@ -307,11 +305,11 @@ to expose-susceptibles
     ]
   ]
 
-  if allow-imported-infections? [
+  if allow-extraneous-infections? [
     let candidates (susceptibles with [not staying-at-home?])
     if any? candidates [
       let p (random-float 100)
-      if p < imported-infection [
+      if p < extraneous-infection [
         ask one-of candidates [set-breed-exposed]
       ]
     ]
@@ -1458,10 +1456,10 @@ HORIZONTAL
 SLIDER
 1245
 140
-1430
+1445
 173
-imported-infection
-imported-infection
+extraneous-infection
+extraneous-infection
 0
 100
 1.0
@@ -1471,12 +1469,12 @@ imported-infection
 HORIZONTAL
 
 SWITCH
-1244
-281
-1441
-314
-allow-imported-infections?
-allow-imported-infections?
+1245
+280
+1435
+313
+allow-extraneous-infections?
+allow-extraneous-infections?
 1
 1
 -1000
