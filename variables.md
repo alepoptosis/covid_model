@@ -3,8 +3,9 @@
 Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, symptomat**I**cs, **R**ecovereds
 
 | name                     	  | access 	| description                                                               	|
-|--------------------------	  |--------	|---------------------------------------------------------------------------	|
+|-----------------------------|---------|-------------------------------------------------------------------------------|
 | min-radius                  | G       | minimum radius an agent can have                                              |
+| daily-contacts              | G       | % of neighbours each agent makes contact with each tick                       |
 | p-infect-base               | G       | basic probability of catching the virus upon contact                          |
 | asym-prevalence             | G       | % of infections that does not develop symptoms                                |
 | min-immunity-duration       | G       | minimum number of days a recovered agent will have immunity                   |
@@ -74,11 +75,12 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | traced?                  	  | ALL    	| whether the agent was traced as a contact of a tested agent               	|
 | asked-to-isolate?        	  | ALL    	| whether the agent was personally asked to isolate by IS or TT             	|
 | comply-with-isolation?   	  | ALL    	| whether the agent decided to comply with an isolation request by IS or TT 	|
-| iso-countdown            	  | ALL    	| individual isolation countdown                                            	|
-| counted?                 	  | ALL    	| whether the agent was already counted in daily contacts                   	|
+| isolation-countdown         | ALL    	| individual isolation countdown                                            	|
+| using-protections?      	  | ALL    	| whether the agent is currently adopting personal protections                	|
+| todays-contacts             | ALL     | set containing the neighbours contacted by the agent in the current tick      |
 | p-infect                 	  | S      	| individual probability of catching the virus                              	|
 | to-become-exposed?       	  | S      	| flag a S agent for exposure (E)                                           	|
-| inc-countdown            	  | E      	| individual incubation countdown                                           	|
+| incubation-countdown     	  | E      	| individual incubation countdown                                           	|
 | to-become-asymptomatic?  	  | E      	| flag an E agent to become asymptomatic (A)                                	|
 | contact-list             	  | E A I  	| list of neighbours the agent came in contact with since exposure          	|
 | tested?                  	  | E A I  	| whether the agent is aware of their infection status                      	|
@@ -90,5 +92,5 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | will-die?                	  | I      	| whether the agent will die (become D) or not (become R)                   	|
 | countdown                	  | I      	| multi-purpose countdown: death if will-die, recovery if not               	|
 | to-die?                  	  | I      	| flag a I agent to die (D)                                                 	|
-| imm-countdown            	  | R      	| individual immunity countdown                                             	|
+| immunity-countdown       	  | R      	| individual immunity countdown                                             	|
 | to-become-susceptible?   	  | R      	| flag a R agent to lose immunity (S)                                       	|
