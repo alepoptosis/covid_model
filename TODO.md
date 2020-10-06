@@ -16,8 +16,7 @@
 - ~~Introduce an agentset called todays-contacts to slim up the process of counting and recording contacts, and exposing susceptibles. This would be a subset of the neighbours that an agent actually made contact with. The count of contacts would then just be the sum of agentset counts / 2 and would ensure that if an agent is only interacting with a percentage of its neighbourhood, that the agents chosen are consistent throughout a tick.~~
 - Find a name for the random duration of the period between incubation and development of symptoms
 - ~~Change contact lists to agentsets~~
-- ~~Instead of using a random p value and comparing it to the parameter value, use n-of where n is the number of agents calculated from the % compliance for that measure (e.g. lockdown or shielding)~~
-- ^ Find a way to ensure using n-of doesn't prevent us from using 0.5 for test-coverage-asym
+- Instead of using a random p value and comparing it to the parameter value, use n-of where n is the number of agents calculated from the % compliance for that measure (e.g. lockdown or shielding)
 - Explain to the user that the order of procedures in modify-measures is critical to ensure that lockdown and shielding don't release agents that are being isolated for other reasons (i.e. isolation of symptomatics and test and trace)
 - Make the isolate procedure less convoluted
 - ~~Prevent the while loop of the normal distribution from looping infinitely~~

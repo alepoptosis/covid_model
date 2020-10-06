@@ -592,8 +592,12 @@ end
 to start-lockdown
   ;; ask all agents to go into lockdown
   ;; and ensure only a percentage (lockdown-compliance) does so
-  let n round (count turtles * lockdown-compliance / 100)
-  ask n-of n turtles [isolate-agent]
+  ask turtles [
+    let p (random-float 100)
+    if p < lockdown-compliance [
+      isolate-agent
+    ]
+  ]
   set lockdown-active? true
 end
 
@@ -611,8 +615,12 @@ end
 to start-shielding
   ;; ask all agents at risk to start shielding
   ;; and ensure only a percentage (shield-compliance) does so
-  let n round (count agents-at-risk * shield-compliance / 100)
-  ask n-of n agents-at-risk [isolate-agent]
+  ask agents-at-risk [
+    let p (random-float 100)
+    if p < shield-compliance [
+      isolate-agent
+    ]
+  ]
   set shielding-active? true
 end
 
@@ -628,13 +636,17 @@ to end-shielding
 end
 
 to start-protections
-  let n round (count turtles * protections-compliance / 100)
-  ask n-of n turtles [set using-protections? true]
-
-  ask susceptibles with [using-protections?] [
-    set p-infect p-infect-adj
+  ;; protections-compliance % of agents start using protections
+  ;; and susceptibles have their p-infect lowered to p-infect-adj
+  ask turtles [
+    let p (random-float 100)
+    if p < protections-compliance [
+      set using-protections? true
+      if breed = susceptibles [
+        set p-infect p-infect-adj
+      ]
+    ]
   ]
-
   set protections-active? true
 end
 
@@ -652,12 +664,19 @@ end
 
 to test
   ;; test symptomatics and exposed/asymptomatics at their respective rates
-  let untested-nonsym ((turtle-set exposeds asymptomatics) with [not tested?])
-  let n ceiling (count untested-nonsym * test-coverage-asym / 100)
-  ask n-of n untested-nonsym [set tested? true]
+  ask (turtle-set exposeds asymptomatics) with [not tested?] [
+    let p (random-float 100)
+    if p < test-coverage-asym [
+      set tested? true
+    ]
+  ]
 
-  set n ceiling (count symptomatics * test-coverage-sym / 100)
-  ask n-of n symptomatics [set tested? true]
+  ask symptomatics with [not tested?] [
+    let p (random-float 100)
+    if p < test-coverage-sym [
+      set tested? true
+    ]
+  ]
 end
 
 to trace
