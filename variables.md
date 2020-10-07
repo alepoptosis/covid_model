@@ -22,6 +22,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | protections-threshold       | G       | % of population that needs to be I to trigger personal protections            |
 | protections-strength        | G       | % reduction in probability of infections for agents adopting protections      |
 | testtrace-threshold         | G       | % of population that needs to be I to trigger test and trace                  |
+| contact-history-length      | G       | how many days back the contact history of an E, A or I agent goes             |
 | test-coverage-sym           | G       | % of untested symptomatic agents that get tested each tick                    |
 | test-coverage-asym          | G       | % of untested exposed and asymptomatic agents that get tested each tick       |
 | contacts-traced             | G       | % of contacts of the tested agent that are asked to isolate                   |
@@ -83,7 +84,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | to-become-exposed?       	  | S      	| flag a S agent for exposure (E)                                           	|
 | incubation-countdown     	  | E      	| individual incubation countdown                                           	|
 | to-become-asymptomatic?  	  | E      	| flag an E agent to become asymptomatic (A)                                	|
-| contact-list             	  | E A I  	| list of neighbours the agent came in contact with since exposure          	|
+| contact-list             	  | E A I  	| list of who the agent came in contact up to contact-history-length days prior |
 | tested?                  	  | E A I  	| whether the agent is aware of their infection status                      	|
 | contacts-alerted?        	  | E A I  	| whether the agent's contacts have been instructed to isolate              	|
 | presym-period               | E A     | number of days (1-3) in which agent is infectious but not (yet) symptomatic   |

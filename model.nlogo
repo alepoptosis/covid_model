@@ -75,7 +75,7 @@ susceptibles-own [
 exposeds-own [
   incubation-countdown      ;; individual incubation countdown
   to-become-asymptomatic?   ;; flag an E agent to become asymptomatic (A)
-  contact-list              ;; list of neighbours the agent came in contact with since exposure
+  contact-list              ;; list of who the agent came in contact up to contact-history-length days prior
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
   presym-period             ;; number of days (1-3) in which agent is infectious but not (yet) symptomatic
@@ -86,7 +86,7 @@ asymptomatics-own [
   countdown                 ;; multi-purpose countdown: symptoms if will-develop-sym?, removal if not
   to-become-sym?            ;; flag an A agent to become symptomatic (I)
   to-recover?               ;; flag an A agent to recover (R)
-  contact-list              ;; list of agents contacted since exposure
+  contact-list              ;; list of who the agent came in contact up to contact-history-length days prior
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
   presym-period             ;; number of days (1-3) in which agent is infectious but not (yet) symptomatic
@@ -97,7 +97,7 @@ symptomatics-own [
   countdown                 ;; multi-purpose countdown: death if will-die, recovery if not
   to-die?                   ;; flag a I agent to die (D)
   to-recover?               ;; flag a I agent to recover (R)
-  contact-list              ;; list of agents contacted since exposure
+  contact-list              ;; list of who the agent came in contact up to contact-history-length days prior
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
 ]
@@ -272,14 +272,18 @@ end
 to record-contacts
   ;; record contacts of infected agents (E, A or I) and update their contact list
   if count symptomatics >= testtrace-threshold-num [
-    ;; only check for new contacts if contact-list doesn't already include all neighbours
     ask (turtle-set exposeds asymptomatics symptomatics) [
-      if contact-list = nobody or count contact-list < count neighbours [
-        set contact-list (turtle-set todays-contacts contact-list)
+      ;; add today's contacts to the top of the contact-list
+      set contact-list (fput todays-contacts contact-list)
+      ;; if the addition means the list goes over the allowed length
+      ;; remove the oldest entry, i.e. the last one
+      if length contact-list > contact-history-length [
+        set contact-list (but-last contact-list)
       ]
     ]
   ]
 end
+
 
 to expose-susceptibles
   ;; check whether non-isolating susceptibles become exposed to the virus
@@ -527,7 +531,7 @@ to set-breed-exposed
   set breed exposeds
   set incubation-countdown (log-normal incubation-mean incubation-stdev 0)
   set to-become-asymptomatic? false
-  set contact-list nobody
+  set contact-list []
   set tested? false
   set contacts-alerted? false
   set presym-period (random 3 + 1)
@@ -727,9 +731,17 @@ to trace
     ;; flagging once contacts are alerted ensures each tested
     ;; agent attempts to reach its contacts only once
     if tested? and not contacts-alerted? [
-      if contact-list != nobody [
-        let n round (count contact-list * contacts-traced / 100)
-        ask n-of n contact-list [set traced? true]
+      ;; the contact-list made of contact-history-length sublists
+      ;; is turned into a single agentset
+      let contacts-agentset nobody
+      foreach contact-list [
+        day ->
+        set contacts-agentset (turtle-set day contacts-agentset)
+      ]
+      if contacts-agentset != nobody [
+        ;; only a percentage (contacts-traced) of contacts is actually flagged
+        let n round (count contacts-agentset * contacts-traced / 100)
+        ask n-of n contacts-agentset [set traced? true]
       ]
       set contacts-alerted? true
     ]
@@ -1046,7 +1058,7 @@ asym-prevalence
 asym-prevalence
 0
 100
-0.0
+60.0
 1
 1
 %
@@ -1351,15 +1363,15 @@ SWITCH
 493
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
 SLIDER
 915
-375
+370
 1111
-408
+403
 testtrace-threshold
 testtrace-threshold
 0
@@ -1372,9 +1384,9 @@ HORIZONTAL
 
 SLIDER
 915
-415
+450
 1112
-448
+483
 test-coverage-sym
 test-coverage-sym
 0
@@ -1387,9 +1399,9 @@ HORIZONTAL
 
 SLIDER
 915
-455
+490
 1114
-488
+523
 test-coverage-asym
 test-coverage-asym
 0
@@ -1402,9 +1414,9 @@ HORIZONTAL
 
 SLIDER
 915
-495
+530
 1132
-528
+563
 contacts-traced
 contacts-traced
 0
@@ -1428,9 +1440,9 @@ isolate-symptomatics?
 
 SLIDER
 915
-670
+710
 1115
-703
+743
 isolation-compliance-sym
 isolation-compliance-sym
 0
@@ -1443,9 +1455,9 @@ HORIZONTAL
 
 SLIDER
 915
-630
+670
 1135
-663
+703
 isolation-sym-threshold
 isolation-sym-threshold
 0
@@ -1484,9 +1496,9 @@ allow-extraneous-infections?
 
 SLIDER
 915
-535
+570
 1155
-568
+603
 isolation-compliance-tested
 isolation-compliance-tested
 0
@@ -1544,9 +1556,9 @@ HORIZONTAL
 
 SLIDER
 915
-575
+610
 1155
-608
+643
 isolation-compliance-traced
 isolation-compliance-traced
 0
@@ -1585,6 +1597,21 @@ daily-contacts
 10
 1
 % of neighbours
+HORIZONTAL
+
+SLIDER
+915
+410
+1117
+443
+contact-history-length
+contact-history-length
+0
+30
+7.0
+1
+1
+days
 HORIZONTAL
 
 @#$#@#$#@
