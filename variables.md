@@ -86,6 +86,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | contact-list             	  | E A I  	| list of neighbours the agent came in contact with since exposure          	|
 | tested?                  	  | E A I  	| whether the agent is aware of their infection status                      	|
 | contacts-alerted?        	  | E A I  	| whether the agent's contacts have been instructed to isolate              	|
+| presym-period               | E A     | number of days (1-3) in which agent is infectious but not (yet) symptomatic   |
 | will-develop-sym?        	  | A      	| whether the agent will develop symptoms (become I) or not (stay A)        	|
 | countdown                	  | A      	| multi-purpose countdown: symptoms if will-develop-sym?, removal if not    	|
 | to-become-sym?           	  | A      	| flag an A agent to become symptomatic (I)                                 	|

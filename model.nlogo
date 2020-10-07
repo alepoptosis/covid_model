@@ -78,6 +78,7 @@ exposeds-own [
   contact-list              ;; list of neighbours the agent came in contact with since exposure
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
+  presym-period             ;; number of days (1-3) in which agent is infectious but not (yet) symptomatic
 ]
 
 asymptomatics-own [
@@ -88,6 +89,7 @@ asymptomatics-own [
   contact-list              ;; list of agents contacted since exposure
   tested?                   ;; whether the agent is aware of their infection status
   contacts-alerted?         ;; whether its contacts have been instructed to isolate
+  presym-period             ;; number of days (1-3) in which agent is infectious but not (yet) symptomatic
 ]
 
 symptomatics-own [
@@ -319,7 +321,7 @@ end
 to progress-exposed
   ;; turn exposed agents that are almost the end of their incubation countdown into asymptomatic
   ask exposeds [
-    ifelse incubation-countdown <= (random 3 + 1)
+    ifelse incubation-countdown <= presym-period
     [set to-become-asymptomatic? true]
     [set incubation-countdown (incubation-countdown - 1)]
   ]
@@ -528,6 +530,7 @@ to set-breed-exposed
   set contact-list nobody
   set tested? false
   set contacts-alerted? false
+  set presym-period (random 3 + 1)
   if visual-elements? [
     set color yellow
     check-outline
@@ -556,7 +559,7 @@ to check-symptoms
     set countdown (normal-dist recovery-mean recovery-stdev) ;; recovery countdown
   ] [ ;; else
     set will-develop-sym? true
-    set countdown (random 3 + 1)                             ;; symptoms countdown
+    set countdown presym-period                              ;; symptoms countdown
   ]
 end
 
@@ -970,7 +973,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-1
+0
 1
 -1000
 
@@ -1043,7 +1046,7 @@ asym-prevalence
 asym-prevalence
 0
 100
-60.0
+0.0
 1
 1
 %
