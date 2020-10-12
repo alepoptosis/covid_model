@@ -21,6 +21,7 @@
 - Explain to the user that the order of procedures in modify-measures is critical to ensure that lockdown and shielding don't release agents that are being isolated for other reasons (i.e. isolation of symptomatics and test and trace)
 - Make the isolate procedure less convoluted
 - ~~Prevent the while loop of the normal distribution from looping infinitely~~
+- Ensure that symptomatics who finish isolation before recovering don't start a new course of isolation due to isolation of symptomatics (Stefano)
 
 # Implementation summary
 
