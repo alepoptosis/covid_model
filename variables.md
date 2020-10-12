@@ -53,6 +53,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | protections-active?         | G      	| whether personal protections are currently in place                       	|
 | protections-threshold-num   | G      	| number of I agents to trigger personal protections                        	|
 | p-infect-adj             	  | G      	| p-infect after reduction of risk from protections                         	|
+| record-contacts?            | G       | whether to start recording contacts for test and trace                        |
 | testtrace-threshold-num  	  | G      	| number of I agents to trigger test and trace                              	|
 | start-isolation?         	  | G      	| whether isolation of symptomatics has begun                               	|
 | isolation-sym-threshold-num | G      	| number of I agents to trigger isolation of symptomatics                   	|

@@ -11,7 +11,7 @@
 - ~~Expand countdown names (iso-countdown to isolation-countdown etc.)~~
 - ~~Add a neighbours-met-per-day slider and make it so that each agent only interacts with that fixed percentage of their neighbourhood every tick~~
 - ~~Test possible ways to only record contacts from x days before~~ 
-- ^ Figure out what to do with the contact history once active cases dip below the threshold
+- ~~^ Figure out what to do with the contact history once active cases dip below the threshold~~
 - *Test using an external file to set age ranges, their prevalence, and relative asymptomatic percentages and risk of death* -> in progress, however this could be very difficult to do in a clean way (e.g. would have to read the number of lines in csv to figure out how many brackets there are etc.) and may be more trouble than it's worth
 - ~~Move threshold calculation from setup-globals to modify-measures so that the threshold is updated as agents die (or could there be a way to only do this when agents die?)~~
 - ~~Introduce an agentset called todays-contacts to slim up the process of counting and recording contacts, and exposing susceptibles. This would be a subset of the neighbours that an agent actually made contact with. The count of contacts would then just be the sum of agentset counts / 2 and would ensure that if an agent is only interacting with a percentage of its neighbourhood, that the agents chosen are consistent throughout a tick.~~

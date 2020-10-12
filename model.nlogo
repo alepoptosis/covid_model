@@ -29,6 +29,7 @@ globals [
   p-infect-adj               ;; p-infect after reduction of risk from protections
 
   ;; test and trace globals
+  record-contacts?          ;; whether to start recording contacts
   testtrace-threshold-num   ;; number of I agents to trigger test and trace
 
   ;; isolation of symptomatics globals
@@ -194,6 +195,7 @@ to setup-globals
 
   ;; test and trace globals
   set testtrace-threshold-num (absolute-threshold testtrace-threshold)
+  set record-contacts? false
 
   ;; isolation of symptomatics globals
   set isolation-sym-threshold-num (absolute-threshold isolation-sym-threshold)
@@ -271,7 +273,11 @@ end
 
 to record-contacts
   ;; record contacts of infected agents (E, A or I) and update their contact list
-  if count symptomatics >= testtrace-threshold-num [
+  if not record-contacts? and count symptomatics >= testtrace-threshold-num [
+    set record-contacts? true
+  ]
+
+  if record-contacts? [
     ask (turtle-set exposeds asymptomatics symptomatics) [
       ;; add today's contacts to the top of the contact-list
       set contact-list (fput todays-contacts contact-list)
@@ -985,7 +991,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-0
+1
 1
 -1000
 
@@ -1376,7 +1382,7 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-0.0
+4.0
 1
 1
 % of pop is I
@@ -1391,7 +1397,7 @@ test-coverage-sym
 test-coverage-sym
 0
 100
-100.0
+75.0
 1
 1
 % of I
@@ -1406,7 +1412,7 @@ test-coverage-asym
 test-coverage-asym
 0
 100
-100.0
+1.0
 1
 1
 % of pop
