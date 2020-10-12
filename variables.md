@@ -7,7 +7,6 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | min-radius                  | G       | minimum radius an agent can have                                              |
 | daily-contacts              | G       | % of neighbours each agent makes contact with each tick                       |
 | p-infect-base               | G       | basic probability of catching the virus upon contact                          |
-| asym-prevalence             | G       | % of infections that does not develop symptoms                                |
 | min-immunity-duration       | G       | minimum number of days a recovered agent will have immunity                   |
 | recovery-mean               | G       | mean of the normal distribution for recovery countdowns                       |
 | recovery-stdev              | G       | std deviation of the normal distribution for recovery countdowns              |
@@ -58,18 +57,8 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | start-isolation?         	  | G      	| whether isolation of symptomatics has begun                               	|
 | isolation-sym-threshold-num | G      	| number of I agents to trigger isolation of symptomatics                   	|
 | num-contacts             	  | G      	| number of contacts between agents for current tick                        	|
-| count-inf-0-39           	  | G      	| cumulative counts of infecteds for each age range                         	|
-| count-inf-40-49          	  | G      	| cumulative counts of infecteds for each age range                         	|
-| count-inf-50-59          	  | G      	| cumulative counts of infecteds for each age range                         	|
-| count-inf-60-69          	  | G      	| cumulative counts of infecteds for each age range                         	|
-| count-inf-70-79          	  | G      	| cumulative counts of infecteds for each age range                         	|
-| count-inf-80plus         	  | G      	| cumulative counts of infecteds for each age range                         	|
-| count-dead-0-39          	  | G      	| cumulative counts of dead agents for each age range                       	|
-| count-dead-40-49         	  | G      	| cumulative counts of dead agents for each age range                       	|
-| count-dead-50-59         	  | G      	| cumulative counts of dead agents for each age range                       	|
-| count-dead-60-69         	  | G      	| cumulative counts of dead agents for each age range                       	|
-| count-dead-70-79         	  | G      	| cumulative counts of dead agents for each age range                       	|
-| count-dead-80plus        	  | G      	| cumulative counts of dead agents for each age range                       	|
+| count-inf-...           	  | G      	| cumulative counts of infecteds for each age range                         	|
+| count-dead-...          	  | G      	| cumulative counts of dead agents for each age range                       	|
 | age                      	  | ALL    	| age range of the agent                                                    	|
 | p-death                  	  | ALL    	| individual probability of death based on age range                        	|
 | radius                   	  | ALL    	| contact radius of the agent                                               	|

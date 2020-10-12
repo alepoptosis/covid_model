@@ -1,6 +1,6 @@
 # TO-DO list from code review
 
-- Assign asymptomatic prevalence by age range, like probability of death
+- ~~Assign asymptomatic prevalence by age range, like probability of death~~ Done following Chang et al., i.e. ~13% sym in children (<=18) and ~67% sym in adults (>18). We may have to add more references for that, and maybe even raise asym infectiousness to 30% like Chang et al. does
 - ~~Add protection-compliance to determine what percentage of agents adopts personal protection~~
 - ~~Reduce the risk of exposure from agents with personal protection, like for asymptomatics - this implies that PP needs to be extended to all breeds~~
 - ~~Add an isolation-compliance-traced for traced contacts~~

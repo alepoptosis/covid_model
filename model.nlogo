@@ -39,14 +39,16 @@ globals [
   ;; reporters
   num-contacts              ;; number of contacts between agents for current tick
 
-  count-inf-0-39            ;; cumulative counts of infecteds for each age range
+  count-inf-0-18            ;; cumulative counts of infecteds for each age range
+  count-inf-19-39
   count-inf-40-49
   count-inf-50-59
   count-inf-60-69
   count-inf-70-79
   count-inf-80plus
 
-  count-dead-0-39           ;; cumulative counts of dead agents for each age range
+  count-dead-0-18           ;; cumulative counts of dead agents for each age range
+  count-dead-19-39
   count-dead-40-49
   count-dead-50-59
   count-dead-60-69
@@ -209,14 +211,16 @@ to setup-globals
 
   ;; num-contacts is reset at every tick in count-contacts
 
-  set count-inf-0-39 0
+  set count-inf-0-18 0
+  set count-inf-19-39 0
   set count-inf-40-49 0
   set count-inf-50-59 0
   set count-inf-60-69 0
   set count-inf-70-79 0
   set count-inf-80plus 0
 
-  set count-dead-0-39 0
+  set count-dead-0-18 0
+  set count-dead-19-39 0
   set count-dead-40-49 0
   set count-dead-50-59 0
   set count-dead-60-69 0
@@ -508,9 +512,10 @@ end
 to set-age
   ;; sets an agent's age based on UK population data
   let p random-float 100
-  if p < 50 [set age "0-39"]                     ;; 50% (UK census 2019)
-  if p >= 50 and p < 63 [set age "40-49"]        ;; 13%
-  if p >= 63 and p < 76 [set age "50-59"]        ;; 13%
+  if p < 22 [set age "0-18"]                     ;; 22% (UK census 2019)
+  if p >= 22 and p < 49 [set age "19-39"]        ;; 27%
+  if p >= 49 and p < 62 [set age "40-49"]        ;; 13%
+  if p >= 62 and p < 76 [set age "50-59"]        ;; 14%
   if p >= 76 and p < 87 [set age "60-69"]        ;; 11%
   if p >= 87 and p < 95 [set age "70-79"]        ;; 8%
   if p >= 95 [set age "80+"]                     ;; 5%
@@ -564,6 +569,7 @@ to check-symptoms
   ;; check whether the agent will remain asymptomatic or develop symptoms
   ;; and assign a value to the countdown accordingly
   let p random-float 100
+  let asym-prevalence (actual-asym-prevalence age)
   ifelse p < asym-prevalence [
     set will-develop-sym? false
     set countdown (normal-dist recovery-mean recovery-stdev) ;; recovery countdown
@@ -575,7 +581,8 @@ end
 
 to add-inf-count
   ;; keeps a running count of infections per age range
-  if age = "0-39"  [set count-inf-0-39 (count-inf-0-39 + 1)]
+  if age = "0-18"  [set count-inf-0-18 (count-inf-0-18 + 1)]
+  if age = "19-39" [set count-inf-19-39 (count-inf-19-39 + 1)]
   if age = "40-49" [set count-inf-40-49 (count-inf-40-49 + 1)]
   if age = "50-59" [set count-inf-50-59 (count-inf-50-59 + 1)]
   if age = "60-69" [set count-inf-60-69 (count-inf-60-69 + 1)]
@@ -585,7 +592,8 @@ end
 
 to add-dead-count
   ;; keeps a running count of deaths per age range
-  if age = "0-39"  [set count-dead-0-39 (count-dead-0-39 + 1)]
+  if age = "0-18"  [set count-dead-0-18 (count-dead-0-18 + 1)]
+  if age = "19-39" [set count-dead-19-39 (count-dead-19-39 + 1)]
   if age = "40-49" [set count-dead-40-49 (count-dead-40-49 + 1)]
   if age = "50-59" [set count-dead-50-59 (count-dead-50-59 + 1)]
   if age = "60-69" [set count-dead-60-69 (count-dead-60-69 + 1)]
@@ -840,14 +848,25 @@ end
 
 to-report actual-p-death [#age]
   ;; return adjusted probability of death based on age range
-  let p 0
-  if #age = "0-39"  [set p 0.2]   ;; based on worldometer 24/9/2020
-  if #age = "40-49" [set p 0.4]
-  if #age = "50-59" [set p 1.3]
-  if #age = "60-69" [set p 3.6]
-  if #age = "70-79" [set p 8]
-  if #age = "80+"   [set p 14.8]
-  report p
+  let x 0
+  if #age = "0-18" or age = "19-39" [set x 0.2]   ;; based on worldometer 24/9/2020
+  if #age = "40-49" [set x 0.4]
+  if #age = "50-59" [set x 1.3]
+  if #age = "60-69" [set x 3.6]
+  if #age = "70-79" [set x 8]
+  if #age = "80+"   [set x 14.8]
+  report x
+end
+
+to-report actual-asym-prevalence [#age]
+  ;; set asymptomatic proportion based on age (Chang et al., 2020)
+  let x 0
+  ifelse #age = "0-18" [
+    set x 87               ;; in children, ~13% cases are symptomatic
+  ] [ ;; else
+    set x 33               ;; in adults, ~67% of cases are symptomatic
+  ]
+  report x
 end
 
 to-report absolute-threshold [#per]
@@ -991,7 +1010,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-1
+0
 1
 -1000
 
@@ -1050,21 +1069,6 @@ p-infect-base
 0
 100
 10.0
-1
-1
-%
-HORIZONTAL
-
-SLIDER
-610
-210
-782
-243
-asym-prevalence
-asym-prevalence
-0
-100
-60.0
 1
 1
 %
@@ -1369,7 +1373,7 @@ SWITCH
 493
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 
@@ -1517,9 +1521,9 @@ HORIZONTAL
 
 SLIDER
 610
-250
+215
 785
-283
+248
 min-immunity-duration
 min-immunity-duration
 0
