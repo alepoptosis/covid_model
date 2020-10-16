@@ -532,6 +532,7 @@ to set-breed-susceptible
   set breed susceptibles
   set p-infect (p-infect-base / 100)
   set to-become-exposed? false
+  set asked-to-isolate? false
   if visual-elements? [
     set color green
     check-outline
@@ -835,6 +836,7 @@ to update-isolation-countdown
         release-agent
         set isolation-countdown -1
         set traced? false
+        set comply-with-isolation? false
       ]
     ]
   ] [ ;; else
@@ -1444,7 +1446,7 @@ SWITCH
 533
 isolate-symptomatics?
 isolate-symptomatics?
-1
+0
 1
 -1000
 
@@ -1457,7 +1459,7 @@ isolation-compliance-sym
 isolation-compliance-sym
 0
 100
-10.0
+100.0
 1
 1
 % of I
@@ -1472,7 +1474,7 @@ isolation-sym-threshold
 isolation-sym-threshold
 0
 100
-5.0
+0.0
 1
 1
 % of pop is I
@@ -1528,7 +1530,7 @@ min-immunity-duration
 min-immunity-duration
 0
 365
-365.0
+30.0
 1
 1
 days
