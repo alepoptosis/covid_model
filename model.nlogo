@@ -770,19 +770,19 @@ to isolate
   if test-and-trace? [
     ;; add agents who have been tested
     let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
-    ask-agents-to-isolate tested-agents
+    ask tested-agents with [not asked-to-isolate?] [ask-to-isolate]
     set agents-to-check (turtle-set tested-agents with [comply-with-isolation?] agents-to-check)
 
     ;; add agents who have been traced as contacts (those reached always isolate)
     let traced-agents (turtles with [traced?])
-    ask-agents-to-isolate traced-agents
+    ask traced-agents with [not asked-to-isolate?] [ask-to-isolate]
     set agents-to-check (turtle-set traced-agents with [comply-with-isolation?] agents-to-check)
   ]
 
   if isolate-symptomatics? [
     ;; add agents who comply with the isolation of symptomatics
-    ask-agents-to-isolate symptomatics
-    set agents-to-check (symptomatics with [comply-with-isolation?])
+    ask symptomatics with [not asked-to-isolate?] [ask-to-isolate]
+    set agents-to-check (turtle-set symptomatics with [comply-with-isolation?] agents-to-check)
   ]
 
   ;; add agents who have recovered but may still have an active isolation countdown
@@ -792,35 +792,36 @@ to isolate
   ask agents-to-check [update-isolation-countdown]
 end
 
-to ask-agents-to-isolate [agents]
-  ;; ask a set of agents to isolate either due to the test and trace or
-  ;; isolation of symptomatic measures
-  ask agents with [not asked-to-isolate?] [
-    let p (random-float 100)
+to ask-to-isolate
+  ;; ask agents to isolate either due to the test and trace or isolation of symptomatic measures
+  let p (random-float 100)
+  let compliance 0
 
-    ;; agents who were tested or traced might have a different chance of complying with
-    ;; isolation than just those with symptoms, so each case has different probabilities
-    ifelse traced? or tested? [
-      ifelse traced? [
-        if p < isolation-compliance-traced [
-          set comply-with-isolation? true
-        ]
-      ] [ ;; else they're tested - this is to prevent asking tested? to breed who do not own that attribute
-        if p < isolation-compliance-tested [
-          set comply-with-isolation? true
-        ]
-      ]
-    ] [ ;; else they're only symptomatics
-      if p < isolation-compliance-sym [
-        set comply-with-isolation? true
-      ]
+  ;; agents who were tested or traced might have a different chance of complying with
+  ;; isolation than just those with symptoms, so each case has different probability
+  ifelse traced? or tested? [
+    ifelse traced? [
+      set compliance isolation-compliance-traced
+    ] [ ;; else they're tested - this is to prevent asking tested? to breed who do not own that attribute
+      set compliance isolation-compliance-tested
     ]
-    set asked-to-isolate? true
+  ] [ ;; else they're only symptomatics
+    set compliance isolation-compliance-sym
   ]
+
+  ;; compare p to the correct compliance and mark them compliant if they pass
+  if p < compliance [
+    set comply-with-isolation? true
+  ]
+
+  ;; flag them as having been asked
+  set asked-to-isolate? true
 end
 
 to update-isolation-countdown
   ;; set or decrease the countdown, or release the agent at the end of it
+
+  ;; if the countdown is -1, the proper countdown is set depending on the agent
   if isolation-countdown = -1 [
     isolate-agent
     ifelse traced? [
@@ -830,6 +831,7 @@ to update-isolation-countdown
     ]
   ]
 
+  ;; then it starts being checked, and when it hits 0, the agent is released
   ifelse isolation-countdown = 0 [
     if not lockdown-active? [
       if not shielding-active? or not member? self agents-at-risk [
@@ -938,9 +940,9 @@ ticks
 30.0
 
 BUTTON
-19
+20
 540
-82
+83
 573
 NIL
 setup
@@ -1375,7 +1377,7 @@ SWITCH
 493
 test-and-trace?
 test-and-trace?
-1
+0
 1
 -1000
 
@@ -1388,7 +1390,7 @@ testtrace-threshold
 testtrace-threshold
 0
 100
-4.0
+0.0
 1
 1
 % of pop is I
@@ -1403,7 +1405,7 @@ test-coverage-sym
 test-coverage-sym
 0
 100
-75.0
+100.0
 1
 1
 % of I
@@ -1418,7 +1420,7 @@ test-coverage-asym
 test-coverage-asym
 0
 100
-1.0
+100.0
 1
 1
 % of pop

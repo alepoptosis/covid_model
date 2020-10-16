@@ -19,7 +19,7 @@
 - ~~Change contact lists to agentsets~~
 - ~~Instead of using a random p value and comparing it to the parameter value, use n-of where n is the number of agents calculated from the % compliance for that measure (e.g. lockdown or shielding)~~ (doesn't support floats, left old system in place)
 - Explain to the user that the order of procedures in modify-measures is critical to ensure that lockdown and shielding don't release agents that are being isolated for other reasons (i.e. isolation of symptomatics and test and trace)
-- Make the isolate procedure less convoluted
+- ~~Make the isolate procedure less convoluted~~
 - ~~Prevent the while loop of the normal distribution from looping infinitely~~
 - ~~Ensure that symptomatics who finish isolation before recovering don't start a new course of isolation due to isolation of symptomatics~~
 
