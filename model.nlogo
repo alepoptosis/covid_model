@@ -501,7 +501,7 @@ to modify-measures
   ;; test and trace doesn't check threshold to ensure agents finish their isolation even if
   ;; active cases dip below it
   if test-and-trace? or start-isolation? [
-    isolate
+    update-isolation-status
   ]
 end
 
@@ -763,70 +763,81 @@ to trace
   ]
 end
 
-to isolate
-  ;; isolate tested agents and their traced contacts
-  let agents-to-check nobody ;; agents for whom isolation has to progress
+to update-isolation-status
+  ;; Updates the isolation status for agents in two steps:
+  ;;
+  ;; 1. Agents who have not yet been asked to isolate, are now asked if they will comply
+  ;;    with the request. Depending on the reason why they have been asked to isolate,
+  ;;    they will respond with different probabilities (e.g. tested positive,
+  ;;    traced contact, etc.).
+  ;;
+  ;; 2. All agents, who have agreed to comply with the request to isolate, will update
+  ;;    their isolation countdown. This will make them isolate, or stop isolating.
 
+  let agents-to-update nobody
+
+  ;; Agents who have been tested, or traced as contacts (those reached always isolate)
   if test-and-trace? [
-    ;; add agents who have been tested
     let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
-    ask tested-agents with [not asked-to-isolate?] [ask-to-isolate]
-    set agents-to-check (turtle-set tested-agents with [comply-with-isolation?] agents-to-check)
-
-    ;; add agents who have been traced as contacts (those reached always isolate)
     let traced-agents (turtles with [traced?])
-    ask traced-agents with [not asked-to-isolate?] [ask-to-isolate]
-    set agents-to-check (turtle-set traced-agents with [comply-with-isolation?] agents-to-check)
+
+    ask-agents-to-isolate tested-agents isolation-compliance-tested
+    ask-agents-to-isolate traced-agents isolation-compliance-traced
+
+    set agents-to-update (turtle-set tested-agents with [comply-with-isolation?] agents-to-update)
+    set agents-to-update (turtle-set traced-agents with [comply-with-isolation?] agents-to-update)
   ]
 
+  ;; Agents who comply with the "isolation of symptomatics"
   if isolate-symptomatics? [
-    ;; add agents who comply with the isolation of symptomatics
-    ask symptomatics with [not asked-to-isolate?] [ask-to-isolate]
-    set agents-to-check (turtle-set symptomatics with [comply-with-isolation?] agents-to-check)
+    ask-agents-to-isolate symptomatics isolation-compliance-sym
+    set agents-to-update (turtle-set symptomatics with [comply-with-isolation?] agents-to-update)
   ]
 
-  ;; add agents who have recovered but may still have an active isolation countdown
+  ;; Agents who have recovered but may still have an active isolation countdown
   ;; because they have recovered before the end of their isolation
-  set agents-to-check (turtle-set recovereds with [isolation-countdown >= 0] agents-to-check)
+  set agents-to-update (turtle-set recovereds with [isolation-countdown >= 0] agents-to-update)
 
-  ask agents-to-check [update-isolation-countdown]
+  ask agents-to-update [update-isolation-countdown]
 end
 
-to ask-to-isolate
-  ;; ask agents to isolate either due to the test and trace or isolation of symptomatic measures
-  let p (random-float 100)
-  let compliance 0
+to ask-agents-to-isolate [#agents #isolation-compliance-likelihood]
+  ;; Asks agents, who have not yet been asked, if they will comply with the request to isolate.
+  ;;
+  ;; Agents will decide whether to comply based on the likelihood of isolating for each group (breed).
 
-  ;; agents who were tested or traced might have a different chance of complying with
-  ;; isolation than just those with symptoms, so each case has different probability
-  ifelse traced? or tested? [
-    ifelse traced? [
-      set compliance isolation-compliance-traced
-    ] [ ;; else they're tested - this is to prevent asking tested? to breed who do not own that attribute
-      set compliance isolation-compliance-tested
+  ask #agents with [not asked-to-isolate?] [
+    let p (random-float 100)
+
+    ;; compare p to the correct compliance and mark them compliant if they pass
+    if p < #isolation-compliance-likelihood [
+      set comply-with-isolation? true
     ]
-  ] [ ;; else they're only symptomatics
-    set compliance isolation-compliance-sym
-  ]
 
-  ;; compare p to the correct compliance and mark them compliant if they pass
-  if p < compliance [
-    set comply-with-isolation? true
+    ;; flag them as having been asked
+    set asked-to-isolate? true
   ]
-
-  ;; flag them as having been asked
-  set asked-to-isolate? true
 end
 
 to update-isolation-countdown
-  ;; set or decrease the countdown, or release the agent at the end of it
+  ;; Updates the isolation countdown and isolation status for an agent.
+  ;;
+  ;; Countdown = -1: the agent was not isolating, so ask them to isolate.
+  ;; The isolation period is set depending on the reason why the agent was asked
+  ;; to isolate, e.g. traced contact from "test and trace" measure, or symptomatic.
+  ;;
+  ;; Countdown = 0: decrease countdown and release the agent if the following are true:
+  ;;   - no lockdown in progress
+  ;;   - the shielding measure is not active, or the agent is not at risk
+  ;;
+  ;; Countdown > 0: decrease the countdown.
 
-  ;; if the countdown is -1, the proper countdown is set depending on the agent
   if isolation-countdown = -1 [
     isolate-agent
+
     ifelse traced? [
       set isolation-countdown isolation-duration-contact
-    ] [ ;; else they're a case (untested symptomatic or tested agent)
+    ] [ ;; else they're a case (e.g. symptomatic, or tested agent)
       set isolation-countdown isolation-duration-case
     ]
   ]
