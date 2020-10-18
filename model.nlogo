@@ -646,54 +646,67 @@ to isolate-agent
 end
 
 to release-agent
-    set staying-at-home? false
-    if visual-elements? [set shape "person"]
+  ;; Makes agents stop isolating.
+  ;;
+  ;; Agents can stop isolating only if the following are true:
+  ;; - lockdown is not active
+  ;; - they are not at risk or, if they are, shielding is not active
+  ;; - they are not required to isolate because of other measures
+
+  if not lockdown-active? [
+    if not shielding-active? or not member? self agents-at-risk [
+      if isolation-countdown <= 0 [
+        set staying-at-home? false
+        if visual-elements? [set shape "person"]
+      ]
+    ]
+  ]
 end
 
 to start-lockdown
   ;; ask all agents to go into lockdown
   ;; and ensure only a percentage (lockdown-compliance) does so
+  set lockdown-active? true
+
   ask turtles [
     let p (random-float 100)
     if p < lockdown-compliance [
       isolate-agent
     ]
   ]
-  set lockdown-active? true
 end
 
 to end-lockdown
-  ;; ask all agents to exit lockdown
-  ;; unless they are at risk and shielding is still active
-  ask turtles [
-    if not shielding-active? or not member? self agents-at-risk [
-      release-agent
-    ]
-  ]
+  ;; Stops the lockdown measure and allows agents to be released.
+
   set lockdown-active? false
+
+  ask turtles [
+    release-agent
+  ]
 end
 
 to start-shielding
   ;; ask all agents at risk to start shielding
   ;; and ensure only a percentage (shield-compliance) does so
+  set shielding-active? true
+
   ask agents-at-risk [
     let p (random-float 100)
     if p < shield-compliance [
       isolate-agent
     ]
   ]
-  set shielding-active? true
 end
 
 to end-shielding
-  ;; ask all agents at risk to  stop shielding
-  ;; unless a lockdown is currently in progress
-  if not lockdown-active? [
-    ask agents-at-risk [
-      release-agent
-    ]
-  ]
+  ;; Stops the shielding measure and allows agents at risk to be released.
+
   set shielding-active? false
+
+  ask agents-at-risk [
+    release-agent
+  ]
 end
 
 to start-protections
@@ -831,9 +844,7 @@ to update-isolation-countdown
   ;; The isolation period is set depending on the reason why the agent was asked
   ;; to isolate, e.g. traced contact from "test and trace" measure, or symptomatic.
   ;;
-  ;; Countdown = 0: decrease countdown and release the agent if the following are true:
-  ;;   - no lockdown in progress
-  ;;   - the shielding measure is not active, or the agent is not at risk
+  ;; Countdown = 0: allow the agent to be released and reset their status.
   ;;
   ;; Countdown > 0: decrease the countdown.
 
@@ -849,14 +860,10 @@ to update-isolation-countdown
 
   ;; then it starts being checked, and when it hits 0, the agent is released
   ifelse isolation-countdown = 0 [
-    if not lockdown-active? [
-      if not shielding-active? or not member? self agents-at-risk [
-        release-agent
-        set isolation-countdown -1
-        set traced? false
-        set comply-with-isolation? false
-      ]
-    ]
+    release-agent
+    set isolation-countdown -1
+    set traced? false
+    set comply-with-isolation? false
   ] [ ;; else
     set isolation-countdown (isolation-countdown - 1)
   ]
