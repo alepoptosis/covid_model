@@ -741,7 +741,12 @@ to test
 end
 
 to trace
-  ;; identify contacts of tested agents and flag them as traced
+  ;; Identifies contacts of tested agents and flag them as traced.
+  ;;
+  ;; Only a subset of agents contained in contact-list are flagged as traced.
+  ;; This allows to simulate different scenarios where only a percentage of
+  ;; contacts, set through the interface, are traced.
+
   ask (turtle-set exposeds asymptomatics symptomatics) [
     ;; flagging once contacts are alerted ensures each tested
     ;; agent attempts to reach its contacts only once
