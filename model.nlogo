@@ -129,7 +129,7 @@ end
 
 to setup
   clear-all
-;  setup-csv
+;  setup-csv                    ;; test procedure to load population data from csv
   setup-turtles
   setup-globals
   reset-ticks
@@ -162,12 +162,12 @@ to setup-turtles
       set using-protections? false
       set todays-contacts nobody
 
-      ;; setup S-specific attributes
+      ;; setup susceptible-specific attributes
       set-breed-susceptible
     ]
   ]
 
-  ;; assign neigbours agentsets (can only be done once all agents have a radius)
+  ;; assign neigbours agentsets (can only be done once all agents are assigned a radius)
   ask turtles [
     set neighbours (other turtles in-radius radius with [radius >= distance myself])
   ]
@@ -205,6 +205,7 @@ to setup-globals
   ;; tt & is globals
   set start-isolation? false
 
+  ;; all measures globals
   set update-thresholds? false
 
   ;; reporters
@@ -243,8 +244,8 @@ to go
     progress-asym                         ;; progress asymptomatic agents through their countdown (to either develop symptoms or recover)
     progress-sym                          ;; progress symptomatic agents through their countdown (to either die or recover)
     if lose-immunity? [lose-immunity]     ;; progress recovered agents through their immunity countdown (to return susceptible)
-    update-breeds                         ;; change breeds of agents who moved onto a different stage
-    modify-measures                       ;; update control measures based on the new number of active cases
+    update-breeds                         ;; change breeds of agents who moved onto a different stage during that tick
+    modify-measures                       ;; update and implement control measures
     tick
   ] [
     stop
@@ -272,21 +273,28 @@ end
 
 to count-contacts
   ;; count the number of contacts between agents at each tick
+  ;; i.e. the total number of contacts divided by 2, since contacts are bilateral
   set num-contacts (round (sum [count todays-contacts] of turtles / 2))
 end
 
 to record-contacts
   ;; record contacts of infected agents (E, A or I) and update their contact list
+
+  ;; ensure recording of contacts doesn't turn off once the threshold is first passed
+  ;; this is because we are simulating manual contact tracing rather than one dependent
+  ;; on tracking by an app, the government, or services (e.g. restaurants, pubs)
   if not record-contacts? and count symptomatics >= testtrace-threshold-num [
     set record-contacts? true
   ]
 
+  ;; this system ensures an agent's contact history only goes back a certain number of days
+  ;; (defined by contact-history-length)
   if record-contacts? [
     ask (turtle-set exposeds asymptomatics symptomatics) [
       ;; add today's contacts to the top of the contact-list
       set contact-list (fput todays-contacts contact-list)
       ;; if the addition means the list goes over the allowed length
-      ;; remove the oldest entry, i.e. the last one
+      ;; remove the oldest entry, i.e. the last item of the list
       if length contact-list > contact-history-length [
         set contact-list (but-last contact-list)
       ]
@@ -310,8 +318,11 @@ to expose-susceptibles
     let num-asym ((count todays-contacts with [breed = asymptomatics and not staying-at-home? and not using-protections?]) * 0.1)
     if num-asym > 0 and num-asym < 1 [set num-asym 1]
 
+    ;; total number of infected contacts
     let total-inf (num-sym + num-sym-protections + num-asym)
 
+    ;; if there are infected contacts, the probability of at least one of them causing infection
+    ;; is 1 - the probability that none do (p-exposure)
     if total-inf != 0 [
       let p-exposure (1 - ((1 - p-infect) ^ total-inf))
       let p (random-float 100)
@@ -321,6 +332,9 @@ to expose-susceptibles
     ]
   ]
 
+  ;; if infections originating outside the agent's normal social circle are permitted
+  ;; each tick has a probability that one susceptible agent who is not isolating
+  ;; will become exposed even if none of his contacts are infected
   if allow-extraneous-infections? [
     let candidates (susceptibles with [not staying-at-home?])
     if any? candidates [
@@ -395,7 +409,7 @@ to update-breeds
   ]
 
   ask exposeds with [to-become-asymptomatic?] [
-    add-inf-count
+    add-inf-count              ;; infection and agent's age are recorded
     set-breed-asymptomatic
   ]
 
@@ -416,20 +430,19 @@ to update-breeds
   ]
 
   ask agents-to-die [
-    add-dead-count
+    add-dead-count              ;; death and agent's age are recorded
     die
   ]
 
   ;; population size and tresholds are updated only if needed
-  ;;? should they only be updated if the measure is on or regardless?
   if update-thresholds? [
     set pop-size (count turtles)
 
-    set lockdown-threshold-num (absolute-threshold lockdown-threshold)
-    set shield-threshold-num (absolute-threshold shield-threshold)
-    set protections-threshold-num (absolute-threshold protections-threshold)
-    set testtrace-threshold-num (absolute-threshold testtrace-threshold)
-    set isolation-sym-threshold-num (absolute-threshold isolation-sym-threshold)
+    if imposed-lockdown? [set lockdown-threshold-num (absolute-threshold lockdown-threshold)]
+    if shield-vulnerable? [set shield-threshold-num (absolute-threshold shield-threshold)]
+    if personal-protections? [set protections-threshold-num (absolute-threshold protections-threshold)]
+    if test-and-trace? [set testtrace-threshold-num (absolute-threshold testtrace-threshold)]
+    if isolation-symptomatics? [set isolation-sym-threshold-num (absolute-threshold isolation-sym-threshold)]
 
     set update-thresholds? false
   ]
@@ -442,7 +455,7 @@ to update-breeds
 end
 
 to modify-measures
-  ;; update control measures based on the new number of active cases
+  ;; update control measures based on the current number of active cases
   let active-cases (count symptomatics)
 
   ;;;; IMPOSED LOCKDOWN
@@ -490,7 +503,7 @@ to modify-measures
   ;;;; ISOLATE SYMPTOMATICS
   ;; once active cases are past the threshold, isolation of symptomatic agents is switched on
   ;; and remains active for the entirety of the simulation
-  if isolate-symptomatics? and not start-isolation? [
+  if isolation-symptomatics? and not start-isolation? [
     if active-cases >= isolation-sym-threshold-num [
       set start-isolation? true
     ]
@@ -498,8 +511,8 @@ to modify-measures
 
   ;;;;; ISOLATION (IS and TT)
   ;; this section carries out isolation for both test and trace and isolation of symptomatics
-  ;; test and trace doesn't check threshold to ensure agents finish their isolation even if
-  ;; active cases dip below it
+  ;; test and trace doesn't check threshold to ensure agents finish their isolation
+  ;; even if active cases dip below it
   if test-and-trace? or start-isolation? [
     update-isolation-status
   ]
@@ -508,6 +521,8 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;; SUPPORTING PROCEDURES ;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;; SETUP PROCEDURES
 
 to set-age
   ;; sets an agent's age based on UK population data
@@ -520,6 +535,8 @@ to set-age
   if p >= 87 and p < 95 [set age "70-79"]        ;; 8%
   if p >= 95 [set age "80+"]                     ;; 5%
 end
+
+;;;;; BREED SETTING PROCEDURES
 
 to check-outline
   ;; ensures agents retain their outline when changing breed
@@ -570,6 +587,7 @@ to check-symptoms
   ;; check whether the agent will remain asymptomatic or develop symptoms
   ;; and assign a value to the countdown accordingly
   let p random-float 100
+  ;; adjust asymptomatic prevalence based on age
   let asym-prevalence (actual-asym-prevalence age)
   ifelse p < asym-prevalence [
     set will-develop-sym? false
@@ -578,28 +596,6 @@ to check-symptoms
     set will-develop-sym? true
     set countdown presym-period                              ;; symptoms countdown
   ]
-end
-
-to add-inf-count
-  ;; keeps a running count of infections per age range
-  if age = "0-18"  [set count-inf-0-18 (count-inf-0-18 + 1)]
-  if age = "19-39" [set count-inf-19-39 (count-inf-19-39 + 1)]
-  if age = "40-49" [set count-inf-40-49 (count-inf-40-49 + 1)]
-  if age = "50-59" [set count-inf-50-59 (count-inf-50-59 + 1)]
-  if age = "60-69" [set count-inf-60-69 (count-inf-60-69 + 1)]
-  if age = "70-79" [set count-inf-70-79 (count-inf-70-79 + 1)]
-  if age = "80+"   [set count-inf-80plus (count-inf-80plus + 1)]
-end
-
-to add-dead-count
-  ;; keeps a running count of deaths per age range
-  if age = "0-18"  [set count-dead-0-18 (count-dead-0-18 + 1)]
-  if age = "19-39" [set count-dead-19-39 (count-dead-19-39 + 1)]
-  if age = "40-49" [set count-dead-40-49 (count-dead-40-49 + 1)]
-  if age = "50-59" [set count-dead-50-59 (count-dead-50-59 + 1)]
-  if age = "60-69" [set count-dead-60-69 (count-dead-60-69 + 1)]
-  if age = "70-79" [set count-dead-70-79 (count-dead-70-79 + 1)]
-  if age = "80+"   [set count-dead-80plus (count-dead-80plus + 1)]
 end
 
 to set-breed-symptomatic
@@ -640,15 +636,17 @@ to set-breed-recovered
   ]
 end
 
+;;;;; ISOLATION AND RELEASE PROCEDURES
+
 to isolate-agent
   set staying-at-home? true
   if visual-elements? [set shape "person-outline"]
 end
 
 to release-agent
-  ;; Makes agents stop isolating.
-  ;;
-  ;; Agents can stop isolating only if the following are true:
+  ;; makes agents stop isolating
+
+  ;; agents can stop isolating only if the following are true:
   ;; - lockdown is not active
   ;; - they are not at risk or, if they are, shielding is not active
   ;; - they are not required to isolate because of other measures
@@ -677,8 +675,7 @@ to start-lockdown
 end
 
 to end-lockdown
-  ;; Stops the lockdown measure and allows agents to be released.
-
+  ;; stop the lockdown measure and allow agents to be released
   set lockdown-active? false
 
   ask turtles [
@@ -700,7 +697,7 @@ to start-shielding
 end
 
 to end-shielding
-  ;; Stops the shielding measure and allows agents at risk to be released.
+  ;; stop the shielding measure and allow agents at risk to be released
 
   set shielding-active? false
 
@@ -754,11 +751,11 @@ to test
 end
 
 to trace
-  ;; Identifies contacts of tested agents and flag them as traced.
-  ;;
-  ;; Only a subset of agents contained in contact-list are flagged as traced.
-  ;; This allows to simulate different scenarios where only a percentage of
-  ;; contacts, set through the interface, are traced.
+  ;; identifies contacts of tested agents and flag them as traced
+
+  ;; only a subset of agents contained in contact-list are flagged as traced.
+  ;; this allows to simulate different scenarios where only a percentage of
+  ;; contacts, set through the interface, are traced
 
   ask (turtle-set exposeds asymptomatics symptomatics) [
     ;; flagging once contacts are alerted ensures each tested
@@ -782,19 +779,19 @@ to trace
 end
 
 to update-isolation-status
-  ;; Updates the isolation status for agents in two steps:
+  ;; updates the isolation status for agents in two steps:
   ;;
-  ;; 1. Agents who have not yet been asked to isolate, are now asked if they will comply
+  ;; 1. agents who have not yet been asked to isolate, are now asked if they will comply
   ;;    with the request. Depending on the reason why they have been asked to isolate,
   ;;    they will respond with different probabilities (e.g. tested positive,
   ;;    traced contact, etc.).
   ;;
-  ;; 2. All agents, who have agreed to comply with the request to isolate, will update
+  ;; 2. all agents who have agreed to comply with the request to isolate, will update
   ;;    their isolation countdown. This will make them isolate, or stop isolating.
 
   let agents-to-update nobody
 
-  ;; Agents who have been tested, or traced as contacts (those reached always isolate)
+  ;; agents who have been tested, or traced as contacts (those reached always isolate)
   if test-and-trace? [
     let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
     let traced-agents (turtles with [traced?])
@@ -806,13 +803,13 @@ to update-isolation-status
     set agents-to-update (turtle-set traced-agents with [comply-with-isolation?] agents-to-update)
   ]
 
-  ;; Agents who comply with the "isolation of symptomatics"
-  if isolate-symptomatics? [
+  ;; agents who comply with the "isolation of symptomatics"
+  if isolation-symptomatics? [
     ask-agents-to-isolate symptomatics isolation-compliance-sym
     set agents-to-update (turtle-set symptomatics with [comply-with-isolation?] agents-to-update)
   ]
 
-  ;; Agents who have recovered but may still have an active isolation countdown
+  ;; agents who have recovered but may still have an active isolation countdown
   ;; because they have recovered before the end of their isolation
   set agents-to-update (turtle-set recovereds with [isolation-countdown >= 0] agents-to-update)
 
@@ -820,9 +817,8 @@ to update-isolation-status
 end
 
 to ask-agents-to-isolate [#agents #isolation-compliance-likelihood]
-  ;; Asks agents, who have not yet been asked, if they will comply with the request to isolate.
-  ;;
-  ;; Agents will decide whether to comply based on the likelihood of isolating for each group (breed).
+  ;; asks agents who have not yet been asked if they will comply with the request to isolate
+  ;; the response is based on the likelihood of isolating for each group (breed)
 
   ask #agents with [not asked-to-isolate?] [
     let p (random-float 100)
@@ -838,15 +834,15 @@ to ask-agents-to-isolate [#agents #isolation-compliance-likelihood]
 end
 
 to update-isolation-countdown
-  ;; Updates the isolation countdown and isolation status for an agent.
+  ;; updates the isolation countdown and isolation status for an agent.
   ;;
-  ;; Countdown = -1: the agent was not isolating, so ask them to isolate.
+  ;; countdown = -1: the agent was not isolating, so ask them to isolate.
   ;; The isolation period is set depending on the reason why the agent was asked
   ;; to isolate, e.g. traced contact from "test and trace" measure, or symptomatic.
   ;;
-  ;; Countdown = 0: allow the agent to be released and reset their status.
+  ;; countdown = 0: allow the agent to be released and reset their status.
   ;;
-  ;; Countdown > 0: decrease the countdown.
+  ;; countdown > 0: decrease the countdown.
 
   if isolation-countdown = -1 [
     isolate-agent
@@ -867,6 +863,28 @@ to update-isolation-countdown
   ] [ ;; else
     set isolation-countdown (isolation-countdown - 1)
   ]
+end
+
+to add-inf-count
+  ;; keep a running count of infections per age range
+  if age = "0-18"  [set count-inf-0-18 (count-inf-0-18 + 1)]
+  if age = "19-39" [set count-inf-19-39 (count-inf-19-39 + 1)]
+  if age = "40-49" [set count-inf-40-49 (count-inf-40-49 + 1)]
+  if age = "50-59" [set count-inf-50-59 (count-inf-50-59 + 1)]
+  if age = "60-69" [set count-inf-60-69 (count-inf-60-69 + 1)]
+  if age = "70-79" [set count-inf-70-79 (count-inf-70-79 + 1)]
+  if age = "80+"   [set count-inf-80plus (count-inf-80plus + 1)]
+end
+
+to add-dead-count
+  ;; keep a running count of deaths per age range
+  if age = "0-18"  [set count-dead-0-18 (count-dead-0-18 + 1)]
+  if age = "19-39" [set count-dead-19-39 (count-dead-19-39 + 1)]
+  if age = "40-49" [set count-dead-40-49 (count-dead-40-49 + 1)]
+  if age = "50-59" [set count-dead-50-59 (count-dead-50-59 + 1)]
+  if age = "60-69" [set count-dead-60-69 (count-dead-60-69 + 1)]
+  if age = "70-79" [set count-dead-70-79 (count-dead-70-79 + 1)]
+  if age = "80+"   [set count-dead-80plus (count-dead-80plus + 1)]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1467,10 +1485,10 @@ HORIZONTAL
 SWITCH
 1245
 500
-1410
+1427
 533
-isolate-symptomatics?
-isolate-symptomatics?
+isolation-symptomatics?
+isolation-symptomatics?
 0
 1
 -1000
