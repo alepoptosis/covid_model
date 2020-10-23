@@ -791,7 +791,7 @@ to update-isolation-status
 
   let agents-to-update nobody
 
-  ;; agents who have been tested, or traced as contacts (those reached always isolate)
+  ;; agents who have been tested, or traced as contacts
   if test-and-trace? [
     let tested-agents (turtle-set exposeds asymptomatics symptomatics) with [tested?]
     let traced-agents (turtles with [traced?])
@@ -803,7 +803,7 @@ to update-isolation-status
     set agents-to-update (turtle-set traced-agents with [comply-with-isolation?] agents-to-update)
   ]
 
-  ;; agents who comply with the "isolation of symptomatics"
+  ;; agents who comply with "isolation of symptomatics"
   if isolation-symptomatics? [
     ask-agents-to-isolate symptomatics isolation-compliance-sym
     set agents-to-update (turtle-set symptomatics with [comply-with-isolation?] agents-to-update)
@@ -1672,7 +1672,13 @@ HORIZONTAL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This model simulates the spread of COVID-19 in a population of varying size, as well as the effects of five non-pharmaceutical interventions that are commonly implemented as part of the effort to contain the pandemic. These are
+
+- Imposed lockdown
+- Shielding of vulnerable population
+- Personal protections such as masks, hand-washing, and social distancing
+- Test, trace, and isolate system
+- Isolation of symptomatic cases
 
 ## HOW IT WORKS
 
