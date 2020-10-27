@@ -151,7 +151,7 @@ to setup-turtles
     ;; place a susceptible on each patch
     sprout-susceptibles 1 [
       ;; setup turtle attributes
-      set-age
+;      set-age
       set p-death (actual-p-death age)
       set radius (pareto-dist min-radius 2)
       set staying-at-home? false
@@ -171,6 +171,8 @@ to setup-turtles
   ask turtles [
     set neighbours (other turtles in-radius radius with [radius >= distance myself])
   ]
+
+  set-age
 
   ;; infect a number of agents equal to initial-infected
   set pop-size (count turtles)
@@ -524,16 +526,39 @@ end
 
 ;;;;; SETUP PROCEDURES
 
+;to set-age
+;  ;; sets an agent's age based on UK population data
+;  let p random-float 100
+;  if p < 22 [set age "0-18"]                     ;; 22% (UK census 2019)
+;  if p >= 22 and p < 49 [set age "19-39"]        ;; 27%
+;  if p >= 49 and p < 62 [set age "40-49"]        ;; 13%
+;  if p >= 62 and p < 76 [set age "50-59"]        ;; 14%
+;  if p >= 76 and p < 87 [set age "60-69"]        ;; 11%
+;  if p >= 87 and p < 95 [set age "70-79"]        ;; 8%
+;  if p >= 95 [set age "80+"]                     ;; 5%
+;end
+
 to set-age
-  ;; sets an agent's age based on UK population data
-  let p random-float 100
-  if p < 22 [set age "0-18"]                     ;; 22% (UK census 2019)
-  if p >= 22 and p < 49 [set age "19-39"]        ;; 27%
-  if p >= 49 and p < 62 [set age "40-49"]        ;; 13%
-  if p >= 62 and p < 76 [set age "50-59"]        ;; 14%
-  if p >= 76 and p < 87 [set age "60-69"]        ;; 11%
-  if p >= 87 and p < 95 [set age "70-79"]        ;; 8%
-  if p >= 95 [set age "80+"]                     ;; 5%
+  let all-agents turtles
+
+  set all-agents (assign-age-bracket all-agents 22 "0-18")
+  set all-agents (assign-age-bracket all-agents 27 "19-39")
+  set all-agents (assign-age-bracket all-agents 13 "40-49")
+  set all-agents (assign-age-bracket all-agents 14 "50-59")
+  set all-agents (assign-age-bracket all-agents 11 "60-69")
+  set all-agents (assign-age-bracket all-agents 8 "70-79")
+  set all-agents (assign-age-bracket all-agents 5 "80+")
+
+  show count all-agents
+end
+
+to-report assign-age-bracket [#agents-to-assign #percentage #age-bracket]
+  let this-group #agents-to-assign
+  let n (round (#percentage * (count this-group) / 100))
+  let temp-agents (n-of n this-group)
+  ask temp-agents [set age #age-bracket]
+  let reporting-agents (this-group with [not member? self temp-agents])
+  report reporting-agents
 end
 
 ;;;;; BREED SETTING PROCEDURES
