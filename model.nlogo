@@ -1,6 +1,7 @@
 extensions [
   profiler
   csv
+  table
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
@@ -10,7 +11,7 @@ breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
 breed [recovereds recovered]        ;; recovered and immune (R)
 
 globals [
-  pop-data                  ;; test csv for population data
+  csv-data                  ;; test csv for population data
   pop-size                  ;; number of agents in simulation
   update-thresholds?        ;; whether thresholds need to be updated due to the death of a number of agents
 
@@ -129,7 +130,7 @@ end
 
 to setup
   clear-all
-;  setup-csv                    ;; test procedure to load population data from csv
+  parse-csv
   setup-turtles
   setup-globals
   reset-ticks
@@ -139,11 +140,6 @@ end
 ;;;;;;;;; SETUP PROCEDURES ;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to setup-csv
-  set pop-data csv:from-file "pop-data.csv"
-  print pop-data
-end
-
 to setup-turtles
   set-default-shape turtles "person"
   ask patches [
@@ -151,7 +147,6 @@ to setup-turtles
     ;; place a susceptible on each patch
     sprout-susceptibles 1 [
       ;; setup turtle attributes
-;      set-age
       set p-death (actual-p-death age)
       set radius (pareto-dist min-radius 2)
       set staying-at-home? false
@@ -229,6 +224,42 @@ to setup-globals
   set count-dead-60-69 0
   set count-dead-70-79 0
   set count-dead-80plus 0
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; CSV PARAMETERS PARSING ;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to parse-csv
+  ; close any files open from last run
+  file-close-all
+  file-open "parameters.csv"
+
+  ; create the destination table
+  set csv-data table:make
+  let total-percentage 0
+
+  ; parse the csv into a table as key:value pairs
+  let header csv:from-row file-read-line
+  while [ not file-at-end? ] [
+    let row csv:from-row file-read-line
+    let age-bracket (first row)
+    let percentage (last row)
+    set total-percentage (percentage + total-percentage)
+    table:put csv-data age-bracket percentage
+  ]
+
+  ; csv sanity check
+  if total-percentage != 100 [
+    error "Please ensure sum of percentages in 'parameters.csv' is 100."
+  ]
+
+  ; output content
+  show header
+  foreach table:keys csv-data [ key ->
+    let value table:get csv-data key
+    show (word key ": " value "%")
+  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -527,23 +558,22 @@ end
 ;;;;; SETUP PROCEDURES
 
 to set-age
+  ;; Set the age-bracket of agents using the percentages in the table.
+
   let all-agents turtles
 
-  set all-agents (assign-age-bracket all-agents 22 "0-18")
-  set all-agents (assign-age-bracket all-agents 27 "19-39")
-  set all-agents (assign-age-bracket all-agents 13 "40-49")
-  set all-agents (assign-age-bracket all-agents 14 "50-59")
-  set all-agents (assign-age-bracket all-agents 11 "60-69")
-  set all-agents (assign-age-bracket all-agents 8 "70-79")
-  set all-agents (assign-age-bracket all-agents 5 "80+")
+  foreach table:keys csv-data [ age-bracket ->
+    let percentage table:get csv-data age-bracket
+    set all-agents (assign-age-bracket age-bracket percentage all-agents)
+  ]
 
   ;; ensure we assigned the age bracket to all agents
-  if count all-agents > 0 [
-    error "Some agents do not have their age bracket set."
+  if count all-agents != 0 [
+    error "An error occurred while settings the age-bracket for agents."
   ]
 end
 
-to-report assign-age-bracket [#agents-without-age #percentage #age-bracket]
+to-report assign-age-bracket [#age-bracket #percentage #agents-without-age]
   ;; Assign the specified age bracket to the percentage of the population,
   ;; then report the remaining agents who still need it assigned.
 
