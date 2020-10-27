@@ -22,7 +22,10 @@
 - ~~Make the isolate procedure less convoluted~~
 - ~~Prevent the while loop of the normal distribution from looping infinitely~~
 - ~~Ensure that symptomatics who finish isolation before recovering don't start a new course of isolation due to isolation of symptomatics~~
-
+- ~~Make infectiousness of asymptomatics a global parameter~~
+- ~~Make infectiousness of symptomatics with masks a global parameter~~ (Not necessary, it's regulated by protection strength)
+- ~~Change wording of extraneous to exogenous~~ 
+ 
 # Implementation summary
 
 ## Week 1

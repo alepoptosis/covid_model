@@ -315,7 +315,7 @@ to expose-susceptibles
     if num-sym-protections > 0 and num-sym-protections < 1 [set num-sym-protections 1]
 
     ;; adjust number of asymptomatics to account for their lower probability of transmission (currently 10%)
-    let num-asym ((count todays-contacts with [breed = asymptomatics and not staying-at-home? and not using-protections?]) * 0.1)
+    let num-asym ((count todays-contacts with [breed = asymptomatics and not staying-at-home? and not using-protections?]) * asym-infectiousness)
     if num-asym > 0 and num-asym < 1 [set num-asym 1]
 
     ;; total number of infected contacts
@@ -335,11 +335,11 @@ to expose-susceptibles
   ;; if infections originating outside the agent's normal social circle are permitted
   ;; each tick has a probability that one susceptible agent who is not isolating
   ;; will become exposed even if none of his contacts are infected
-  if allow-extraneous-infections? [
+  if allow-exogenous-infections? [
     let candidates (susceptibles with [not staying-at-home?])
     if any? candidates [
       let p (random-float 100)
-      if p < extraneous-infection [
+      if p < exogenous-infection [
         ask one-of candidates [set-breed-exposed]
       ]
     ]
@@ -1161,9 +1161,9 @@ Control measures parameters
 
 SLIDER
 605
-430
+485
 777
-463
+518
 death-mean
 death-mean
 0
@@ -1176,9 +1176,9 @@ HORIZONTAL
 
 SLIDER
 605
-470
+525
 777
-503
+558
 death-stdev
 death-stdev
 0
@@ -1191,9 +1191,9 @@ HORIZONTAL
 
 SLIDER
 605
-335
+390
 777
-368
+423
 recovery-mean
 recovery-mean
 0
@@ -1206,9 +1206,9 @@ HORIZONTAL
 
 SLIDER
 605
-375
+430
 777
-408
+463
 recovery-stdev
 recovery-stdev
 0
@@ -1221,9 +1221,9 @@ HORIZONTAL
 
 TEXTBOX
 630
-302
+357
 780
-320
+375
 Countdown parameters
 11
 0.0
@@ -1231,9 +1231,9 @@ Countdown parameters
 
 SLIDER
 605
-525
+580
 778
-558
+613
 incubation-mean
 incubation-mean
 0
@@ -1246,9 +1246,9 @@ HORIZONTAL
 
 SLIDER
 605
-565
+620
 779
-598
+653
 incubation-stdev
 incubation-stdev
 0
@@ -1526,10 +1526,10 @@ HORIZONTAL
 SLIDER
 1245
 140
-1445
+1440
 173
-extraneous-infection
-extraneous-infection
+exogenous-infection
+exogenous-infection
 0
 100
 1.0
@@ -1541,10 +1541,10 @@ HORIZONTAL
 SWITCH
 1245
 280
-1435
+1430
 313
-allow-extraneous-infections?
-allow-extraneous-infections?
+allow-exogenous-infections?
+allow-exogenous-infections?
 1
 1
 -1000
@@ -1667,6 +1667,21 @@ contact-history-length
 1
 1
 days
+HORIZONTAL
+
+SLIDER
+610
+255
+787
+288
+asym-infectiousness
+asym-infectiousness
+0
+100
+30.0
+1
+1
+%
 HORIZONTAL
 
 @#$#@#$#@
@@ -2034,6 +2049,130 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="shield-vulnerable?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-radius">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-base">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lose-immunity?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-coverage-asym">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="visual-elements?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="extraneous-infection">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="1.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-duration-case">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-tested">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-strength">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="shield-compliance">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-symptomatics?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-immunity-duration">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contact-history-length">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-infected">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-sym-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="daily-contacts">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contacts-traced">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="personal-protections?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-coverage-sym">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-compliance">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-threshold">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="shield-threshold">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-compliance">
+      <value value="75"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-duration-contact">
+      <value value="14"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="allow-extraneous-infections?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-traced">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-sym">
+      <value value="100"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default

@@ -8,6 +8,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | daily-contacts              | G       | % of neighbours each agent makes contact with each tick                       |
 | p-infect-base               | G       | basic probability of catching the virus upon contact                          |
 | min-immunity-duration       | G       | minimum number of days a recovered agent will have immunity                   |
+| asym-infectiousness         | G       | infectiousness of asymptomatics compared to symptomatics                      |
 | recovery-mean               | G       | mean of the normal distribution for recovery countdowns                       |
 | recovery-stdev              | G       | std deviation of the normal distribution for recovery countdowns              |
 | death-mean                  | G       | mean of the normal distribution for death countdowns                          |
@@ -33,10 +34,10 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | isolation-duration-contact  | G       | duration of isolation period for contacts of tested agents                    |
 | duration                    | G       | number of years to simulate                                                   |
 | initial-infected            | G       | % of population that is exposed at the start of the simulation                |
-| extraneous-infection        | G       | probability per tick to introduce an external infection into the system       |
+| exogenous-infection         | G       | probability per tick to introduce an external infection into the system       |
 | lose-immunity?              | G       | whether recovereds can lose post-infection immunity                           |
 | visual-elements?            | G       | whether visual elements should be rendered (turn off when running headless)   |
-| allow-extraneous-infections?| G       | whether external infections can occur                                         |
+| allow-exogenous-infections? | G       | whether external infections can occur                                         |
 | imposed-lockdown?           | G       | whether to simulate imposed lockdown measures                                 |
 | shield-vulnerable?          | G       | whether to simulate shielding of the vulnerable measures                      |
 | personal-protections?       | G       | whether to simulate personal protections measures                             |
