@@ -526,18 +526,6 @@ end
 
 ;;;;; SETUP PROCEDURES
 
-;to set-age
-;  ;; sets an agent's age based on UK population data
-;  let p random-float 100
-;  if p < 22 [set age "0-18"]                     ;; 22% (UK census 2019)
-;  if p >= 22 and p < 49 [set age "19-39"]        ;; 27%
-;  if p >= 49 and p < 62 [set age "40-49"]        ;; 13%
-;  if p >= 62 and p < 76 [set age "50-59"]        ;; 14%
-;  if p >= 76 and p < 87 [set age "60-69"]        ;; 11%
-;  if p >= 87 and p < 95 [set age "70-79"]        ;; 8%
-;  if p >= 95 [set age "80+"]                     ;; 5%
-;end
-
 to set-age
   let all-agents turtles
 
@@ -549,16 +537,22 @@ to set-age
   set all-agents (assign-age-bracket all-agents 8 "70-79")
   set all-agents (assign-age-bracket all-agents 5 "80+")
 
-  show count all-agents
+  ;; ensure we assigned the age bracket to all agents
+  if count all-agents > 0 [
+    error "Some agents do not have their age bracket set."
+  ]
 end
 
-to-report assign-age-bracket [#agents-to-assign #percentage #age-bracket]
-  let this-group #agents-to-assign
-  let n (round (#percentage * (count this-group) / 100))
-  let temp-agents (n-of n this-group)
-  ask temp-agents [set age #age-bracket]
-  let reporting-agents (this-group with [not member? self temp-agents])
-  report reporting-agents
+to-report assign-age-bracket [#agents-without-age #percentage #age-bracket]
+  ;; Assign the specified age bracket to the percentage of the population,
+  ;; then report the remaining agents who still need it assigned.
+
+  let number-of-agents (#percentage * count turtles) / 100
+  let agents-with-age (n-of number-of-agents #agents-without-age)
+  ask agents-with-age [set age #age-bracket]
+  let remaining-agents #agents-without-age with [not member? self agents-with-age]
+
+  report remaining-agents
 end
 
 ;;;;; BREED SETTING PROCEDURES
