@@ -147,7 +147,6 @@ to setup-turtles
     ;; place a susceptible on each patch
     sprout-susceptibles 1 [
       ;; setup turtle attributes
-      set p-death (actual-p-death age)
       set radius (pareto-dist min-radius 2)
       set staying-at-home? false
       set traced? false
@@ -167,7 +166,7 @@ to setup-turtles
     set neighbours (other turtles in-radius radius with [radius >= distance myself])
   ]
 
-  set-age
+  set-turtle-parameters
 
   ;; infect a number of agents equal to initial-infected
   set pop-size (count turtles)
@@ -231,35 +230,52 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to parse-csv
+  ; Parse the csv into a table as key:value pairs.
+
   ; close any files open from last run
   file-close-all
   file-open "parameters.csv"
 
   ; create the destination table
   set csv-data table:make
+
+  do-parsing
+
+  ; output content
+  show csv-data
+end
+
+to do-parsing
   let total-percentage 0
 
-  ; parse the csv into a table as key:value pairs
   let header csv:from-row file-read-line
   while [ not file-at-end? ] [
     let row csv:from-row file-read-line
-    let age-bracket (first row)
-    let percentage (last row)
-    set total-percentage (percentage + total-percentage)
-    table:put csv-data age-bracket percentage
+
+    let age-bracket item 0 row
+    let population-percentage item 1 row
+    let death-probability item 2 row
+
+    ; put age bracket parameters into the table
+    put-age-bracket-data age-bracket population-percentage death-probability
+
+    set total-percentage (population-percentage + total-percentage)
   ]
 
   ; csv sanity check
   if total-percentage != 100 [
     error "Please ensure sum of percentages in 'parameters.csv' is 100."
   ]
+end
 
-  ; output content
-  show header
-  foreach table:keys csv-data [ key ->
-    let value table:get csv-data key
-    show (word key ": " value "%")
-  ]
+to put-age-bracket-data [#age-bracket #population-percentage #death-probability]
+  ; create child table
+  let age-bracket-table table:make
+  table:put age-bracket-table "population-percentage" #population-percentage
+  table:put age-bracket-table "death-probability" #death-probability
+
+  ; put child table in main table
+  table:put csv-data #age-bracket age-bracket-table
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -557,32 +573,34 @@ end
 
 ;;;;; SETUP PROCEDURES
 
-to set-age
-  ;; Set the age-bracket of agents using the percentages in the table.
+to set-turtle-parameters
+  ;; Set the turtle parameters using data from the csv.
 
-  let all-agents turtles
+  let agents-to-update turtles
 
+  ; set age related parameters
   foreach table:keys csv-data [ age-bracket ->
-    let percentage table:get csv-data age-bracket
-    set all-agents (assign-age-bracket age-bracket percentage all-agents)
+    ; get parameters for this age-bracket
+    let age-bracket-table table:get csv-data age-bracket
+    let population-percentage table:get age-bracket-table "population-percentage"
+    let death-probability table:get age-bracket-table "death-probability"
+
+    ; create agents subset
+    let number-of-agents (population-percentage * count turtles) / 100
+    let updated-agents (n-of number-of-agents agents-to-update)
+
+    ; set agents' values
+    ask updated-agents [set age age-bracket]
+    ask updated-agents [set p-death death-probability]
+
+    ; remove them from the temp agentset
+    set agents-to-update agents-to-update with [not member? self updated-agents]
   ]
 
   ;; ensure we assigned the age bracket to all agents
-  if count all-agents != 0 [
+  if count agents-to-update != 0 [
     error "An error occurred while settings the age-bracket for agents."
   ]
-end
-
-to-report assign-age-bracket [#age-bracket #percentage #agents-without-age]
-  ;; Assign the specified age bracket to the percentage of the population,
-  ;; then report the remaining agents who still need it assigned.
-
-  let number-of-agents (#percentage * count turtles) / 100
-  let agents-with-age (n-of number-of-agents #agents-without-age)
-  ask agents-with-age [set age #age-bracket]
-  let remaining-agents #agents-without-age with [not member? self agents-with-age]
-
-  report remaining-agents
 end
 
 ;;;;; BREED SETTING PROCEDURES
@@ -939,18 +957,6 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-to-report actual-p-death [#age]
-  ;; return adjusted probability of death based on age range
-  let x 0
-  if #age = "0-18" or age = "19-39" [set x 0.2]   ;; based on worldometer 24/9/2020
-  if #age = "40-49" [set x 0.4]
-  if #age = "50-59" [set x 1.3]
-  if #age = "60-69" [set x 3.6]
-  if #age = "70-79" [set x 8]
-  if #age = "80+"   [set x 14.8]
-  report x
-end
 
 to-report actual-asym-prevalence [#age]
   ;; set asymptomatic proportion based on age (Chang et al., 2020)
