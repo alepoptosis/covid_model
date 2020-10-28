@@ -11,7 +11,7 @@ breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
 breed [recovereds recovered]        ;; recovered and immune (R)
 
 globals [
-  csv-data                  ;; test csv for population data
+  csv-data                  ;; csv for population data
   pop-size                  ;; number of agents in simulation
   update-thresholds?        ;; whether thresholds need to be updated due to the death of a number of agents
 
@@ -166,7 +166,7 @@ to setup-turtles
     set neighbours (other turtles in-radius radius with [radius >= distance myself])
   ]
 
-  set-turtle-parameters
+  set-age-and-p-death
 
   ;; infect a number of agents equal to initial-infected
   set pop-size (count turtles)
@@ -234,15 +234,15 @@ to parse-csv
 
   ; close any files open from last run
   file-close-all
-  file-open "parameters.csv"
+  file-open "pop-data.csv"
 
   ; create the destination table
   set csv-data table:make
 
   do-parsing
 
-  ; output content
-  show csv-data
+;   ;output content
+;  show csv-data
 end
 
 to do-parsing
@@ -264,7 +264,7 @@ to do-parsing
 
   ; csv sanity check
   if total-percentage != 100 [
-    error "Please ensure sum of percentages in 'parameters.csv' is 100."
+    error "Please ensure sum of percentages in 'pop-data.csv' is 100."
   ]
 end
 
@@ -573,7 +573,7 @@ end
 
 ;;;;; SETUP PROCEDURES
 
-to set-turtle-parameters
+to set-age-and-p-death
   ;; Set the turtle parameters using data from the csv.
 
   let agents-to-update turtles
@@ -1473,7 +1473,7 @@ SWITCH
 493
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 

@@ -25,6 +25,7 @@
 - ~~Make infectiousness of asymptomatics a global parameter~~
 - ~~Make infectiousness of symptomatics with masks a global parameter~~ (Not necessary, it's regulated by protection strength)
 - ~~Change wording of extraneous to exogenous~~ 
+- Change reporters on infections and deaths to use the csv-data (change name to pop-data) to store and retrieve the counts
  
 # Implementation summary
 
