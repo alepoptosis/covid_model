@@ -1110,7 +1110,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-0
+1
 1
 -1000
 
@@ -1544,7 +1544,7 @@ SWITCH
 533
 isolation-symptomatics?
 isolation-symptomatics?
-0
+1
 1
 -1000
 
@@ -1600,7 +1600,7 @@ SWITCH
 313
 allow-exogenous-infections?
 allow-exogenous-infections?
-1
+0
 1
 -1000
 
@@ -1628,7 +1628,7 @@ min-immunity-duration
 min-immunity-duration
 0
 365
-30.0
+60.0
 1
 1
 days
@@ -2105,10 +2105,15 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="test-one" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count turtles</metric>
+    <metric>count susceptibles</metric>
+    <metric>count exposeds</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
     <enumeratedValueSet variable="shield-vulnerable?">
       <value value="false"/>
     </enumeratedValueSet>
@@ -2131,9 +2136,12 @@ NetLogo 6.1.1
       <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="visual-elements?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="allow-exogenous-infections?">
       <value value="true"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="extraneous-infection">
+    <enumeratedValueSet variable="exogenous-infection">
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="duration">
@@ -2158,16 +2166,16 @@ NetLogo 6.1.1
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-symptomatics?">
-      <value value="true"/>
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="min-immunity-duration">
-      <value value="30"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="contact-history-length">
-      <value value="7"/>
+      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="initial-infected">
       <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contact-history-length">
+      <value value="7"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-sym-threshold">
       <value value="0"/>
@@ -2196,14 +2204,17 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="protections-threshold">
       <value value="1"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="lockdown-threshold">
-      <value value="4"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="shield-threshold">
       <value value="3"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="test-and-trace?">
-      <value value="true"/>
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infectiousness">
+      <value value="30"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-compliance">
       <value value="75"/>
@@ -2211,8 +2222,135 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="isolation-duration-contact">
       <value value="14"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="allow-extraneous-infections?">
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-traced">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-sym">
+      <value value="100"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="test-two" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count susceptibles</metric>
+    <metric>count exposeds</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
+    <enumeratedValueSet variable="shield-vulnerable?">
       <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-radius">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-base">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lose-immunity?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-coverage-asym">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="visual-elements?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="allow-exogenous-infections?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="exogenous-infection">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="1.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-duration-case">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-tested">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-strength">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="shield-compliance">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-symptomatics?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-immunity-duration">
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-infected">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contact-history-length">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-sym-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="daily-contacts">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contacts-traced">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="personal-protections?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-coverage-sym">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-compliance">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-threshold">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="shield-threshold">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infectiousness">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-compliance">
+      <value value="75"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-duration-contact">
+      <value value="14"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="testtrace-threshold">
       <value value="0"/>
