@@ -1,6 +1,7 @@
 extensions [
   profiler
   csv
+  table
 ]
 
 breed [susceptibles susceptible]    ;; can be infected (S)
@@ -10,7 +11,7 @@ breed [asymptomatics asymptomatic]  ;; infectious and asymptomatic (A)
 breed [recovereds recovered]        ;; recovered and immune (R)
 
 globals [
-  pop-data                  ;; test csv for population data
+  csv-data                  ;; csv for population data
   pop-size                  ;; number of agents in simulation
   update-thresholds?        ;; whether thresholds need to be updated due to the death of a number of agents
 
@@ -129,7 +130,7 @@ end
 
 to setup
   clear-all
-;  setup-csv                    ;; test procedure to load population data from csv
+  parse-csv
   setup-turtles
   setup-globals
   reset-ticks
@@ -139,11 +140,6 @@ end
 ;;;;;;;;; SETUP PROCEDURES ;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to setup-csv
-  set pop-data csv:from-file "pop-data.csv"
-  print pop-data
-end
-
 to setup-turtles
   set-default-shape turtles "person"
   ask patches [
@@ -151,8 +147,6 @@ to setup-turtles
     ;; place a susceptible on each patch
     sprout-susceptibles 1 [
       ;; setup turtle attributes
-      set-age
-      set p-death (actual-p-death age)
       set radius (pareto-dist min-radius 2)
       set staying-at-home? false
       set traced? false
@@ -171,6 +165,8 @@ to setup-turtles
   ask turtles [
     set neighbours (other turtles in-radius radius with [radius >= distance myself])
   ]
+
+  set-age-and-p-death
 
   ;; infect a number of agents equal to initial-infected
   set pop-size (count turtles)
@@ -227,6 +223,59 @@ to setup-globals
   set count-dead-60-69 0
   set count-dead-70-79 0
   set count-dead-80plus 0
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; CSV PARAMETERS PARSING ;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to parse-csv
+  ; Parse the csv into a table as key:value pairs.
+
+  ; close any files open from last run
+  file-close-all
+  file-open "pop-data.csv"
+
+  ; create the destination table
+  set csv-data table:make
+
+  do-parsing
+
+;   ;output content
+;  show csv-data
+end
+
+to do-parsing
+  let total-percentage 0
+
+  let header csv:from-row file-read-line
+  while [ not file-at-end? ] [
+    let row csv:from-row file-read-line
+
+    let age-bracket item 0 row
+    let population-percentage item 1 row
+    let death-probability item 2 row
+
+    ; put age bracket parameters into the table
+    put-age-bracket-data age-bracket population-percentage death-probability
+
+    set total-percentage (population-percentage + total-percentage)
+  ]
+
+  ; csv sanity check
+  if total-percentage != 100 [
+    error "Please ensure sum of percentages in 'pop-data.csv' is 100."
+  ]
+end
+
+to put-age-bracket-data [#age-bracket #population-percentage #death-probability]
+  ; create child table
+  let age-bracket-table table:make
+  table:put age-bracket-table "population-percentage" #population-percentage
+  table:put age-bracket-table "death-probability" #death-probability
+
+  ; put child table in main table
+  table:put csv-data #age-bracket age-bracket-table
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -524,16 +573,34 @@ end
 
 ;;;;; SETUP PROCEDURES
 
-to set-age
-  ;; sets an agent's age based on UK population data
-  let p random-float 100
-  if p < 22 [set age "0-18"]                     ;; 22% (UK census 2019)
-  if p >= 22 and p < 49 [set age "19-39"]        ;; 27%
-  if p >= 49 and p < 62 [set age "40-49"]        ;; 13%
-  if p >= 62 and p < 76 [set age "50-59"]        ;; 14%
-  if p >= 76 and p < 87 [set age "60-69"]        ;; 11%
-  if p >= 87 and p < 95 [set age "70-79"]        ;; 8%
-  if p >= 95 [set age "80+"]                     ;; 5%
+to set-age-and-p-death
+  ;; Set the turtle parameters using data from the csv.
+
+  let agents-to-update turtles
+
+  ; set age related parameters
+  foreach table:keys csv-data [ age-bracket ->
+    ; get parameters for this age-bracket
+    let age-bracket-table table:get csv-data age-bracket
+    let population-percentage table:get age-bracket-table "population-percentage"
+    let death-probability table:get age-bracket-table "death-probability"
+
+    ; create agents subset
+    let number-of-agents (population-percentage * count turtles) / 100
+    let updated-agents (n-of number-of-agents agents-to-update)
+
+    ; set agents' values
+    ask updated-agents [set age age-bracket]
+    ask updated-agents [set p-death death-probability]
+
+    ; remove them from the temp agentset
+    set agents-to-update agents-to-update with [not member? self updated-agents]
+  ]
+
+  ;; ensure we assigned the age bracket to all agents
+  if count agents-to-update != 0 [
+    error "An error occurred while settings the age-bracket for agents."
+  ]
 end
 
 ;;;;; BREED SETTING PROCEDURES
@@ -891,18 +958,6 @@ end
 ;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to-report actual-p-death [#age]
-  ;; return adjusted probability of death based on age range
-  let x 0
-  if #age = "0-18" or age = "19-39" [set x 0.2]   ;; based on worldometer 24/9/2020
-  if #age = "40-49" [set x 0.4]
-  if #age = "50-59" [set x 1.3]
-  if #age = "60-69" [set x 3.6]
-  if #age = "70-79" [set x 8]
-  if #age = "80+"   [set x 14.8]
-  report x
-end
-
 to-report actual-asym-prevalence [#age]
   ;; set asymptomatic proportion based on age (Chang et al., 2020)
   let x 0
@@ -1055,7 +1110,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-0
+1
 1
 -1000
 
@@ -1418,7 +1473,7 @@ SWITCH
 493
 test-and-trace?
 test-and-trace?
-0
+1
 1
 -1000
 
@@ -1489,7 +1544,7 @@ SWITCH
 533
 isolation-symptomatics?
 isolation-symptomatics?
-0
+1
 1
 -1000
 
@@ -1545,7 +1600,7 @@ SWITCH
 313
 allow-exogenous-infections?
 allow-exogenous-infections?
-1
+0
 1
 -1000
 
@@ -1573,7 +1628,7 @@ min-immunity-duration
 min-immunity-duration
 0
 365
-30.0
+60.0
 1
 1
 days
@@ -2050,10 +2105,15 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="test-one" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count turtles</metric>
+    <metric>count susceptibles</metric>
+    <metric>count exposeds</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
     <enumeratedValueSet variable="shield-vulnerable?">
       <value value="false"/>
     </enumeratedValueSet>
@@ -2076,9 +2136,12 @@ NetLogo 6.1.1
       <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="visual-elements?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="allow-exogenous-infections?">
       <value value="true"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="extraneous-infection">
+    <enumeratedValueSet variable="exogenous-infection">
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="duration">
@@ -2103,16 +2166,16 @@ NetLogo 6.1.1
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-symptomatics?">
-      <value value="true"/>
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="min-immunity-duration">
-      <value value="30"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="contact-history-length">
-      <value value="7"/>
+      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="initial-infected">
       <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contact-history-length">
+      <value value="7"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="isolation-sym-threshold">
       <value value="0"/>
@@ -2141,14 +2204,17 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="protections-threshold">
       <value value="1"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="lockdown-threshold">
-      <value value="4"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="shield-threshold">
       <value value="3"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="test-and-trace?">
-      <value value="true"/>
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infectiousness">
+      <value value="30"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lockdown-compliance">
       <value value="75"/>
@@ -2156,8 +2222,135 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="isolation-duration-contact">
       <value value="14"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="allow-extraneous-infections?">
+    <enumeratedValueSet variable="testtrace-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-mean">
+      <value value="16"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-traced">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-sym">
+      <value value="100"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="test-two" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count susceptibles</metric>
+    <metric>count exposeds</metric>
+    <metric>count symptomatics</metric>
+    <metric>count asymptomatics</metric>
+    <metric>count recovereds</metric>
+    <metric>count deads</metric>
+    <enumeratedValueSet variable="shield-vulnerable?">
       <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-radius">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p-infect-base">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="imposed-lockdown?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lose-immunity?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="death-stdev">
+      <value value="8.21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-coverage-asym">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="visual-elements?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="allow-exogenous-infections?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="exogenous-infection">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-stdev">
+      <value value="1.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-duration-case">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-mean">
+      <value value="20.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-compliance-tested">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-strength">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="shield-compliance">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-symptomatics?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-immunity-duration">
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-infected">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contact-history-length">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-sym-threshold">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="incubation-mean">
+      <value value="1.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="daily-contacts">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="contacts-traced">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-stdev">
+      <value value="6.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="personal-protections?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-coverage-sym">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-compliance">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="protections-threshold">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="shield-threshold">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-threshold">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="test-and-trace?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="asym-infectiousness">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lockdown-compliance">
+      <value value="75"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="isolation-duration-contact">
+      <value value="14"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="testtrace-threshold">
       <value value="0"/>
