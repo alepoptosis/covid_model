@@ -2099,20 +2099,23 @@ NetLogo 6.1.1
     <metric>lockdown-active?</metric>
     <metric>shielding-active?</metric>
     <metric>protections-active?</metric>
-    <metric>count-inf-0-18</metric>
-    <metric>count-inf-19-39</metric>
-    <metric>count-inf-40-49</metric>
-    <metric>count-inf-50-59</metric>
-    <metric>count-inf-60-69</metric>
-    <metric>count-inf-70-79</metric>
-    <metric>count-inf-80plus</metric>
-    <metric>count-dead-0-18</metric>
-    <metric>count-dead-19-39</metric>
-    <metric>count-dead-40-49</metric>
-    <metric>count-dead-50-59</metric>
-    <metric>count-dead-60-69</metric>
-    <metric>count-dead-70-79</metric>
-    <metric>count-dead-80plus</metric>
+
+    <metric>get-age-bracket-data "0-18" "infected"</metric>
+    <metric>get-age-bracket-data "19-39" "infected"</metric>
+    <metric>get-age-bracket-data "40-49" "infected"</metric>
+    <metric>get-age-bracket-data "50-59" "infected"</metric>
+    <metric>get-age-bracket-data "60-69" "infected"</metric>
+    <metric>get-age-bracket-data "70-79" "infected"</metric>
+    <metric>get-age-bracket-data "80+" "infected"</metric>
+
+    <metric>get-age-bracket-data "0-18" "dead"</metric>
+    <metric>get-age-bracket-data "19-39" "dead"</metric>
+    <metric>get-age-bracket-data "40-49" "dead"</metric>
+    <metric>get-age-bracket-data "50-59" "dead"</metric>
+    <metric>get-age-bracket-data "60-69" "dead"</metric>
+    <metric>get-age-bracket-data "70-79" "dead"</metric>
+    <metric>get-age-bracket-data "80+" "dead"</metric>
+
     <enumeratedValueSet variable="duration">
       <value value="1"/>
     </enumeratedValueSet>

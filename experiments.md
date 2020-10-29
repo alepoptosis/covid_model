@@ -15,21 +15,22 @@ lockdown-active?
 shielding-active?
 protections-active?
 
-count-inf-0-18  
-count-inf-19-39
-count-inf-40-49
-count-inf-50-59
-count-inf-60-69
-count-inf-70-79
-count-inf-80plus
+get-age-bracket-data "0-18" "infected"
+get-age-bracket-data "19-39" "infected"
+get-age-bracket-data "40-49" "infected"
+get-age-bracket-data "50-59" "infected"
+get-age-bracket-data "60-69" "infected"
+get-age-bracket-data "70-79" "infected"
+get-age-bracket-data "80+" "infected"
 
-count-dead-0-18 
-count-dead-19-39
-count-dead-40-49
-count-dead-50-59
-count-dead-60-69
-count-dead-70-79
-count-dead-80plus
+get-age-bracket-data "0-18" "dead"
+get-age-bracket-data "19-39" "dead"
+get-age-bracket-data "40-49" "dead"
+get-age-bracket-data "50-59" "dead"
+get-age-bracket-data "60-69" "dead"
+get-age-bracket-data "70-79" "dead"
+get-age-bracket-data "80+" "dead"
+
 
 # base parameters in logical order (ver 2.0 29/10/2020)
 
