@@ -7,57 +7,82 @@ count exposeds
 count symptomatics
 count asymptomatics
 count recovereds
-count deads
-count.locked
-currently-locked?
+count-locked
+
 num-contacts
-dead-0-29
-dead-30-59
-dead-60+
-count-infecteds-0-29   
-count-infecteds-30-59  
-count-infecteds-60+
 
-# base parameters in logical order
+lockdown-active?
+shielding-active?
+protections-active?
 
-["initial-inf" 0.1]
+count-inf-0-18  
+count-inf-19-39
+count-inf-40-49
+count-inf-50-59
+count-inf-60-69
+count-inf-70-79
+count-inf-80plus
+
+count-dead-0-18 
+count-dead-19-39
+count-dead-40-49
+count-dead-50-59
+count-dead-60-69
+count-dead-70-79
+count-dead-80plus
+
+# base parameters in logical order (ver 2.0 29/10/2020)
+
 ["duration" 1]
+["initial-infected" 0.1]
+["allow-exogenous-infections?" true]
+["exogenous-infection" 1]
+["visual-elements?" false]
 
-["imposed-lockdown?" false]
-["personal-protection?" false]
-["isolate-symptomatics?" false]
-["test-and-trace?" false]
-["shield-vulnerable?" false]
-["closed-system?" false]
-["lose-immunity?" false]
+["min-radius" 2]
+["daily-contacts" 50]
 
-["lockdown-threshold" 1]
-["protection-threshold" 1]
-["isolation-threshold" 1] 
-["testtrace-threshold" 1]
-["shield-threshold" 1]
+["p-infect-base" 10]
+["asym-infectiousness" 30]
 
-["lockdown-strictness" 0]
-["protection-strength" 0]
-["isolation-strictness" 0]
-["travel-strictness" 99]
-["shield-adherance" 0]
-["sym-test-coverage" 0]
-["asym-test-coverage" 0]
+["lose-immunity?" true]
+["min-immunity-duration" 180]
 
-["p-infect-init" 10]
-["p-death" 2.5]
-["z-contact-min" 2]
-["asym-infections" 60]
-["incubation-mean" 1.6]
-["incubation-stdev" 0.4]
 ["recovery-mean" 20.5]
 ["recovery-stdev" 6.7]
 ["death-mean" 16]
 ["death-stdev" 8.21]
-["immunity-mean" 365]
-["iso-countdown-max" 14]
-["mean-iso-reduction" 1]
+["incubation-mean" 1.6]
+["incubation-stdev" 1.4]
+
+["imposed-lockdown?" false]
+["lockdown-threshold" 4]
+["lockdown-compliance" 75]
+
+["shield-vulnerable?" false]
+["shield-threshold" 3]
+["shield-compliance" 50]
+
+["personal-protections?" false]
+["protections-threshold" 1]
+["protections-strength" 50]
+["protections-compliance" 100]
+
+["test-and-trace?" false]
+["testtrace-threshold" 0]
+["contact-history-length" 7]
+["test-coverage-sym" 100]
+["test-coverage-asym" 100]
+["contacts-traced" 100]
+["isolation-compliance-tested" 100]
+["isolation-compliance-traced" 100]
+
+["isolation-symptomatics?" false]
+["isolation-sym-threshold" 0]
+["isolation-compliance-sym" 100]
+
+["isolation-duration-case" 7]
+["isolation-duration-contact" 14]
 
 ["min-pxcor" 0]
 ["min-pycor" 0]
