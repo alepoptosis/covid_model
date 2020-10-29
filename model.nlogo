@@ -451,7 +451,8 @@ to update-breeds
   ]
 
   ask exposeds with [to-become-asymptomatic?] [
-    add-inf-count              ;; infection and agent's age are recorded
+    ; increase the counter of infected agents in the same age-bracket
+    increase-age-bracket-counter age "infected"
     set-breed-asymptomatic
   ]
 
@@ -472,7 +473,8 @@ to update-breeds
   ]
 
   ask agents-to-die [
-    add-dead-count              ;; death and agent's age are recorded
+    ; increase the counter of deceased agents in the same age-bracket
+    increase-age-bracket-counter age "deceased"
     die
   ]
 
@@ -923,16 +925,6 @@ to update-isolation-countdown
   ] [ ;; else
     set isolation-countdown (isolation-countdown - 1)
   ]
-end
-
-to add-inf-count
-  ;; keep a running count of infections per age range
-  increase-age-bracket-counter age "infected"
-end
-
-to add-dead-count
-  ;; keep a running count of deaths per age range
-  increase-age-bracket-counter age "dead"
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2108,13 +2100,13 @@ NetLogo 6.1.1
     <metric>get-age-bracket-data "70-79" "infected"</metric>
     <metric>get-age-bracket-data "80+" "infected"</metric>
 
-    <metric>get-age-bracket-data "0-18" "dead"</metric>
-    <metric>get-age-bracket-data "19-39" "dead"</metric>
-    <metric>get-age-bracket-data "40-49" "dead"</metric>
-    <metric>get-age-bracket-data "50-59" "dead"</metric>
-    <metric>get-age-bracket-data "60-69" "dead"</metric>
-    <metric>get-age-bracket-data "70-79" "dead"</metric>
-    <metric>get-age-bracket-data "80+" "dead"</metric>
+    <metric>get-age-bracket-data "0-18" "deceased"</metric>
+    <metric>get-age-bracket-data "19-39" "deceased"</metric>
+    <metric>get-age-bracket-data "40-49" "deceased"</metric>
+    <metric>get-age-bracket-data "50-59" "deceased"</metric>
+    <metric>get-age-bracket-data "60-69" "deceased"</metric>
+    <metric>get-age-bracket-data "70-79" "deceased"</metric>
+    <metric>get-age-bracket-data "80+" "deceased"</metric>
 
     <enumeratedValueSet variable="duration">
       <value value="1"/>
