@@ -39,22 +39,6 @@ globals [
 
   ;; reporters
   num-contacts              ;; number of contacts between agents for current tick
-
-  count-inf-0-18            ;; cumulative counts of infecteds for each age range
-  count-inf-19-39
-  count-inf-40-49
-  count-inf-50-59
-  count-inf-60-69
-  count-inf-70-79
-  count-inf-80plus
-
-  count-dead-0-18           ;; cumulative counts of dead agents for each age range
-  count-dead-19-39
-  count-dead-40-49
-  count-dead-50-59
-  count-dead-60-69
-  count-dead-70-79
-  count-dead-80plus
 ]
 
 turtles-own [
@@ -207,22 +191,6 @@ to setup-globals
   ;; reporters
 
   ;; num-contacts is reset at every tick in count-contacts
-
-  set count-inf-0-18 0
-  set count-inf-19-39 0
-  set count-inf-40-49 0
-  set count-inf-50-59 0
-  set count-inf-60-69 0
-  set count-inf-70-79 0
-  set count-inf-80plus 0
-
-  set count-dead-0-18 0
-  set count-dead-19-39 0
-  set count-dead-40-49 0
-  set count-dead-50-59 0
-  set count-dead-60-69 0
-  set count-dead-70-79 0
-  set count-dead-80plus 0
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -231,6 +199,7 @@ end
 
 to parse-csv
   ; Parse the csv into a table as key:value pairs.
+  ; The resulting data structure is a tree.
 
   ; close any files open from last run
   file-close-all
@@ -240,24 +209,21 @@ to parse-csv
   set csv-data table:make
 
   do-parsing
-
-;   ;output content
-;  show csv-data
 end
 
 to do-parsing
   let total-percentage 0
-
   let header csv:from-row file-read-line
+
   while [ not file-at-end? ] [
     let row csv:from-row file-read-line
-
     let age-bracket item 0 row
     let population-percentage item 1 row
     let death-probability item 2 row
 
     ; put age bracket parameters into the table
-    put-age-bracket-data age-bracket population-percentage death-probability
+    put-age-bracket-data age-bracket "population-percentage" population-percentage
+    put-age-bracket-data age-bracket "death-probability" death-probability
 
     set total-percentage (population-percentage + total-percentage)
   ]
@@ -268,13 +234,40 @@ to do-parsing
   ]
 end
 
-to put-age-bracket-data [#age-bracket #population-percentage #death-probability]
-  ; create child table
-  let age-bracket-table table:make
-  table:put age-bracket-table "population-percentage" #population-percentage
-  table:put age-bracket-table "death-probability" #death-probability
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;; TABLE DATA ;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ; put child table in main table
+to increase-age-bracket-counter [#age-bracket #counter-name]
+  ; Increase the value of a counter for the specified age-bracket by 1.
+  let age-bracket-data table:get csv-data #age-bracket
+  let counter-value table:get-or-default age-bracket-data #counter-name 0
+  set counter-value counter-value + 1
+  put-age-bracket-data #age-bracket #counter-name counter-value
+end
+
+to-report get-age-bracket-data [#age-bracket #key]
+  ; Report the value for the specified key of an age-bracket.
+  ;
+  ; If the specified key does not exist, it is created to avoid runtime errors.
+  ; This should only happen when trying to retrieve a counter using the observer.
+
+  let age-bracket-data table:get csv-data #age-bracket
+
+  ifelse table:has-key? csv-data #key [
+    report table:get age-bracket-data #key
+  ][; else
+    ; avoid runtime errors if the counter has not been created yet
+    put-age-bracket-data #age-bracket #key 0
+    report 0
+  ]
+end
+
+to put-age-bracket-data [#age-bracket #key #value]
+  ; Put a table with key/value into the specified age-bracket.
+  let age-bracket-table table:get-or-default csv-data #age-bracket table:make
+  table:put age-bracket-table #key #value
+  ; create, or overwrite, the age-bracket-table
   table:put csv-data #age-bracket age-bracket-table
 end
 
@@ -458,7 +451,8 @@ to update-breeds
   ]
 
   ask exposeds with [to-become-asymptomatic?] [
-    add-inf-count              ;; infection and agent's age are recorded
+    ; increase the counter of infected agents in the same age-bracket
+    increase-age-bracket-counter age "infected"
     set-breed-asymptomatic
   ]
 
@@ -479,7 +473,8 @@ to update-breeds
   ]
 
   ask agents-to-die [
-    add-dead-count              ;; death and agent's age are recorded
+    ; increase the counter of deceased agents in the same age-bracket
+    increase-age-bracket-counter age "deceased"
     die
   ]
 
@@ -932,28 +927,6 @@ to update-isolation-countdown
   ]
 end
 
-to add-inf-count
-  ;; keep a running count of infections per age range
-  if age = "0-18"  [set count-inf-0-18 (count-inf-0-18 + 1)]
-  if age = "19-39" [set count-inf-19-39 (count-inf-19-39 + 1)]
-  if age = "40-49" [set count-inf-40-49 (count-inf-40-49 + 1)]
-  if age = "50-59" [set count-inf-50-59 (count-inf-50-59 + 1)]
-  if age = "60-69" [set count-inf-60-69 (count-inf-60-69 + 1)]
-  if age = "70-79" [set count-inf-70-79 (count-inf-70-79 + 1)]
-  if age = "80+"   [set count-inf-80plus (count-inf-80plus + 1)]
-end
-
-to add-dead-count
-  ;; keep a running count of deaths per age range
-  if age = "0-18"  [set count-dead-0-18 (count-dead-0-18 + 1)]
-  if age = "19-39" [set count-dead-19-39 (count-dead-19-39 + 1)]
-  if age = "40-49" [set count-dead-40-49 (count-dead-40-49 + 1)]
-  if age = "50-59" [set count-dead-50-59 (count-dead-50-59 + 1)]
-  if age = "60-69" [set count-dead-60-69 (count-dead-60-69 + 1)]
-  if age = "70-79" [set count-dead-70-79 (count-dead-70-79 + 1)]
-  if age = "80+"   [set count-dead-80plus (count-dead-80plus + 1)]
-end
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;; REPORTERS ;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1110,7 +1083,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-1
+0
 1
 -1000
 
@@ -2118,20 +2091,23 @@ NetLogo 6.1.1
     <metric>lockdown-active?</metric>
     <metric>shielding-active?</metric>
     <metric>protections-active?</metric>
-    <metric>count-inf-0-18</metric>
-    <metric>count-inf-19-39</metric>
-    <metric>count-inf-40-49</metric>
-    <metric>count-inf-50-59</metric>
-    <metric>count-inf-60-69</metric>
-    <metric>count-inf-70-79</metric>
-    <metric>count-inf-80plus</metric>
-    <metric>count-dead-0-18</metric>
-    <metric>count-dead-19-39</metric>
-    <metric>count-dead-40-49</metric>
-    <metric>count-dead-50-59</metric>
-    <metric>count-dead-60-69</metric>
-    <metric>count-dead-70-79</metric>
-    <metric>count-dead-80plus</metric>
+
+    <metric>get-age-bracket-data "0-18" "infected"</metric>
+    <metric>get-age-bracket-data "19-39" "infected"</metric>
+    <metric>get-age-bracket-data "40-49" "infected"</metric>
+    <metric>get-age-bracket-data "50-59" "infected"</metric>
+    <metric>get-age-bracket-data "60-69" "infected"</metric>
+    <metric>get-age-bracket-data "70-79" "infected"</metric>
+    <metric>get-age-bracket-data "80+" "infected"</metric>
+
+    <metric>get-age-bracket-data "0-18" "deceased"</metric>
+    <metric>get-age-bracket-data "19-39" "deceased"</metric>
+    <metric>get-age-bracket-data "40-49" "deceased"</metric>
+    <metric>get-age-bracket-data "50-59" "deceased"</metric>
+    <metric>get-age-bracket-data "60-69" "deceased"</metric>
+    <metric>get-age-bracket-data "70-79" "deceased"</metric>
+    <metric>get-age-bracket-data "80+" "deceased"</metric>
+
     <enumeratedValueSet variable="duration">
       <value value="1"/>
     </enumeratedValueSet>
