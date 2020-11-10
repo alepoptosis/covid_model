@@ -254,7 +254,7 @@ to-report get-age-bracket-data [#age-bracket #key]
 
   let age-bracket-data table:get csv-data #age-bracket
 
-  ifelse table:has-key? csv-data #key [
+  ifelse table:has-key? age-bracket-data #key [
     report table:get age-bracket-data #key
   ][; else
     ; avoid runtime errors if the counter has not been created yet
