@@ -150,6 +150,7 @@ to setup-turtles
     set neighbours (other turtles in-radius radius with [radius >= distance myself])
   ]
 
+  ;; assign age and relative death probability to all agents
   set-age-and-p-death
 
   ;; infect a number of agents equal to initial-infected
@@ -188,8 +189,6 @@ to setup-globals
   ;; all measures globals
   set update-thresholds? false
 
-  ;; reporters
-
   ;; num-contacts is reset at every tick in count-contacts
 end
 
@@ -198,8 +197,8 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to parse-csv
-  ; Parse the csv into a table as key:value pairs.
-  ; The resulting data structure is a tree.
+  ;; Parse the csv into a table as key:value pairs.
+  ;; The resulting data structure is a tree.
 
   ; close any files open from last run
   file-close-all
@@ -221,7 +220,7 @@ to do-parsing
     let population-percentage item 1 row
     let death-probability item 2 row
 
-    ; put age bracket parameters into the table
+    ;; put age bracket parameters into the table
     put-age-bracket-data age-bracket "population-percentage" population-percentage
     put-age-bracket-data age-bracket "death-probability" death-probability
 
@@ -235,7 +234,7 @@ to do-parsing
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;; TABLE DATA ;;;;;;;;;;;
+;;;;;;;; TABLE PROCEDURES ;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to increase-age-bracket-counter [#age-bracket #counter-name]
@@ -1126,7 +1125,7 @@ duration
 duration
 0
 10
-0.5
+1.0
 0.5
 1
 years
@@ -1394,7 +1393,7 @@ SWITCH
 233
 lose-immunity?
 lose-immunity?
-0
+1
 1
 -1000
 
@@ -1504,7 +1503,7 @@ contacts-traced
 contacts-traced
 0
 100
-86.0
+100.0
 1
 1
 % of contacts
@@ -1601,7 +1600,7 @@ min-immunity-duration
 min-immunity-duration
 0
 365
-60.0
+180.0
 1
 1
 days
