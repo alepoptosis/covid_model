@@ -356,7 +356,7 @@ to expose-susceptibles
     if num-sym-protections > 0 and num-sym-protections < 1 [set num-sym-protections 1]
 
     ;; adjust number of asymptomatics to account for their lower probability of transmission (currently 10%)
-    let num-asym ((count todays-contacts with [breed = asymptomatics and not staying-at-home? and not using-protections?]) * asym-infectiousness)
+    let num-asym ((count todays-contacts with [breed = asymptomatics and not staying-at-home? and not using-protections?]) * asym-infectiousness / 100)
     if num-asym > 0 and num-asym < 1 [set num-asym 1]
 
     ;; total number of infected contacts
