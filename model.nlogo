@@ -251,10 +251,10 @@ to-report get-age-bracket-data [#age-bracket #key]
   ; If the specified key does not exist, it is created to avoid runtime errors.
   ; This should only happen when trying to retrieve a counter using the observer.
 
-  let age-bracket-data table:get csv-data #age-bracket
+  let age-bracket-data-table table:get csv-data #age-bracket
 
-  ifelse table:has-key? csv-data #key [
-    report table:get age-bracket-data #key
+  ifelse table:has-key? age-bracket-data-table #key [
+    report table:get age-bracket-data-table #key
   ][; else
     ; avoid runtime errors if the counter has not been created yet
     put-age-bracket-data #age-bracket #key 0
