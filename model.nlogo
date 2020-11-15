@@ -983,8 +983,8 @@ end
 GRAPHICS-WINDOW
 18
 20
-526
-529
+3026
+3029
 -1
 -1
 10.0
@@ -998,9 +998,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-49
+299
 0
-49
+299
 0
 0
 1
@@ -1082,7 +1082,7 @@ SWITCH
 273
 visual-elements?
 visual-elements?
-0
+1
 1
 -1000
 
@@ -1311,7 +1311,7 @@ SWITCH
 378
 imposed-lockdown?
 imposed-lockdown?
-1
+0
 1
 -1000
 
@@ -1324,7 +1324,7 @@ lockdown-threshold
 lockdown-threshold
 0
 100
-4.0
+0.1
 1
 1
 % of pop is I
@@ -1339,7 +1339,7 @@ lockdown-compliance
 lockdown-compliance
 0
 100
-75.0
+100.0
 1
 1
 % compliance
