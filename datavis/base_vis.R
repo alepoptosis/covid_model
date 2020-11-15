@@ -15,54 +15,74 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # script options, change for different file, output options and plot size
 
 # names of experiments to visualise
-to_run = c(
-  "action-none-1y"
-  ,"action-all-1y")
+# to_run = c(
+#   "action-none-1y"
+#   ,"action-all-1y")
+# 
+# # rest of the script is looped for each of the experiments
+# for (run in to_run) {
 
-# rest of the script is looped for each of the experiments
-for (run in to_run) {
-
-run_name = sprintf("2020-08-10_%s", run) # change date accordingly
+run_name = sprintf("2020-11-13_no-controls")#, run) # change date accordingly
 dest_path = "visualisations"             # folder for visualisations
 g_width = 22                             # size of plots
 g_height = 16
-export_plots = TRUE                      # export plots or just display them
+export_plots = FALSE                      # export plots or just display them
 new_ld_vis = TRUE # updated way of showing proportion of runs in lockdown
+single_csv = TRUE # whether the output was already collated (ran on one PC)
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
 pattern = sprintf("%s_", run_name) # date and test name
 
-# if the collated csv already exists, use it
-if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
+if (single_csv) {
   
-  raw = read.csv(sprintf("%s/%sfull.csv", path, pattern), 
-                 stringsAsFactors=FALSE, check.names = FALSE)
+  raw = read.csv(sprintf("%s.csv", path), 
+                 skip = 6, stringsAsFactors=FALSE, check.names = FALSE)
   
-} else {
-  # otherwise, get list of csvs
-  csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
-  
-  # merge in one csv and add a run ID while removing the useless one
-  raw = csvs %>%
-    set_names() %>%
-    map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
-             .id = "run_num", stringsAsFactors=FALSE, check.names = FALSE) %>% 
-    select(-"[run number]") %>%
-    mutate_at("run_num", ~gsub(sprintf("%s/%s|.csv", path, pattern), "", .)) %>%
-    mutate_at("run_num", as.numeric) %>%
-    mutate_at("run_num", ~ run_num + 1)
-  
-  # clean column names
+  names(raw) = gsub("run number", "run_num", names(raw))
   names(raw) = gsub("\\[|\\]|", "", names(raw))
   names(raw) = gsub("\\.", " ", names(raw))
   names(raw) = gsub("\\-", "_", names(raw))
   
-  write.csv(raw, sprintf("%s/%sfull.csv", path, pattern), row.names = FALSE)
+} else {
+  # if the collated csv already exists, use it
+  if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
+    
+    raw = read.csv(sprintf("%s/%sfull.csv", path, pattern), 
+                   stringsAsFactors=FALSE, check.names = FALSE)
+    
+  } else {
+    # otherwise, get list of csvs
+    csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
+    
+    # merge in one csv and add a run ID while removing the useless one
+    raw = csvs %>%
+      set_names() %>%
+      map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
+               .id = "run_num", stringsAsFactors=FALSE, check.names = FALSE) %>% 
+      select(-"[run number]") %>%
+      mutate_at("run_num", ~gsub(sprintf("%s/%s|.csv", path, pattern), "", .)) %>%
+      mutate_at("run_num", as.numeric) %>%
+      mutate_at("run_num", ~ run_num + 1)
+    
+    # clean column names
+    names(raw) = gsub("\\[|\\]|", "", names(raw))
+    names(raw) = gsub("\\.", " ", names(raw))
+    names(raw) = gsub("\\-", "_", names(raw))
+    
+    write.csv(raw, sprintf("%s/%sfull.csv", path, pattern), row.names = FALSE)
+  }
 }
 
 # subset containing only data on counts, run number and step
-data = raw[ ,grepl("^count |^step|^run_num", names(raw))]
+data = raw[ ,grepl("^count |^step|^run_num|deceased", names(raw))]
+
+if (single_csv) { # new csvs with single output have separate deceased counts
+  data = data %>%
+    mutate(`count deceased` = select(., contains("deceased")) %>% 
+             rowSums(na.rm = TRUE)) %>%
+    select(-contains("get_age_bracket_data"))
+}
 
 # turn data into long format for plotting
 data_long = data %>% pivot_longer (
@@ -71,6 +91,7 @@ data_long = data %>% pivot_longer (
   names_prefix = "count ",
   values_to = "count"
 )
+  
 
 # aggregate data from all runs into an average count and stdev, min and max
 data_aggr = data_long %>%
@@ -83,17 +104,18 @@ data_long = data_long %>% filter(breed != "locked")
 data_aggr = data_aggr %>% filter(breed != "locked")
 
 # subset containing parameter information for each run
-par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
+par = unique(
+  raw[ ,grepl("^(?!.*(count |count_|num_contacts|step|dead|get_age_bracket_data|active|currently))", 
                           names(raw), perl=TRUE)])
 
 # save parameter file if it doesn't already exist
-if (!file.exists(sprintf("%s/%sparameters.par", path, pattern))) {
+if (!single_csv & !file.exists(sprintf("%s/%sparameters.par", path, pattern))) {
   write.csv(raw, sprintf("%s/%sparameters.par", path, pattern), row.names = FALSE)
 }
 
 # subset containing lockdown info
-if ("currently_locked?" %in% colnames(raw)) {
-  ld = raw[ ,grepl("run_num|step|locked", names(raw))]
+if ("currently_locked?" %in% colnames(raw) | "lockdown_active?" %in% colnames(raw)) {
+  ld = raw[ ,grepl("run_num|step|^count_locked|lockdown_active", names(raw))]
 } else { 
   # for old files where currently_locked wasn't tracked
   pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1]
@@ -111,11 +133,21 @@ if ("currently_locked?" %in% colnames(raw)) {
 num_runs = max(data_long$run_num) # number of runs for ylabel
 
 # aggregate data from all runs into a percentage of locked runs per step
-ld_aggr = ld %>%
-  select(-`count locked`) %>%
-  group_by(step) %>%
-  summarise(locked_runs = sum(`currently_locked?` == TRUE),
-            locked_runs_per = (locked_runs * 100) / num_runs)
+
+if (single_csv) {
+  ld_aggr = ld %>%
+    select(-`count_locked`) %>%
+    group_by(step) %>%
+    summarise(locked_runs = sum(`lockdown_active?` == TRUE),
+              locked_runs_per = (locked_runs * 100) / num_runs)
+} else {
+  ld_aggr = ld %>%
+    select(-`count_locked`) %>%
+    group_by(step) %>%
+    summarise(locked_runs = sum(`currently_locked?` == TRUE),
+              locked_runs_per = (locked_runs * 100) / num_runs)
+}
+
 
 # subset containing info on contacts
 contact = raw[ ,grepl("run_num|step|num_contacts", names(raw))]
@@ -127,60 +159,106 @@ cont_aggr = contact %>%
             max = max(num_contacts), min = min(num_contacts))
 
 # subset containing info on dead agents
-deads = raw[ ,grepl("^dead|run_num|step|deads", names(raw))]
+deceased = raw[ ,grepl("^dead|run_num|step|deads|deceased", names(raw))]
 
 # turn data into long format for plotting
-deads_long = deads %>% pivot_longer (
-  cols = contains("dead"),
-  names_to = "age",
-  names_prefix = "dead_",
-  values_to = "cum_count"
-) %>%
+
+if (single_csv) {
+  deceased_long = deceased %>% pivot_longer (
+    cols = contains("deceased"),
+    names_to = "age",
+    names_prefix = "get_age_bracket_data",
+    values_to = "cum_count"
+  ) %>%
+    mutate_at("age", ~gsub("deceased", "", .)) %>%
+    mutate_at("age", ~gsub("\"", "", .)) %>%
+    mutate_at("age", ~gsub("_", "-", .))
+  
+} else {
+  deceased_long = deceased %>% pivot_longer (
+    cols = contains("dead"),
+    names_to = "age",
+    names_prefix = "dead_",
+    values_to = "cum_count"
+  ) %>%
   mutate_at("age", ~gsub("count deads", "total", .))
+}
+
 
 # add column with new deaths per step
-deads_long = deads_long %>%
+deceased_long = deceased_long %>%
   group_by(run_num,age) %>%
   mutate(new_deaths = c(0,diff(cum_count)))
 
 # aggregated version of deads info
-deads_aggr = deads_long %>%
+deceased_aggr = deceased_long %>%
   group_by(step, age) %>%
   summarise(mean = mean(cum_count), stdev = round(sd(cum_count), 2),
             max = max(cum_count), min = min(cum_count),
             mean_new = mean(new_deaths), stdev_new = round(sd(new_deaths), 2),
             max_new = max(new_deaths), min_new = min(new_deaths))
 
-if ("count_infecteds_0_29" %in% colnames(raw)) {
-  # if information is available, subset containing info on infected agents
-  infs = raw[ ,grepl("^count_infecteds_|run_num|step", names(raw))]
+if (single_csv) {
   
-  infs = infs %>%
-    group_by(run_num, step) %>%
-    mutate(count_infecteds_total = sum(count_infecteds_0_29, 
-                                       count_infecteds_30_59, 
-                                       `count_infecteds_60+`))
+  # subset containing info on dead agents
+  infs = raw[ ,grepl("run_num|step|\"infected", names(raw))]
   
   # turn data into long format for plotting
   infs_long = infs %>% pivot_longer (
-    cols = starts_with("count_infecteds_"),
+    cols = contains("infected"),
     names_to = "age",
-    names_prefix = "count_infecteds_",
+    names_prefix = "get_age_bracket_data",
     values_to = "cum_count"
-  )
+  ) %>%
+    mutate_at("age", ~gsub("infected", "", .)) %>%
+    mutate_at("age", ~gsub("\"", "", .)) %>%
+    mutate_at("age", ~gsub("_", "-", .))
   
-  # add column with total and new infections per step
+  # add column with new deaths per step
   infs_long = infs_long %>%
     group_by(run_num,age) %>%
     mutate(new_infs = c(0,diff(cum_count)))
   
-  # aggregated version of infecteds info
+  # aggregated version of deads info
   infs_aggr = infs_long %>%
     group_by(step, age) %>%
     summarise(mean = mean(cum_count), stdev = round(sd(cum_count), 2),
               max = max(cum_count), min = min(cum_count),
               mean_new = mean(new_infs), stdev_new = round(sd(new_infs), 2),
               max_new = max(new_infs), min_new = min(new_infs))
+  
+} else {
+  if ("count_infecteds_0_29" %in% colnames(raw)) {
+    # if information is available, subset containing info on infected agents
+    infs = raw[ ,grepl("^count_infecteds_|run_num|step", names(raw))]
+    
+    infs = infs %>%
+      group_by(run_num, step) %>%
+      mutate(count_infecteds_total = sum(count_infecteds_0_29, 
+                                         count_infecteds_30_59, 
+                                         `count_infecteds_60+`))
+    
+    # turn data into long format for plotting
+    infs_long = infs %>% pivot_longer (
+      cols = starts_with("count_infecteds_"),
+      names_to = "age",
+      names_prefix = "count_infecteds_",
+      values_to = "cum_count"
+    )
+    
+    # add column with total and new infections per step
+    infs_long = infs_long %>%
+      group_by(run_num,age) %>%
+      mutate(new_infs = c(0,diff(cum_count)))
+    
+    # aggregated version of infecteds info
+    infs_aggr = infs_long %>%
+      group_by(step, age) %>%
+      summarise(mean = mean(cum_count), stdev = round(sd(cum_count), 2),
+                max = max(cum_count), min = min(cum_count),
+                mean_new = mean(new_infs), stdev_new = round(sd(new_infs), 2),
+                max_new = max(new_infs), min_new = min(new_infs))
+  }
 }
 
 ##### various plotting information
@@ -391,4 +469,4 @@ if (export_plots) {
 ggsave(sprintf("%s/%scontacts.pdf", dest_path, pattern), 
        width = g_width, height = g_height)
 }
-}
+# }
