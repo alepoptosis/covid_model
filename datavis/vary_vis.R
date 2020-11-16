@@ -15,7 +15,7 @@ metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
 
-run_name = "2020-07-21_vary-tt-threshold-01" # change name accordingly
+run_name = "2020-11-14_vary-ld-compliance" # change name accordingly
 varying_par = "testtrace_threshold" # use "_" instead of "-"
 optimal_value = 0.25 # optimal value chosen for measure (if needed)
 dest_path = "visualisations" # folder for visualisations
@@ -29,45 +29,59 @@ fix_metric_plot = FALSE     # fix one metric and vary the other (2 param only)
 breed_plots = TRUE          # one breed plot per parameter value (1 param only)
 log_plots = FALSE           # for varying p-infect only
 export_plots = TRUE         # export plots or just display them
+single_csv = TRUE
 
 ############################## DATA WRANGLING #################################
 path = sprintf("results/%s", run_name)
 pattern = sprintf("%s_", run_name) # date and test name
 
-# if the collated csv already exists, use it
-if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
+if (single_csv) {
   
-  raw = read.csv(sprintf("%s/%sfull.csv", path, pattern), 
-                 stringsAsFactors=FALSE, check.names = FALSE)
+  raw = read.csv(sprintf("%s.csv", path), 
+                 skip = 6, stringsAsFactors=FALSE, check.names = FALSE)
   
-} else {
-  # otherwise, get list of csvs
-  csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
-  
-  # merge in one csv and add a run ID while removing the useless one
-  raw = csvs %>%
-    set_names() %>%
-    map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
-             .id = "run_num", stringsAsFactors=FALSE, check.names = FALSE) %>% 
-    select(-"[run number]") %>%
-    mutate_at("run_num", ~gsub(sprintf("%s/%s|.csv", path, pattern), "", .)) %>%
-    mutate_at("run_num", as.numeric) %>%
-    mutate_at("run_num", ~ run_num + 1)
-  
-  # clean column names
+  names(raw) = gsub("run number", "run_num", names(raw))
   names(raw) = gsub("\\[|\\]|", "", names(raw))
   names(raw) = gsub("\\.", " ", names(raw))
   names(raw) = gsub("\\-", "_", names(raw))
   
-  raw = raw %>%
-    unite("run_num", c("run_num", sprintf("%s",varying_par)), remove = FALSE)
-  
-  write.csv(raw, sprintf("%s/%sfull.csv", path, pattern), row.names = FALSE)
+} else {
+  # if the collated csv already exists, use it
+  if (file.exists(sprintf("%s/%sfull.csv", path, pattern))) {
+    
+    raw = read.csv(sprintf("%s/%sfull.csv", path, pattern), 
+                   stringsAsFactors=FALSE, check.names = FALSE)
+    
+  } else {
+    # otherwise, get list of csvs
+    csvs = list.files(path = path, pattern = pattern, full.names = TRUE)
+    
+    # merge in one csv and add a run ID while removing the useless one
+    raw = csvs %>%
+      set_names() %>%
+      map_dfr( ~ read_csv(.x, col_types = cols(), skip = 6), 
+               .id = "run_num", stringsAsFactors=FALSE, check.names = FALSE) %>% 
+      select(-"[run number]") %>%
+      mutate_at("run_num", ~gsub(sprintf("%s/%s|.csv", path, pattern), "", .)) %>%
+      mutate_at("run_num", as.numeric) %>%
+      mutate_at("run_num", ~ run_num + 1)
+    
+    # clean column names
+    names(raw) = gsub("\\[|\\]|", "", names(raw))
+    names(raw) = gsub("\\.", " ", names(raw))
+    names(raw) = gsub("\\-", "_", names(raw))
+    
+    raw = raw %>%
+      unite("run_num", c("run_num", sprintf("%s",varying_par)), remove = FALSE)
+    
+    write.csv(raw, sprintf("%s/%sfull.csv", path, pattern), row.names = FALSE)
+  }
 }
 
 # subset containing parameter information for each run
-par = unique(raw[ ,grepl("^(?!.*(count |count_|step|contacts|dead|currently))", 
-                         names(raw), perl=TRUE)])
+par = unique(
+  raw[ ,grepl("^(?!.*(count |count_|num_contacts|step|dead|get_age_bracket_data|active|currently))", 
+              names(raw), perl=TRUE)])
 
 num_ticks = max(raw$step) # number of ticks/steps for xaxis
 

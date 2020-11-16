@@ -22,11 +22,11 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # # rest of the script is looped for each of the experiments
 # for (run in to_run) {
 
-run_name = sprintf("2020-11-13_no-controls")#, run) # change date accordingly
+run_name = sprintf("2020-11-15_no-controls")#, run) # change date accordingly
 dest_path = "visualisations"             # folder for visualisations
 g_width = 22                             # size of plots
 g_height = 16
-export_plots = FALSE                      # export plots or just display them
+export_plots = TRUE                      # export plots or just display them
 new_ld_vis = TRUE # updated way of showing proportion of runs in lockdown
 single_csv = TRUE # whether the output was already collated (ran on one PC)
 
@@ -113,6 +113,8 @@ if (!single_csv & !file.exists(sprintf("%s/%sparameters.par", path, pattern))) {
   write.csv(raw, sprintf("%s/%sparameters.par", path, pattern), row.names = FALSE)
 }
 
+num_runs = max(data_long$run_num) # number of runs for ylabel
+
 # subset containing lockdown info
 if ("currently_locked?" %in% colnames(raw) | "lockdown_active?" %in% colnames(raw)) {
   ld = raw[ ,grepl("run_num|step|^count_locked|lockdown_active", names(raw))]
@@ -129,8 +131,6 @@ if ("currently_locked?" %in% colnames(raw) | "lockdown_active?" %in% colnames(ra
     mutate(`currently_locked?` = count > lockdown_thr) %>%
     select(-c("breed", "count"))
 }
-
-num_runs = max(data_long$run_num) # number of runs for ylabel
 
 # aggregate data from all runs into a percentage of locked runs per step
 
@@ -183,7 +183,6 @@ if (single_csv) {
   ) %>%
   mutate_at("age", ~gsub("count deads", "total", .))
 }
-
 
 # add column with new deaths per step
 deceased_long = deceased_long %>%
@@ -286,7 +285,7 @@ peak_sym = pull(data_long %>%
 
 # find out the total number of deaths
 tot_deaths = pull(data_long %>%
-  filter(breed == "deads") %>%
+  filter(breed == "deceased") %>%
   group_by(run_num) %>%
   summarise(tot_deaths = max(count)) %>%
   group_by() %>%
@@ -295,22 +294,28 @@ tot_deaths = pull(data_long %>%
 # find out the deaths in first year (if it ran for more than 1)
 if (num_ticks >= 365) { 
   year1_deaths = round(data_aggr %>% 
-                         filter(step == 365, breed == "deads") %>% 
+                         filter(step == 365, breed == "deceased") %>% 
                          pull(mean), 2)
 } else {
   year1_deaths = "n/a"
 }
 
 # if available, find out number of infections over entire run
-if ("count_infecteds_0_29" %in% colnames(raw)) {
+
+if (single_csv) {
   tot_infs = round(max(infs_aggr$mean), 2)
 } else {
-  tot_infs = "n/a"
+  if ("count_infecteds_0_29" %in% colnames(raw)) {
+    tot_infs = round(max(infs_aggr$mean), 2)
+  } else {
+    tot_infs = "n/a"
+  }
 }
+
 
 # set order of breeds for legend
 order = c("susceptibles", "exposeds", "asymptomatics",
-          "symptomatics", "recovereds", "deads") #, "locked")
+          "symptomatics", "recovereds", "deceased") #, "locked")
 
 data_long$breed = factor(data_long$breed, levels=order)
 data_aggr$breed = factor(data_aggr$breed, levels=order)
@@ -363,9 +368,9 @@ if (!new_ld_vis) {
     geom_line(aes(color=breed), size = 1) +
     coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
     scale_color_manual(values = pal, 
-                       labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
+                       labels = order) +
     scale_fill_manual(values = pal, 
-                      labels = substr(str_to_sentence(order), 1, nchar(order)-1)) +
+                      labels = order) +
     scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
                                                     scale = 1e-3), 
                        breaks = seq(0, max_cont, by = 30000)) +
@@ -388,9 +393,9 @@ if (!new_ld_vis) {
 
 ######### NEW DEATHS PER TICK PLOT, NON AGGREGATED
 
-ggplot(subset(deads_aggr, age != "total"), aes(x=step, y=mean_new)) + 
+ggplot(subset(deceased_aggr, age != "total"), aes(x=step, y=mean_new)) + 
   geom_area(data = ld,
-            aes(x = step, y = (max(deads_aggr$mean_new) + 1) * `currently_locked?`,
+            aes(x = step, y = (max(deceased_aggr$mean_new) + 1) * `currently_locked?`,
                 fill = as.factor(run_num)),
             inherit.aes = FALSE, position=position_dodge(0), alpha = 0.2,
             show.legend = FALSE) +
@@ -401,8 +406,8 @@ ggplot(subset(deads_aggr, age != "total"), aes(x=step, y=mean_new)) +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
   scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-  coord_cartesian(ylim = c(- min(deads_aggr$mean_new), 
-                             max(deads_aggr$mean_new)),
+  coord_cartesian(ylim = c(- min(deceased_aggr$mean_new), 
+                             max(deceased_aggr$mean_new)),
                   xlim = c(0, num_ticks)) +
   labs(x = "Day", y = "Mean new deaths", fill = "Age range", color = "Age range",
        title = sprintf("Control measures: %s", measures),
