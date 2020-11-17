@@ -256,3 +256,49 @@ if (export_plots) {
   ggsave(sprintf("%s/%scontacts.pdf", dest_path, pattern), 
          width = g_width, height = g_height)
 }
+
+######### NEW DEATHS PER TICK PLOT, NON AGGREGATED
+
+greens_sliced = brewer.pal(9, "Greens")[-seq_len(2)]
+
+ggplot(deceased_aggr, aes(x=step, y=mean_new)) +
+  geom_line(aes(color=age), size = 1) +
+  scale_color_manual(values = greens_sliced) +
+  scale_fill_manual(values = greens_sliced) +
+  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
+  coord_cartesian(ylim = c(- min(deceased_aggr$mean_new),
+                           max(deceased_aggr$mean_new)),
+                  xlim = c(0, num_ticks)) +
+  labs(x = "Day", y = "Mean new deaths", fill = "Age range", color = "Age range",
+       title = sprintf("Control measures: %s", measures),
+       caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s\nCalculated over %s simulations", 
+                         tot_deaths, year1_deaths, num_runs)) +
+  theme(plot.caption = element_text(hjust = 0))
+
+if (export_plots) {
+  ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
+         width = g_width, height = g_height)
+}
+
+######### NEW INFECTIONS PER TICK PLOT, NON AGGREGATED
+
+reds_sliced = brewer.pal(9, "Reds")[-seq_len(2)]
+
+ggplot(infected_aggr, aes(x=step, y=mean_new)) +
+  geom_line(aes(color=age), size = 1) +
+  scale_color_manual(values = reds_sliced) +
+  scale_fill_manual(values = reds_sliced) +
+  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
+  coord_cartesian(ylim = c(- min(infected_aggr$mean_new),
+                           max(infected_aggr$mean_new)),
+                  xlim = c(0, num_ticks)) +
+  labs(x = "Day", y = "Mean new infections", fill = "Age range", color = "Age range",
+       title = sprintf("Control measures: %s", measures),
+       caption = sprintf("Average size of symptomatic peak: %s \nAverage number of infections: %s\nCalculated over %s simulations", 
+                         peak_sym, tot_infs, num_runs)) +
+  theme(plot.caption = element_text(hjust = 0))
+
+if (export_plots) {
+  ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
+         width = g_width, height = g_height)
+}

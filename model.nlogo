@@ -1311,7 +1311,7 @@ SWITCH
 378
 imposed-lockdown?
 imposed-lockdown?
-0
+1
 1
 -1000
 
@@ -1324,7 +1324,7 @@ lockdown-threshold
 lockdown-threshold
 0
 100
-0.1
+4.0
 1
 1
 % of pop is I
@@ -1339,7 +1339,7 @@ lockdown-compliance
 lockdown-compliance
 0
 100
-100.0
+75.0
 1
 1
 % compliance
@@ -1404,7 +1404,7 @@ SWITCH
 454
 personal-protections?
 personal-protections?
-1
+0
 1
 -1000
 
@@ -1417,7 +1417,7 @@ protections-strength
 protections-strength
 0
 100
-50.0
+100.0
 1
 1
 % reduction
@@ -1432,7 +1432,7 @@ protections-threshold
 protections-threshold
 0
 100
-1.0
+0.1
 1
 1
 % of pop is I
@@ -2573,7 +2573,7 @@ NetLogo 6.1.1
     <metric>count symptomatics</metric>
     <metric>count asymptomatics</metric>
     <metric>count recovereds</metric>
-    <metric>count staying-at-home</metric>
+    <metric>count_staying-at-home</metric>
     <metric>num-contacts</metric>
     <metric>lockdown-active?</metric>
     <metric>shielding-active?</metric>
@@ -2737,7 +2737,7 @@ NetLogo 6.1.1
     <metric>count symptomatics</metric>
     <metric>count asymptomatics</metric>
     <metric>count recovereds</metric>
-    <metric>count staying-at-home</metric>
+    <metric>count_staying-at-home</metric>
     <metric>num-contacts</metric>
     <metric>lockdown-active?</metric>
     <metric>shielding-active?</metric>
