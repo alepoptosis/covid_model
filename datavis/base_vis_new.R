@@ -25,7 +25,7 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # # rest of the script is looped for each of the experiments
 # for (run in to_run) {
 
-run_name = sprintf("2020-11-15_no-controls")#, run) # change date accordingly
+run_name = sprintf("2020-11-17_no-controls")#, run) # change date accordingly
 dest_path = "visualisations"             # folder for visualisations
 g_width = 22                             # size of plots
 g_height = 16
@@ -60,7 +60,9 @@ data_long = data %>% pivot_longer (
   names_to = "breed", 
   names_prefix = "count |count_",
   values_to = "count"
-)
+) %>%
+  mutate_at("breed", ~gsub("^_", "", .)) %>%
+  mutate_at("breed", ~gsub("_", " ", .))
 
 # aggregate data from all runs into an average count and stdev, min and max
 data_aggr = data_long %>%
@@ -193,12 +195,12 @@ if (num_ticks >= 365) {
 # number of infections over entire run
 tot_infs = round(max(infected_aggr$mean), 2)
 
+data_long = data_long %>% filter(breed != "staying at home")
+data_aggr = data_aggr %>% filter(breed != "staying at home")
+
 # set order of breeds for legend
 order = c("susceptibles", "exposeds", "asymptomatics",
-          "symptomatics", "recovereds", "deceased", "locked")
-
-data_long = data_long %>% filter(breed != "locked")
-data_aggr = data_aggr %>% filter(breed != "locked")
+          "symptomatics", "recovereds", "deceased")
 
 data_long$breed = factor(data_long$breed, levels=order)
 data_aggr$breed = factor(data_aggr$breed, levels=order)
@@ -215,9 +217,9 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
                      labels = order) +
   scale_fill_manual(values = pal, 
                     labels = order) +
-  scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
-                                                  scale = 1e-3), 
-                     breaks = seq(0, max_cont, by = 30000)) +
+  # scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
+  #                                                 scale = 1e-3), 
+  #                    breaks = seq(0, max_cont, by = 30000)) +
   scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
   labs(x = "Day", y = "Mean count",
        title = sprintf("Control measures: %s", measures),
@@ -242,9 +244,9 @@ ggplot(contacts_aggr, aes(x=step, y=mean)) +
   geom_line(size = 1, color = "orange") +
   geom_ribbon(aes(ymin=min, ymax=max), alpha=0.2, fill = "orange") +
   coord_cartesian(ylim = c(0, max_cont), xlim = c(0, num_ticks)) +
-  scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
-                                                  scale = 1e-3), 
-                     breaks = seq(0, max_cont, by = 100000)) +
+  # scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
+  #                                                 scale = 1e-3), 
+  #                    breaks = seq(0, max_cont, by = 100000)) +
   scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
   scale_fill_manual(values = rep("lightgrey", num_runs)) +
   labs(x = "Day", y = "Mean contacts",
@@ -299,6 +301,6 @@ ggplot(infected_aggr, aes(x=step, y=mean_new)) +
   theme(plot.caption = element_text(hjust = 0))
 
 if (export_plots) {
-  ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
+  ggsave(sprintf("%s/%sinfections.pdf", dest_path, pattern), 
          width = g_width, height = g_height)
 }
