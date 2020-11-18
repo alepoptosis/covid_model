@@ -45,11 +45,9 @@ names(raw) = gsub("\\.", " ", names(raw))
 names(raw) = gsub("\\-", "_", names(raw))
 
 # subset containing only data on counts, run number and step
+# and collapse deceased counts by age into a single `count deceased`
 data = raw %>%
-  select(matches("run_num|step|count|deceased"))
-
-# collapse deceased counts by age into a single `count deceased`
-data = data %>%
+  select(matches("run_num|step|count|deceased")) %>%
   mutate(`count deceased` = select(., contains("deceased")) %>% 
            rowSums(na.rm = TRUE)) %>%
   select(-contains("get_age_bracket_data"))
@@ -154,13 +152,6 @@ infected_aggr = infected_long %>%
 
 ##### various plotting information
 
-# list of measures featured in experiment
-measures = paste(unlist(str_to_sentence(colnames(par[, 3:8])[par[1, 3:8] == "TRUE"])), collapse = ", ")
-measures = gsub("[^[:alnum:][:blank:]+\\,]", " ", measures)
-measures = gsub(" ,", ",", measures)
-measures = gsub("control measures", "personal protection", measures)
-if (measures == "") {measures = "None"}
-
 num_ticks = max(data_long$step) # number of ticks/steps for xaxis
 max_cont = max(contacts_aggr$mean) # max avg contacts for ylim (contacts plot)
 pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
@@ -222,7 +213,6 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
   #                    breaks = seq(0, max_cont, by = 30000)) +
   scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
   labs(x = "Day", y = "Mean count",
-       title = sprintf("Control measures: %s", measures),
        fill = "Breed", color = "Breed",
        caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s \nCalculated over %s simulations", 
                          tot_deaths, year1_deaths, peak_sym, tot_infs, num_runs)) +
@@ -250,7 +240,6 @@ ggplot(contacts_aggr, aes(x=step, y=mean)) +
   scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
   scale_fill_manual(values = rep("lightgrey", num_runs)) +
   labs(x = "Day", y = "Mean contacts",
-       title = sprintf("Control measures: %s", measures),
        caption = sprintf("Calculated over %s simulations", num_runs)) +
   theme(plot.caption = element_text(hjust = 0))
 
@@ -272,7 +261,6 @@ ggplot(deceased_aggr, aes(x=step, y=mean_new)) +
                            max(deceased_aggr$mean_new)),
                   xlim = c(0, num_ticks)) +
   labs(x = "Day", y = "Mean new deaths", fill = "Age range", color = "Age range",
-       title = sprintf("Control measures: %s", measures),
        caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s\nCalculated over %s simulations", 
                          tot_deaths, year1_deaths, num_runs)) +
   theme(plot.caption = element_text(hjust = 0))
@@ -295,7 +283,6 @@ ggplot(infected_aggr, aes(x=step, y=mean_new)) +
                            max(infected_aggr$mean_new)),
                   xlim = c(0, num_ticks)) +
   labs(x = "Day", y = "Mean new infections", fill = "Age range", color = "Age range",
-       title = sprintf("Control measures: %s", measures),
        caption = sprintf("Average size of symptomatic peak: %s \nAverage number of infections: %s\nCalculated over %s simulations", 
                          peak_sym, tot_infs, num_runs)) +
   theme(plot.caption = element_text(hjust = 0))
