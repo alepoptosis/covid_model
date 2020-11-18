@@ -15,8 +15,8 @@ metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
 
-run_name = "2020-11-14_vary-sv-compliance" # change name accordingly
-varying_par = "shield_compliance" # use "_" instead of "-"
+run_name = "2020-11-17_vary-lockdown-compliance-0100" # change name accordingly
+varying_par = "lockdown_compliance" # use "_" instead of "-"
 optimal_value = 0.25 # optimal value chosen for measure (if needed)
 dest_path = "visualisations" # folder for visualisations
 g_width = 22     # size of plots
