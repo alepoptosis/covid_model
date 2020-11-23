@@ -20,7 +20,7 @@ globals [
   lockdown-threshold-num    ;; number of I agents to trigger lockdown
 
   ;; shielding globals
-  agents-at-risk            ;; set of agents over 70
+  agents-at-risk            ;; set of agents over 60
   shielding-active?         ;; whether shielding of vulnerable is in progress
   shield-threshold-num      ;; number of I agents to trigger shielding
 
@@ -167,7 +167,7 @@ to setup-globals
   set lockdown-threshold-num (absolute-threshold lockdown-threshold)
 
   ;; shielding globals
-  set agents-at-risk (turtles with [age = "70-79" or age = "80+"])
+  set agents-at-risk (turtles with [age = "60-69" or age = "70-79" or age = "80+"])
   set shielding-active? false
   set shield-threshold-num (absolute-threshold shield-threshold)
 
