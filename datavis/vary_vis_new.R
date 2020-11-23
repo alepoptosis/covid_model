@@ -15,22 +15,22 @@ metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
 
-run_name = "2020-11-18_vary-test-coverage-combo-0100" # change name accordingly
-varying_par = c("test_coverage_sym", "test_coverage_asym") # use "_" instead of "-"
+run_name = "2020-11-17_vary-lockdown-compliance-0100" # change name accordingly
+varying_par = "lockdown_compliance" # use "_" instead of "-"
 optimal_value = 0.25 # optimal value chosen for measure (if needed)
 dest_path = "visualisations" # folder for visualisations
 g_width = 22     # size of plots
 g_height = 16
 
 # choose which plots to make
-metrics_plot = TRUE         # output metrics vs param value (1 or 2 params)
-fix_metric_plot = TRUE     # fix one metric and vary the other (2 param only)
+metrics_plot = FALSE         # output metrics vs param value (1 or 2 params)
+boxplot = TRUE
+fix_metric_plot = FALSE     # fix one metric and vary the other (2 param only)
   # MORE OPTIONS NEEDED FOR FIXED METRIC PLOT 
   focus_par = "test_coverage_asym" # which one of the parameters to vary
   fixed_par = "test_coverage_sym" # which one of the parameters to fix
   fixed_value = 0 # value to fix other parameter at
 
-breed_plots = TRUE          # one breed plot per parameter value (1 param only)
 export_plots = TRUE         # export plots or just display them
 
 ############################## DATA WRANGLING #################################
@@ -65,7 +65,7 @@ if (length(varying_par) == 1) {
               peak_size = max(`count symptomatics`)) %>%
     pivot_longer(c("death_toll", "peak_size"),
                  names_to = "metric",
-                 values_to = "count")
+                 values_to = "value")
   
   if (num_ticks > 365) {
     first_year = raw %>%
@@ -74,7 +74,7 @@ if (length(varying_par) == 1) {
       summarise(year1_deaths = max(`count deceased`)) %>%
       pivot_longer("year1_deaths",
                    names_to = "metric",
-                   values_to = "count")
+                   values_to = "value")
     
     summary = rbind(summary, first_year) 
   }
@@ -87,7 +87,7 @@ if (length(varying_par) == 2) {
               peak_size = max(`count symptomatics`)) %>%
     pivot_longer(c("death_toll", "peak_size"),
                  names_to = "metric",
-                 values_to = "count")
+                 values_to = "value")
   
   if (num_ticks > 365) {
     first_year = raw %>%
@@ -96,7 +96,7 @@ if (length(varying_par) == 2) {
       summarise(year1_deaths = max(`count deceased`)) %>%
       pivot_longer("year1_deaths",
                    names_to = "metric",
-                   values_to = "count")
+                   values_to = "value")
     
     summary = rbind(summary, first_year) 
   }
@@ -116,7 +116,7 @@ if (metrics_plot & length(varying_par) == 1) {
     
   summary_aggr = summary %>%
     group_by(!!as.name(varying_par), metric) %>%
-    summarise(mean = mean(count), max = max(count), min = min(count))
+    summarise(mean = mean(value), max = max(value), min = min(value))
   
   tick_names = unique(pull(summary_aggr[1]))
   
@@ -129,7 +129,7 @@ if (metrics_plot & length(varying_par) == 1) {
     scale_x_continuous(breaks = tick_names) +
     scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
     scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
-    labs(x = sprintf("%s (%%)", formatted_par), y = "Mean count",
+    labs(x = sprintf("%s (%%)", formatted_par), y = "Mean value",
          fill = "", color = "",
          caption = sprintf("Calculated over %s simulation", num_runs)) +
     theme(plot.caption = element_text(hjust = 0),
@@ -146,13 +146,39 @@ if (metrics_plot & length(varying_par) == 1) {
     }
 }
 
+######################## DEATH TOLL AND PEAK SIZE BOXPLOT #####################
+
+if (boxplot & length(varying_par) == 1) {
+  
+  summary_aggr = summary %>%
+    group_by(!!as.name(varying_par), metric) %>%
+    summarise(mean = mean(value), max = max(value), min = min(value))
+  
+  tick_names = unique(pull(summary_aggr[1]))
+  
+  ggplot(summary, aes(x = factor(!!as.name(varying_par)), y = value, fill = metric)) + 
+    geom_boxplot() + 
+    geom_jitter(aes(color = metric), shape = 16, alpha = 0.5,
+                position = position_jitter(0.2)) +
+    scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
+    scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
+    labs(x = sprintf("%s (%%)", formatted_par), y = "Value",
+         fill = "", color = "",
+         caption = sprintf("Calculated over %s simulation", num_runs))
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%sboxplot.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
+}
+
 ########## HEATMAPS FOR COMBINATION OF 2 VARYING PARAMETERS ###################
 
 if (metrics_plot & length(varying_par) == 2) {
 
   summary_aggr = summary %>%
     group_by(!!as.name(varying_par[1]), !!as.name(varying_par[2]), metric) %>%
-    summarise(mean = mean(count), stdev = sd(count))
+    summarise(mean = mean(value), stdev = sd(value))
   
   x_tick_labels = unique(pull(summary_aggr[1]))
   y_tick_labels = unique(pull(summary_aggr[2]))
@@ -219,7 +245,7 @@ if (fix_metric_plot & length(varying_par) == 2) {
   summary_aggr = summary %>%
     filter(!!as.name(fixed_par) == fixed_value) %>%
     group_by(!!as.name(focus_par), metric) %>%
-    summarise(mean = mean(count), max = max(count), min = min(count))
+    summarise(mean = mean(value), max = max(value), min = min(value))
   
   tick_names = unique(pull(summary_aggr[1]))
   
@@ -232,7 +258,7 @@ if (fix_metric_plot & length(varying_par) == 2) {
     scale_x_continuous(breaks = tick_names) +
     scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
     scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
-    labs(x = sprintf("%s (%%)", focus_formatted), y = "Mean count",
+    labs(x = sprintf("%s (%%)", focus_formatted), y = "Mean value",
          fill = "Metric", color = "Metric",
          caption = sprintf("Calculated over %s simulation\n%s fixed at %s", num_runs, fixed_formatted, fixed_value)) +
     theme(plot.caption = element_text(hjust = 0))

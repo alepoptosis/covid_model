@@ -43,6 +43,7 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | personal-protections?       | G       | whether to simulate personal protections measures                             |
 | test-and-trace?             | G       | whether to simulate test and trace measures                                   |
 | isolate-symptomatics?       | G       | whether to simulate isolation of symptomatics measures                        |
+| csv-data                    | G       | the csv used for population data such as age ranges, p-death etc.
 | pop-size                 	  | G      	| number of agents in simulation                                            	|
 | update-thresholds?          | G       | whether thresholds need to be updated due to the death of a number of agents  |
 | lockdown-active?         	  | G      	| whether an imposed lockdown is currently in progress                      	|
@@ -58,8 +59,6 @@ Abbreviations: **G**lobals, **S**usceptibles, **E**xposeds, **A**symptomatics, s
 | start-isolation?         	  | G      	| whether isolation of symptomatics has begun                               	|
 | isolation-sym-threshold-num | G      	| number of I agents to trigger isolation of symptomatics                   	|
 | num-contacts             	  | G      	| number of contacts between agents for current tick                        	|
-| count-inf-...           	  | G      	| cumulative counts of infecteds for each age range                         	|
-| count-dead-...          	  | G      	| cumulative counts of dead agents for each age range                       	|
 | age                      	  | ALL    	| age range of the agent                                                    	|
 | p-death                  	  | ALL    	| individual probability of death based on age range                        	|
 | radius                   	  | ALL    	| contact radius of the agent                                               	|
