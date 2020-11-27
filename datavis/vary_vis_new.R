@@ -158,13 +158,13 @@ if (boxplot & length(varying_par) == 1) {
   
   ggplot(summary, aes(x = factor(!!as.name(varying_par)), y = value, fill = metric)) + 
     geom_boxplot() + 
-    geom_jitter(aes(color = metric), shape = 16, alpha = 0.5,
-                position = position_jitter(0.2)) +
     scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
     scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
-    labs(x = sprintf("%s (%%)", formatted_par), y = "Value",
+    scale_y_continuous(trans="log10") +
+    labs(x = sprintf("%s (%%)", formatted_par), y = "Log10 of value",
          fill = "", color = "",
-         caption = sprintf("Calculated over %s simulation", num_runs))
+         caption = sprintf("Showing %s simulation per variable value", 
+                           (num_runs / length(tick_names))))
   
   if (export_plots) {
     ggsave(sprintf("%s/%sboxplot.pdf", dest_path, pattern), 
