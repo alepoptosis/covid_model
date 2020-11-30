@@ -981,13 +981,13 @@ to-report count_staying-at-home
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-18
+0
 20
-1026
-1029
+488
+509
 -1
 -1
-10.0
+4.8
 1
 10
 1
@@ -1076,10 +1076,10 @@ NIL
 1
 
 SWITCH
-1245
-240
-1390
-273
+1530
+555
+1675
+588
 visual-elements?
 visual-elements?
 1
@@ -1102,10 +1102,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1245
-101
-1418
-134
+1530
+91
+1703
+124
 initial-infected
 initial-infected
 0
@@ -1117,10 +1117,10 @@ initial-infected
 HORIZONTAL
 
 SLIDER
-1245
-60
-1417
-93
+1530
+50
+1702
+83
 duration
 duration
 0
@@ -1157,10 +1157,10 @@ Pathogen parameters
 1
 
 TEXTBOX
-1292
-36
-1442
-54
+1577
+26
+1727
+44
 Simulation options
 11
 0.0
@@ -1177,10 +1177,10 @@ Population parameters
 1
 
 TEXTBOX
-945
-20
 1095
-38
+15
+1245
+33
 Control measures parameters
 11
 0.0
@@ -1305,10 +1305,10 @@ PENS
 "default" 1.0 0 -955883 true "" ";plot num-contacts"
 
 SWITCH
-1245
-345
-1407
-378
+1530
+305
+1692
+338
 imposed-lockdown?
 imposed-lockdown?
 1
@@ -1346,10 +1346,10 @@ lockdown-compliance
 HORIZONTAL
 
 SWITCH
-1245
-384
-1408
-417
+1530
+344
+1693
+377
 shield-vulnerable?
 shield-vulnerable?
 1
@@ -1387,10 +1387,10 @@ shield-compliance
 HORIZONTAL
 
 SWITCH
-1245
-200
-1389
-233
+1530
+190
+1674
+223
 lose-immunity?
 lose-immunity?
 1
@@ -1398,10 +1398,10 @@ lose-immunity?
 -1000
 
 SWITCH
-1245
-421
-1417
-454
+1530
+381
+1702
+414
 personal-protections?
 personal-protections?
 1
@@ -1439,10 +1439,10 @@ protections-threshold
 HORIZONTAL
 
 SWITCH
-1245
-460
-1408
-493
+1530
+420
+1693
+453
 test-and-trace?
 test-and-trace?
 1
@@ -1450,10 +1450,10 @@ test-and-trace?
 -1000
 
 SLIDER
-915
-370
-1111
-403
+1215
+60
+1411
+93
 testtrace-threshold
 testtrace-threshold
 0
@@ -1465,10 +1465,10 @@ testtrace-threshold
 HORIZONTAL
 
 SLIDER
-915
-450
-1112
-483
+1215
+140
+1412
+173
 test-coverage-sym
 test-coverage-sym
 0
@@ -1480,10 +1480,10 @@ test-coverage-sym
 HORIZONTAL
 
 SLIDER
-915
-490
-1114
-523
+1215
+180
+1414
+213
 test-coverage-asym
 test-coverage-asym
 0
@@ -1495,10 +1495,10 @@ test-coverage-asym
 HORIZONTAL
 
 SLIDER
-915
-530
-1132
-563
+1215
+220
+1432
+253
 contacts-traced
 contacts-traced
 0
@@ -1510,10 +1510,10 @@ contacts-traced
 HORIZONTAL
 
 SWITCH
-1245
-500
-1427
-533
+1530
+460
+1712
+493
 isolation-symptomatics?
 isolation-symptomatics?
 1
@@ -1521,10 +1521,10 @@ isolation-symptomatics?
 -1000
 
 SLIDER
-915
-710
-1115
-743
+1220
+400
+1420
+433
 isolation-compliance-sym
 isolation-compliance-sym
 0
@@ -1536,10 +1536,10 @@ isolation-compliance-sym
 HORIZONTAL
 
 SLIDER
-915
-670
-1135
-703
+1220
+360
+1440
+393
 isolation-sym-threshold
 isolation-sym-threshold
 0
@@ -1551,10 +1551,10 @@ isolation-sym-threshold
 HORIZONTAL
 
 SLIDER
-1245
-140
-1440
-173
+1530
+130
+1725
+163
 exogenous-infection
 exogenous-infection
 0
@@ -1566,10 +1566,10 @@ exogenous-infection
 HORIZONTAL
 
 SWITCH
-1245
-280
-1430
-313
+1530
+230
+1715
+263
 allow-exogenous-infections?
 allow-exogenous-infections?
 0
@@ -1577,10 +1577,10 @@ allow-exogenous-infections?
 -1000
 
 SLIDER
-915
-570
-1155
-603
+1215
+260
+1455
+293
 isolation-compliance-tested
 isolation-compliance-tested
 0
@@ -1607,10 +1607,10 @@ days
 HORIZONTAL
 
 SLIDER
-1230
-635
-1430
-668
+1220
+440
+1420
+473
 isolation-duration-case
 isolation-duration-case
 0
@@ -1637,10 +1637,10 @@ protections-compliance
 HORIZONTAL
 
 SLIDER
-915
-610
-1155
-643
+1215
+300
+1455
+333
 isolation-compliance-traced
 isolation-compliance-traced
 0
@@ -1652,10 +1652,10 @@ isolation-compliance-traced
 HORIZONTAL
 
 SLIDER
-1230
-675
-1447
-708
+1220
+480
+1437
+513
 isolation-duration-contact
 isolation-duration-contact
 0
@@ -1682,10 +1682,10 @@ daily-contacts
 HORIZONTAL
 
 SLIDER
-915
-410
-1117
-443
+1215
+100
+1417
+133
 contact-history-length
 contact-history-length
 0
@@ -1714,45 +1714,55 @@ HORIZONTAL
 @#$#@#$#@
 ## WHAT IS IT?
 
-This model simulates the spread of COVID-19 in a population of varying size, as well as the effects of five non-pharmaceutical interventions that are commonly implemented as part of the effort to contain the pandemic. These are
-
-- Imposed lockdown
-- Shielding of vulnerable population
-- Personal protections such as masks, hand-washing, and social distancing
-- Test, trace, and isolate system
-- Isolation of symptomatic cases
+This model simulates the spread of COVID-19 in a population of varying size, as well as the effects of five non-pharmaceutical interventions that are commonly implemented as part of the effort to contain the pandemic. 
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+Each agent in this model represents one human being, and the who fall into their radius are their neighbourhood. They represent the people they meet most often for the longest time, and so the ones who would be most at risk of transmission. Agents fall into five categories: susceptible, who can catch the virus if exposed to it, exposed, who have been exposed to the virus but are not infectious yet, asymptomatic, who are infectious but show no signs of it, symptomatic, who are infectious and show symptoms, and finally recovered, who are not infectious and cannot catch the virus. Recovered agents can return susceptibles at the end of ther immunity periods. Furthermore, symptomatic agents have a chance to die, and deceased agents are removed from the population.
+
+```
+               D
+               | 
+S -> E -> A -> I -> R -> S
+          |         |
+          -----------
+```
+A simplified diagram of the progression between categories, or breeds, that the agents in this model experience.
+
+The control measures implemented to slow down the spread of the virus are:
+
+- **Imposed lockdown**: once the number of symptomatic cases surpass the *lockdown-threshold*, a *lockdown-compliance* percentage of all agents interrupt all contacts with other agents until cases are dip back below the threshold;
+- **Shielding of vulnerable population**: once the number of symptomatic cases surpass the *shield-threshold*, a *shield-compliance* percentage of all at-risk agents (over 60 years of age) interrupt all contacts with other agents until cases are dip back below the threshold;
+- **Personal protections** such as masks, hand-washing, and social distancing: once the number of symptomatic cases surpass the *protections-threshold*, a *protections-compliance* percentage of all agents adopt protections. In case of susceptible agents, these lower the probability of catching the virus from an infected contact, while in case of infected agents (asymptomatic or symptomatic), it lowers the probability of transmitting it. In both case, the reduction in probability is equal to *protections-strength*;
+- **Test, trace, and isolate system**: once the number of symptomatic cases surpass the *testtrace-threshold* for the first time, the measure activates. The tracing system produces a contact history for each exposed, symptomatic or asymptomatic agent listing all agents they have come in contact with up until *contact-history-length* days prior. The testing system makes a *test-coverage-sym* percentage of symptomatic agents aware of their infected status every day, as well as a *test-coverage-asym* percentage of exposed and asymptomatic agents. The isolate system alerts a *contacts-traced* percentage of the tested agent's contacts, an *isolation-compliance-traced* percentage of it complies with isolation. Similarly, an *isolation-compliance-tested* percentage of tested agents also isolates. When cases dip back below the threshold, testing stops. Tested agents isolate for *isolation-duration-case* days, while contacts isolate for *isolation-duration-contact* days.
+- **Isolation of symptomatic cases**: once the number of symptomatic cases surpass the *isolation-sym-threshold*, a *isolation-compliance-sym* percentage of symptomatic agents self-isolate for *isolation-duration-case* days. This continues even once cases dip back below the threshold.
+
+Each of these can be turned on or off using the dedicated switch in the Interface tab.
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+The interface parameters are divided into 5 sections:
 
-## THINGS TO NOTICE
+- **Population parameters**: these control how connected the population is; change how many people agents come into contact with by increasing or decreasing their *min-radius* contact radius and/or the *daily-contacts* percentage of the neighbourhood they meet each day.
+- **Pathogen parameters**: these control some basic characteristics of the pathogen, like infectiousness and immunity duration. The virus spreads more or less easily by changing *p-infect-base*, immunity last a longer or shorter time by changing *min-immunity-duration*, and the infectiousness of asymptomatic agents is regulated by *asym-infectiousness*.
+- **Countdown parameters**: these control the clinical course of the infection. The default values were taken from Hoertel et al., 2020 [1] and Lauer et al., 2020 [2].
+- **Control measure parameters**: described in further detail in the section above, these control the various aspects of the non-pharmaceutial interventions put in place to attempt to slow down the spread of the virus.
+- **Simulation options**: these control more fundamental aspects of the simulation, like its duration (*duration*), how many infections are present in the system at day 1 (*initial-infected*), and how likely it is for an agent to encounter an exogenous infection (*exogenous-infection*). It also allows the user to control whether loss of immunity can occur (*lose-immunity?*), and whether the system is open to exogenous infections (*allow-exogenous-infections?*). Finally, there user can turn on or off any of the five control measures. 
 
-(suggested things for the user to notice while running the model)
+Note: in case the simulation is being run headless and visual elements such as colour-coded agents and outlines aren't necessary, they can be turned off to make the simulation slightly faster (*visual-elements?*).
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+- Change how connected society is;
+- Change the characteristics of the virus to make it more or less infectious;
+- Change the clinical course of the infection;
+- Combine different control measures to see which ones work best together.
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+[1] N. Hoertel et al., ‘Facing the COVID-19 epidemic in NYC: a stochastic agent-based model of various intervention strategies’, medRxiv, p. 2020.04.23.20076885, Apr. 2020, doi: 10.1101/2020.04.23.20076885.
+
+[2] S. A. Lauer et al., ‘The Incubation Period of Coronavirus Disease 2019 (COVID-19) From Publicly Reported Confirmed Cases: Estimation and Application’, Ann Intern Med, Mar. 2020, doi: 10.7326/M20-0504.
 @#$#@#$#@
 default
 true
