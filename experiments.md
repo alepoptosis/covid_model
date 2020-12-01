@@ -176,7 +176,7 @@ get-age-bracket-data "80+" "deceased"
 
 ["imposed-lockdown?" true]
 ["lockdown-threshold" 0.1]
-["lockdown-compliance" 0 25 50 75 100]
+["lockdown-compliance" 0 10 20 30 40 50 60 70 80 90 100]
 
 ["shield-vulnerable?" false]
 ["shield-threshold" 3]
@@ -238,7 +238,7 @@ get-age-bracket-data "80+" "deceased"
 
 ["shield-vulnerable?" true]
 ["shield-threshold" 0.1]
-["shield-compliance" 0 25 50 75 100]
+["shield-compliance" 0 10 20 30 40 50 60 70 80 90 100]
 
 ["personal-protections?" false]
 ["protections-threshold" 1]
@@ -300,7 +300,7 @@ get-age-bracket-data "80+" "deceased"
 
 ["personal-protections?" true]
 ["protections-threshold" 0.1]
-["protections-strength" 0 25 50 75 100]
+["protections-strength" 0 10 20 30 40 50 60 70 80 90 100]
 ["protections-compliance" 100]
 
 ["test-and-trace?" false]
@@ -359,7 +359,7 @@ get-age-bracket-data "80+" "deceased"
 ["personal-protections?" true]
 ["protections-threshold" 0.1]
 ["protections-strength" 50]
-["protections-compliance" 0 25 50 75 100]
+["protections-compliance" 0 10 20 30 40 50 60 70 80 90 100]
 
 ["test-and-trace?" false]
 ["testtrace-threshold" 0]
@@ -422,8 +422,8 @@ get-age-bracket-data "80+" "deceased"
 ["test-and-trace?" true]
 ["testtrace-threshold" 0.25]
 ["contact-history-length" 7]
-["test-coverage-sym" 0 25 50 75 100]
-["test-coverage-asym" 0 25 50 75 100]
+["test-coverage-sym" 0 10 20 30 40 50 60 70 80 90 100]
+["test-coverage-asym" 0 10 20 30 40 50 60 70 80 90 100]
 ["contacts-traced" 75]
 ["isolation-compliance-tested" 100]
 ["isolation-compliance-traced" 75]
@@ -439,3 +439,63 @@ get-age-bracket-data "80+" "deceased"
 ["min-pycor" 0]
 ["max-pxcor" 99]
 ["max-pycor" 99]
+
+## vary-isolation-compliance-0100
+
+["duration" 1]
+["initial-infected" 0.1]
+["allow-exogenous-infections?" true]
+["exogenous-infection" 1]
+["visual-elements?" false]
+
+["min-radius" 2]
+["daily-contacts" 50]
+
+["p-infect-base" 10]
+["asym-infectiousness" 30]
+
+["lose-immunity?" false]
+["min-immunity-duration" 180]
+
+["recovery-mean" 20.5]
+["recovery-stdev" 6.7]
+["death-mean" 16]
+["death-stdev" 8.21]
+["incubation-mean" 1.6]
+["incubation-stdev" 1.4]
+
+["imposed-lockdown?" false]
+["lockdown-threshold" 4]
+["lockdown-compliance" 75]
+
+["shield-vulnerable?" false]
+["shield-threshold" 3]
+["shield-compliance" 50]
+
+["personal-protections?" false]
+["protections-threshold" 1]
+["protections-strength" 50]
+["protections-compliance" 100]
+
+["test-and-trace?" false]
+["testtrace-threshold" 0]
+["contact-history-length" 7]
+["test-coverage-sym" 100]
+["test-coverage-asym" 100]
+["contacts-traced" 100]
+["isolation-compliance-tested" 100]
+["isolation-compliance-traced" 100]
+
+["isolation-symptomatics?" true]
+["isolation-sym-threshold" 0.1]
+["isolation-compliance-sym" 0 10 20 30 40 50 60 70 80 90 100]
+
+["isolation-duration-case" 7]
+["isolation-duration-contact" 14]
+
+["min-pxcor" 0]
+["min-pycor" 0]
+["max-pxcor" 99]
+["max-pycor" 99]
+
+##

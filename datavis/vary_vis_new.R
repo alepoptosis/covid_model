@@ -15,8 +15,8 @@ metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
 
-run_name = "2020-11-17_vary-lockdown-compliance-0100" # change name accordingly
-varying_par = "lockdown_compliance" # use "_" instead of "-"
+run_name = "2020-11-30_vary-protections-compliance-0100" # change name accordingly
+varying_par = "protections_compliance" # use "_" instead of "-"
 optimal_value = 0.25 # optimal value chosen for measure (if needed)
 dest_path = "visualisations" # folder for visualisations
 g_width = 22     # size of plots
@@ -61,9 +61,9 @@ raw = raw %>%
 if (length(varying_par) == 1) {
   summary = raw %>%
     group_by(run_num, !!as.name(varying_par)) %>%
-    summarise(death_toll = max(`count deceased`), 
+    summarise(deaths = max(`count deceased`), 
               peak_size = max(`count symptomatics`)) %>%
-    pivot_longer(c("death_toll", "peak_size"),
+    pivot_longer(c("deaths", "peak_size"),
                  names_to = "metric",
                  values_to = "value")
   
@@ -83,9 +83,9 @@ if (length(varying_par) == 1) {
 if (length(varying_par) == 2) {
   summary = raw %>%
     group_by(run_num, !!as.name(varying_par[1]), !!as.name(varying_par[2])) %>%
-    summarise(death_toll = max(`count deceased`), 
+    summarise(deaths = max(`count deceased`), 
               peak_size = max(`count symptomatics`)) %>%
-    pivot_longer(c("death_toll", "peak_size"),
+    pivot_longer(c("deaths", "peak_size"),
                  names_to = "metric",
                  values_to = "value")
   
@@ -110,7 +110,7 @@ pop_size = ((par$max_pxcor + 1) * (par$max_pycor + 1))[1] # population size
 formatted_par = str_to_sentence(str_replace_all(varying_par, "_", " "))
 formatted_metrics = str_to_sentence(str_replace_all(unique((summary$metric)), "_", " "))
 
-################### PARAMETER VALUES vs DEATH TOLL AND PEAK SIZE ##############
+################### PARAMETER VALUES vs DEATHS AND PEAK SIZE ##############
 
 if (metrics_plot & length(varying_par) == 1) {
     
@@ -146,7 +146,11 @@ if (metrics_plot & length(varying_par) == 1) {
     }
 }
 
-######################## DEATH TOLL AND PEAK SIZE BOXPLOT #####################
+######################## DEATHS AND PEAK SIZE BOXPLOT #####################
+
+insert_minor <- function(major_labs, n_minor) {labs <- 
+  c( sapply( major_labs, function(x) c(x, rep("", 4) ) ) )
+labs[1:(length(labs)-n_minor)]}
 
 if (boxplot & length(varying_par) == 1) {
   
@@ -160,8 +164,8 @@ if (boxplot & length(varying_par) == 1) {
     geom_boxplot() + 
     scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
     scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
-    scale_y_continuous(trans="log10") +
-    labs(x = sprintf("%s (%%)", formatted_par), y = "Log10 of value",
+    scale_y_continuous(trans="log10", breaks = seq(0,1000, by = 50)) +
+    labs(x = sprintf("%s (%%)", formatted_par), y = expression("Cases in Log"[10]*" scale"),
          fill = "", color = "",
          caption = sprintf("Showing %s simulation per variable value", 
                            (num_runs / length(tick_names))))
@@ -183,8 +187,8 @@ if (metrics_plot & length(varying_par) == 2) {
   x_tick_labels = unique(pull(summary_aggr[1]))
   y_tick_labels = unique(pull(summary_aggr[2]))
   
-  ##### DEATH TOLL PLOT
-  ggplot(subset(summary_aggr, metric == "death_toll"), 
+  ##### DEATHS PLOT
+  ggplot(subset(summary_aggr, metric == "deaths"), 
          aes(x = get(varying_par[1]), y = get(varying_par[2]),
              fill = mean)) +
     geom_tile(aes(fill = mean)) +
@@ -196,8 +200,7 @@ if (metrics_plot & length(varying_par) == 2) {
     theme(panel.grid.minor = element_blank()) +
     labs(x = "Population tested per day (%)",# sprintf("%s (%%)", formatted_par[1]), 
          y = "Symptomatic cases tested per day (%)",# sprintf("%s (%%)", formatted_par[2]), 
-         fill = "Mean death toll\n",
-         # title = "Death toll",           
+         fill = "Mean deaths\n",          
          caption = sprintf("Calculated over %s simulation", num_runs)) +
     theme(plot.caption = element_text(hjust = 0), 
           legend.title = element_text(size = 30),
@@ -205,7 +208,7 @@ if (metrics_plot & length(varying_par) == 2) {
           legend.key.size = unit(3,"line"))
   
   if (export_plots) {
-    ggsave(sprintf("%s/%sdeath_toll.pdf", dest_path, pattern), 
+    ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
            width = g_width, height = g_height)
   }
   

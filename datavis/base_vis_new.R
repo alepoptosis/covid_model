@@ -222,7 +222,7 @@ ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
         legend.key.size = unit(3,"line"))
 
 if (export_plots) {
-  ggsave(sprintf("%s/%sbreeds-newld.pdf", dest_path, pattern), 
+  ggsave(sprintf("%s/%sbreeds.pdf", dest_path, pattern), 
          width = g_width, height = g_height)
 }
 
