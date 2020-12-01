@@ -1411,7 +1411,7 @@ SWITCH
 404
 personal-protections?
 personal-protections?
-1
+0
 1
 -1000
 
