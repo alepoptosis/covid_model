@@ -10,13 +10,14 @@ for (pkg in packages){
 }
 
 theme_set(theme_minimal(base_size = 40))
+theme_update(panel.grid.major = element_line(colour = "grey95"))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
 
-run_name = "2020-11-30_vary-protections-compliance-0100" # change name accordingly
-varying_par = "protections_compliance" # use "_" instead of "-"
+run_name = "2020-12-01_vary-lockdown-threshold-01" # change name accordingly
+varying_par = "lockdown_threshold" # use "_" instead of "-"
 optimal_value = 0.25 # optimal value chosen for measure (if needed)
 dest_path = "visualisations" # folder for visualisations
 g_width = 22     # size of plots
@@ -148,10 +149,6 @@ if (metrics_plot & length(varying_par) == 1) {
 
 ######################## DEATHS AND PEAK SIZE BOXPLOT #####################
 
-insert_minor <- function(major_labs, n_minor) {labs <- 
-  c( sapply( major_labs, function(x) c(x, rep("", 4) ) ) )
-labs[1:(length(labs)-n_minor)]}
-
 if (boxplot & length(varying_par) == 1) {
   
   summary_aggr = summary %>%
@@ -161,14 +158,15 @@ if (boxplot & length(varying_par) == 1) {
   tick_names = unique(pull(summary_aggr[1]))
   
   ggplot(summary, aes(x = factor(!!as.name(varying_par)), y = value, fill = metric)) + 
-    geom_boxplot() + 
+    geom_boxplot(aes(fill = metric), position = position_dodge(width=-0.5)) +
     scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
     scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
-    scale_y_continuous(trans="log10", breaks = seq(0,1000, by = 50)) +
-    labs(x = sprintf("%s (%%)", formatted_par), y = expression("Cases in Log"[10]*" scale"),
+    # scale_y_continuous(trans="log10") +
+    labs(x = sprintf("%s (%%)", formatted_par), y = "Cases",#expression("Cases in Log"[10]*" scale"),
          fill = "", color = "",
          caption = sprintf("Showing %s simulation per variable value", 
-                           (num_runs / length(tick_names))))
+                           (num_runs / length(tick_names)))) +
+    theme(panel.grid.minor = element_blank())
   
   if (export_plots) {
     ggsave(sprintf("%s/%sboxplot.pdf", dest_path, pattern), 

@@ -11,6 +11,7 @@ for (pkg in packages){
 }
 
 theme_set(theme_minimal(base_size = 40))
+theme_update(panel.grid.major = element_line(colour = "grey95"))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 
 # script options, change for different file, output options and plot size
@@ -25,10 +26,13 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # # rest of the script is looped for each of the experiments
 # for (run in to_run) {
 
-run_name = sprintf("2020-11-17_no-controls")#, run) # change date accordingly
+run_name = sprintf("sv-only")#, run) # change date accordingly
 dest_path = "visualisations"             # folder for visualisations
 g_width = 22                             # size of plots
 g_height = 16
+breed_plot = TRUE
+contact_plot = FALSE
+deaths_inf_plots = FALSE
 export_plots = TRUE                      # export plots or just display them
 
 ############################## DATA WRANGLING #################################
@@ -189,6 +193,30 @@ tot_infs = round(max(infected_aggr$mean), 2)
 data_long = data_long %>% filter(breed != "staying at home")
 data_aggr = data_aggr %>% filter(breed != "staying at home")
 
+# list of active measures
+
+measure_names = c("imposed_lockdown?", "shield_vulnerable?", 
+                  "personal_protections?", "test_and_trace?",
+                  "isolation_symptomatics?")
+
+active_measures = colnames(par %>%
+  select(one_of(measure_names)) %>%
+  distinct() %>%
+  select_if(any_vars( . == "true")) %>%
+  select_if(~!(all(is.na(.)))))
+
+if (length(active_measures) == 5) {
+  active_measures = "All"
+} else if (length(active_measures) == 0) {
+  active_measures = "None"
+} else {
+  active_measures = paste(unlist(str_to_sentence(active_measures)), collapse = ", ")
+  active_measures = gsub("[^[:alnum:][:blank:]+\\,]", " ", active_measures)
+  active_measures = gsub(" ,", ",", active_measures)
+  active_measures = gsub("Shield vulnerable", "Shielding of vulnerables", active_measures)
+  active_measures = gsub("Isolation", "Isolation of", active_measures)
+}
+
 # set order of breeds for legend
 order = c("susceptibles", "exposeds", "asymptomatics",
           "symptomatics", "recovereds", "deceased")
@@ -198,96 +226,105 @@ data_aggr$breed = factor(data_aggr$breed, levels=order)
 
 ######### AVERAGE COUNT PER BREED OVER TIME
 
-ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
-  geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
-  geom_area(data = lockdown_aggr, aes(x = step, y = locked_runs_per*900), 
-            inherit.aes = FALSE, fill = "lightgrey") +
-  geom_line(aes(color=breed), size = 1) +
-  coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
-  scale_color_manual(values = pal, 
-                     labels = order) +
-  scale_fill_manual(values = pal, 
-                    labels = order) +
-  # scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
-  #                                                 scale = 1e-3), 
-  #                    breaks = seq(0, max_cont, by = 30000)) +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-  labs(x = "Day", y = "Mean count",
-       fill = "Breed", color = "Breed",
-       caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s \nCalculated over %s simulations", 
-                         tot_deaths, year1_deaths, peak_sym, tot_infs, num_runs)) +
-  theme(plot.caption = element_text(hjust = 0),
-        legend.title = element_text(size = 50),
-        legend.text = element_text(size = 40),
-        legend.key.size = unit(3,"line"))
-
-if (export_plots) {
-  ggsave(sprintf("%s/%sbreeds.pdf", dest_path, pattern), 
-         width = g_width, height = g_height)
+if (breed_plot) {
+  breed_labels = c("Susceptible", "Exposed", "Asymptomatic", "Symptomatic",
+                   "Recovered", "Deceased")
+  
+  ggplot(data_aggr, aes(x=step, y=mean, group=breed)) +
+    geom_ribbon(aes(ymin=min, ymax=max, fill = breed), alpha=0.2) +
+    geom_area(data = lockdown_aggr, aes(x = step, y = locked_runs_per*900), 
+              inherit.aes = FALSE, fill = "lightgrey") +
+    geom_line(aes(color=breed), size = 1) +
+    coord_cartesian(ylim = c(0, pop_size), xlim = c(0, num_ticks)) +
+    scale_color_manual(values = pal, 
+                       labels = breed_labels) +
+    scale_fill_manual(values = pal, 
+                      labels = breed_labels) +
+    scale_y_continuous(breaks = seq(0, max_cont, by = 2500)) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
+    labs(x = "Day", y = "Mean count",
+         fill = "Breed", color = "Breed",
+         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s \nAverage size of symptomatic peak: %s\nAverage number of infections: %s\nActive measures: %s \nCalculated over %s simulations", 
+                           tot_deaths, year1_deaths, peak_sym, tot_infs, active_measures, num_runs)) +
+    theme(plot.caption = element_text(hjust = 0),
+          legend.title = element_text(size = 50),
+          legend.text = element_text(size = 40),
+          legend.key.size = unit(3,"line"))
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%sbreeds.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
 }
 
 ######### CONTACTS OVER TIME PLOT
 
-ggplot(contacts_aggr, aes(x=step, y=mean)) +
-  geom_area(data = lockdown_aggr, aes(x = step, y = locked_runs_per*5500), 
-            inherit.aes = FALSE, fill = "lightgrey", alpha = 0.7) +
-  geom_line(size = 1, color = "orange") +
-  geom_ribbon(aes(ymin=min, ymax=max), alpha=0.2, fill = "orange") +
-  coord_cartesian(ylim = c(0, max_cont), xlim = c(0, num_ticks)) +
-  # scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
-  #                                                 scale = 1e-3), 
-  #                    breaks = seq(0, max_cont, by = 100000)) +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-  scale_fill_manual(values = rep("lightgrey", num_runs)) +
-  labs(x = "Day", y = "Mean contacts",
-       caption = sprintf("Calculated over %s simulations", num_runs)) +
-  theme(plot.caption = element_text(hjust = 0))
-
-if (export_plots) {
-  ggsave(sprintf("%s/%scontacts.pdf", dest_path, pattern), 
-         width = g_width, height = g_height)
+if (contact_plot) {
+  ggplot(contacts_aggr, aes(x=step, y=mean)) +
+    geom_area(data = lockdown_aggr, aes(x = step, y = locked_runs_per*5500), 
+              inherit.aes = FALSE, fill = "lightgrey", alpha = 0.7) +
+    geom_line(size = 1, color = "orange") +
+    geom_ribbon(aes(ymin=min, ymax=max), alpha=0.2, fill = "orange") +
+    coord_cartesian(ylim = c(0, max_cont), xlim = c(0, num_ticks)) +
+    # scale_y_continuous(labels = scales::unit_format(unit = "K", sep = "", 
+    #                                                 scale = 1e-3), 
+    #                    breaks = seq(0, max_cont, by = 100000)) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
+    scale_fill_manual(values = rep("lightgrey", num_runs)) +
+    labs(x = "Day", y = "Mean contacts",
+         caption = sprintf("Calculated over %s simulations", num_runs)) +
+    theme(plot.caption = element_text(hjust = 0))
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%scontacts.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
 }
 
 ######### NEW DEATHS PER TICK PLOT, NON AGGREGATED
 
-greens_sliced = brewer.pal(9, "Greens")[-seq_len(2)]
+if (deaths_inf_plots) {
+  greens_sliced = brewer.pal(9, "Greens")[-seq_len(2)]
 
-ggplot(deceased_aggr, aes(x=step, y=mean_new)) +
-  geom_line(aes(color=age), size = 1) +
-  scale_color_manual(values = greens_sliced) +
-  scale_fill_manual(values = greens_sliced) +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-  coord_cartesian(ylim = c(- min(deceased_aggr$mean_new),
-                           max(deceased_aggr$mean_new)),
-                  xlim = c(0, num_ticks)) +
-  labs(x = "Day", y = "Mean new deaths", fill = "Age range", color = "Age range",
-       caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s\nCalculated over %s simulations", 
-                         tot_deaths, year1_deaths, num_runs)) +
-  theme(plot.caption = element_text(hjust = 0))
-
-if (export_plots) {
-  ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
-         width = g_width, height = g_height)
+  ggplot(deceased_aggr, aes(x=step, y=mean_new)) +
+    geom_line(aes(color=age), size = 1) +
+    scale_color_manual(values = greens_sliced) +
+    scale_fill_manual(values = greens_sliced) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
+    coord_cartesian(ylim = c(- min(deceased_aggr$mean_new),
+                             max(deceased_aggr$mean_new)),
+                    xlim = c(0, num_ticks)) +
+    labs(x = "Day", y = "Mean new deaths", fill = "Age range", color = "Age range",
+         caption = sprintf("Average total deaths: %s \nAverage deaths in first year: %s\nCalculated over %s simulations", 
+                           tot_deaths, year1_deaths, num_runs)) +
+    theme(plot.caption = element_text(hjust = 0))
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%sdeaths.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
 }
 
 ######### NEW INFECTIONS PER TICK PLOT, NON AGGREGATED
 
-reds_sliced = brewer.pal(9, "Reds")[-seq_len(2)]
-
-ggplot(infected_aggr, aes(x=step, y=mean_new)) +
-  geom_line(aes(color=age), size = 1) +
-  scale_color_manual(values = reds_sliced) +
-  scale_fill_manual(values = reds_sliced) +
-  scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
-  coord_cartesian(ylim = c(- min(infected_aggr$mean_new),
-                           max(infected_aggr$mean_new)),
-                  xlim = c(0, num_ticks)) +
-  labs(x = "Day", y = "Mean new infections", fill = "Age range", color = "Age range",
-       caption = sprintf("Average size of symptomatic peak: %s \nAverage number of infections: %s\nCalculated over %s simulations", 
-                         peak_sym, tot_infs, num_runs)) +
-  theme(plot.caption = element_text(hjust = 0))
-
-if (export_plots) {
-  ggsave(sprintf("%s/%sinfections.pdf", dest_path, pattern), 
-         width = g_width, height = g_height)
+if (deaths_inf_plots) {
+  reds_sliced = brewer.pal(9, "Reds")[-seq_len(2)]
+  
+  ggplot(infected_aggr, aes(x=step, y=mean_new)) +
+    geom_line(aes(color=age), size = 1) +
+    scale_color_manual(values = reds_sliced) +
+    scale_fill_manual(values = reds_sliced) +
+    scale_x_continuous(breaks = seq(0, num_ticks, by = 30)) +
+    coord_cartesian(ylim = c(- min(infected_aggr$mean_new),
+                             max(infected_aggr$mean_new)),
+                    xlim = c(0, num_ticks)) +
+    labs(x = "Day", y = "Mean new infections", fill = "Age range", color = "Age range",
+         caption = sprintf("Average size of symptomatic peak: %s \nAverage number of infections: %s\nCalculated over %s simulations", 
+                           peak_sym, tot_infs, num_runs)) +
+    theme(plot.caption = element_text(hjust = 0))
+  
+  if (export_plots) {
+    ggsave(sprintf("%s/%sinfections.pdf", dest_path, pattern), 
+           width = g_width, height = g_height)
+  }
 }
