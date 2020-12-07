@@ -16,8 +16,8 @@ metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
 
-run_name = "2020-12-01_vary-lockdown-threshold-01" # change name accordingly
-varying_par = "lockdown_threshold" # use "_" instead of "-"
+run_name = "vary-shield-compliance-0100" # change name accordingly
+varying_par = "shield_compliance" # use "_" instead of "-"
 optimal_value = 0.25 # optimal value chosen for measure (if needed)
 dest_path = "visualisations" # folder for visualisations
 g_width = 22     # size of plots
@@ -161,12 +161,11 @@ if (boxplot & length(varying_par) == 1) {
     geom_boxplot(aes(fill = metric), position = position_dodge(width=-0.5)) +
     scale_fill_manual(values = metrics_pal, labels = formatted_metrics) +
     scale_color_manual(values = metrics_pal, labels = formatted_metrics) +
-    # scale_y_continuous(trans="log10") +
+    scale_y_continuous(breaks = seq(0, max(summary_aggr$max), by = 250)) +
     labs(x = sprintf("%s (%%)", formatted_par), y = "Cases",#expression("Cases in Log"[10]*" scale"),
          fill = "", color = "",
          caption = sprintf("Showing %s simulation per variable value", 
-                           (num_runs / length(tick_names)))) +
-    theme(panel.grid.minor = element_blank())
+                           (num_runs / length(tick_names))))
   
   if (export_plots) {
     ggsave(sprintf("%s/%sboxplot.pdf", dest_path, pattern), 

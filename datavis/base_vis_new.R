@@ -26,7 +26,7 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # # rest of the script is looped for each of the experiments
 # for (run in to_run) {
 
-run_name = sprintf("sv-only")#, run) # change date accordingly
+run_name = sprintf("all-controls")#, run) # change date accordingly
 dest_path = "visualisations"             # folder for visualisations
 g_width = 22                             # size of plots
 g_height = 16
@@ -118,7 +118,7 @@ deceased_long = deceased_long %>%
   group_by(run_num,age) %>%
   mutate(new_deaths = c(0,diff(cum_count)))
 
-# aggregated version of deads info
+# aggregated version of deceased long
 deceased_aggr = deceased_long %>%
   group_by(step, age) %>%
   summarise(mean = mean(cum_count), stdev = round(sd(cum_count), 2),
@@ -126,9 +126,11 @@ deceased_aggr = deceased_long %>%
             mean_new = mean(new_deaths), stdev_new = round(sd(new_deaths), 2),
             max_new = max(new_deaths), min_new = min(new_deaths))
 
-# subset containing info on dead agents
+# subset containing info on infected agents
 infected = raw %>%
-  select(matches("run_num|step|\"infected"))
+  select(matches("run_num|step|\"infected")) %>%
+  mutate(`get_age_bracket_data "total" "infected"` = select(., contains("infected")) %>% 
+           rowSums(na.rm = TRUE))
 
 # turn data into long format for plotting
 infected_long = infected %>% pivot_longer (
@@ -141,12 +143,12 @@ infected_long = infected %>% pivot_longer (
   mutate_at("age", ~gsub("\"", "", .)) %>%
   mutate_at("age", ~gsub("_", "-", .))
 
-# add column with new deaths per step
+# add column with new infectons per step
 infected_long = infected_long %>%
   group_by(run_num,age) %>%
   mutate(new_infs = c(0,diff(cum_count)))
 
-# aggregated version of deads info
+# aggregated version of infected long
 infected_aggr = infected_long %>%
   group_by(step, age) %>%
   summarise(mean = mean(cum_count), stdev = round(sd(cum_count), 2),

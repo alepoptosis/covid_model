@@ -117,6 +117,7 @@ pivot_longer(
 metrics$metric = factor(metrics$metric, 
                         levels = c("sympeak", "totinfs", "totdeaths", "totcontacts"))
 
+
 # expanded labels for the metrics
 met_lab = c("sympeak" = "Peak cases", "totinfs" = "10 infections",
             "totdeaths" = "Death toll", "totcontacts" = "10,000 contacts")
