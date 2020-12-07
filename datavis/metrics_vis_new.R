@@ -9,7 +9,7 @@ for (pkg in packages){
   library(pkg, character.only = TRUE)
 }
 
-theme_set(theme_minimal(base_size = 40))
+theme_set(theme_minimal(base_size = 25))
 theme_update(panel.grid.major = element_line(colour = "grey95"))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 metrics_pal = c("#666666", "#FB8072", "#80B1D3")
@@ -25,6 +25,11 @@ export_plots = TRUE     # export plots or just display them
 run_order = c("no-controls", "all-controls", "ld", "sv", "pp", "tt", "is")
 # edit the formatted/extended names of the runs (ordered as above)
 extended_names = c("None", "All", "LD", "SV", "PP", "TT", "IS")
+
+# # edit the order in which the runs go using the runs name (left to right)
+# run_order = c("no-controls", "all-controls", "sv-is", "sv-is-dld", "pp-tt", "pp-tt-dld", "pp-tt-sv")
+# # edit the formatted/extended names of the runs (ordered as above)
+# extended_names = c("None", "All", "SV+IS", "SV+IS\n+DLD", "PP+TT", "PP+TT\n+DLD", "PP+TT\n+SV")
 
 
 # obtain list of csvs
@@ -150,11 +155,11 @@ ggplot(data = metrics,
            position=position_dodge(0.5), width = 0.5) +
   scale_fill_manual(name="Metric", labels = met_lab,
                     values = c("#FB8072", "#80B1D3", "#666666", "#FDB462")) +
-  scale_x_discrete(limits = rev(levels(metrics$run_name)), labels = extended_names) +
+  scale_x_discrete(limits = levels(metrics$run_name), labels = extended_names) +
   theme(axis.text.x = element_text(size = 16)) +
   labs(x = "", y = "")
 
 if (export_plots) {
-  ggsave(sprintf("%s/all-metrics.pdf", dest_path), 
+  ggsave(sprintf("%s/all-metrics-single.pdf", dest_path), 
          width = g_width, height = g_height)
 }

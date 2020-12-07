@@ -10,7 +10,7 @@ for (pkg in packages){
   library(pkg, character.only = TRUE)
 }
 
-theme_set(theme_minimal(base_size = 40))
+theme_set(theme_minimal(base_size = 25))
 theme_update(panel.grid.major = element_line(colour = "grey95"))
 pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 
@@ -26,7 +26,7 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 # # rest of the script is looped for each of the experiments
 # for (run in to_run) {
 
-run_name = sprintf("all-controls")#, run) # change date accordingly
+run_name = sprintf("pp-tt")#, run) # change date accordingly
 dest_path = "visualisations"             # folder for visualisations
 g_width = 22                             # size of plots
 g_height = 16
