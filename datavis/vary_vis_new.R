@@ -15,17 +15,18 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 metrics_pal = c("#666666", "#FB8072", "#80B1D3")
 
 # script options, change for different file, output options and plot size
+# note: this script as is cannot be looped because there's too many options
 
-run_name = "vary-shield-compliance-0100" # change name accordingly
-varying_par = "shield_compliance" # use "_" instead of "-"
-optimal_value = 0.25 # optimal value chosen for measure (if needed)
+run_name = "04-07-2021_vary-test-coverage-combo-0100" # change name accordingly
+varying_par = c("test_coverage_sym", "test_coverage_asym") # ause "_" instead of "-"
+optimal_value = 0 # optimal value chosen for measure (if needed)
 dest_path = "visualisations" # folder for visualisations
 g_width = 22     # size of plots
 g_height = 16
 
 # choose which plots to make
-metrics_plot = FALSE         # output metrics vs param value (1 or 2 params)
-boxplot = TRUE
+metrics_plot = TRUE         # output metrics vs param value (1 or 2 params)
+boxplot = TRUE              # output metric vs param value (1 param only)
 fix_metric_plot = FALSE     # fix one metric and vary the other (2 param only)
   # MORE OPTIONS NEEDED FOR FIXED METRIC PLOT 
   focus_par = "test_coverage_asym" # which one of the parameters to vary
@@ -190,8 +191,8 @@ if (metrics_plot & length(varying_par) == 2) {
              fill = mean)) +
     geom_tile(aes(fill = mean)) +
     geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0))),
-              size = 10) +
-    scale_fill_viridis(limits = c(100, 200)) +
+              size = 5) +
+    scale_fill_viridis()+#limits = c(100, 200)) +
     scale_y_continuous(breaks = x_tick_labels) +
     scale_x_continuous(breaks = y_tick_labels) +
     theme(panel.grid.minor = element_blank()) +
@@ -215,10 +216,10 @@ if (metrics_plot & length(varying_par) == 2) {
              fill = mean)) +
     geom_tile(aes(fill = mean)) +
     geom_text(aes(label = sprintf("%s ± %s", round(mean, 0), round(stdev, 0))),
-              size = 10) +
+              size = 5) +
     scale_y_continuous(breaks = y_tick_labels) +
     scale_x_continuous(breaks = x_tick_labels) +
-    scale_fill_viridis(limits = c(500, 1000)) +
+    scale_fill_viridis()+#limits = c(500, 1000)) +
     theme(panel.grid.minor = element_blank()) +
     labs(x = "Population tested per day (%)",# sprintf("%s (%%)", formatted_par[1]), 
          y = "Symptomatic cases tested per day (%)",# sprintf("%s (%%)", formatted_par[2]), 

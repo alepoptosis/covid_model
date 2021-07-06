@@ -18,20 +18,31 @@ pal = c("#B3DE69", "#FFD92F", "#BEBADA", "#FC8D62", "#80B1D3", "#B3B3B3")
 
 ### UNCOMMENT THIS for a for loop and process multiple runs at once
 
-# names of experiments to visualise
-# to_run = c(
-#   "action-none-1y"
-#   ,"action-all-1y")
-# 
-# # rest of the script is looped for each of the experiments
-# for (run in to_run) {
+## names of experiments to visualise
+to_run = c(
+  "all-controls",
+  "is-only",
+  "ld-only",
+  "no-controls",
+  "pp-only",
+  "pp-tt",
+  "pp-tt-dld",
+  "pp-tt-sv",
+  "sv-is",
+  "sv-is-dld",
+  "sv-only",
+  "tt-only"
+)
 
-run_name = sprintf("pp-tt")#, run) # change date accordingly
+## rest of the script is looped for each of the experiments
+for (run in to_run) {
+
+run_name = sprintf("04-07-2021_%s", run) # change date accordingly
 dest_path = "visualisations"             # folder for visualisations
 g_width = 22                             # size of plots
 g_height = 16
 breed_plot = TRUE
-contact_plot = FALSE
+contact_plot = TRUE
 deaths_inf_plots = FALSE
 export_plots = TRUE                      # export plots or just display them
 
@@ -329,4 +340,5 @@ if (deaths_inf_plots) {
     ggsave(sprintf("%s/%sinfections.pdf", dest_path, pattern), 
            width = g_width, height = g_height)
   }
+}
 }
